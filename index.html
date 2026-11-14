@@ -224,7 +224,7 @@ function buckle(hex){const g=new THREE.Group(),m=M(hex||'#d4b04a',0.4);put(g,B(0
 put(g,B(0.016,0.016,0.096),m,-0.055,0.008,0);put(g,B(0.016,0.016,0.096),m,0.055,0.008,0);put(g,B(0.01,0.01,0.08),m,0,0.012,0);return g}
 function pot(hex){const g=new THREE.Group();put(g,Cy(0.075,0.065,0.1,10),M('#b06a3a'),0,0.05,0);put(g,Cy(0.068,0.068,0.01,10),M(hex,0.3),0,0.1,0);
 const rim=mesh(new THREE.TorusGeometry(0.075,0.01,5,12),M('#8a4f28'));rim.rotation.x=Math.PI/2;rim.position.y=0.1;g.add(rim);return g}
-const PAINTS=[{id:'kahve',ad:'Kahverengi',hex:'#6e3d1f'},{id:'kirmizi',ad:'Kırmızı',hex:'#a3302a'},{id:'lacivert',ad:'Lacivert',hex:'#2c3e6b'},{id:'siyah',ad:'Siyah',hex:'#262220'},{id:'sari',ad:'Sarı',hex:'#c9982a'},{id:'mor',ad:'Mor',hex:'#5e3a6e'}];
+const PAINTS=[{id:'kahve',ad:'Kahverengi',hex:'#8a4214'},{id:'kirmizi',ad:'Kırmızı',hex:'#d42a1e'},{id:'lacivert',ad:'Lacivert',hex:'#1f48b8'},{id:'siyah',ad:'Siyah',hex:'#151313'},{id:'sari',ad:'Sarı',hex:'#f2b80f'},{id:'mor',ad:'Mor',hex:'#8a2fb8'}];
 function seedMk(hex){return ()=>{const g=new THREE.Group();const s=put(g,new THREE.SphereGeometry(0.09,8,6),M('#cdbb94'),0,0.08,0);s.scale.set(1,0.9,1);put(g,Cy(0.035,0.05,0.05,6),M('#cdbb94'),0,0.17,0);put(g,Cy(0.04,0.04,0.012,8),M('#8a5530'),0,0.155,0);
 [[0.12,0.015,0.05],[0.15,0.015,-0.02],[0.1,0.015,-0.07]].forEach(p=>put(g,new THREE.SphereGeometry(0.022,5,4),M(hex),p[0],p[1],p[2]));put(g,Cy(0.035,0.035,0.006,8),M(hex),0,0.09,0.088).rotation.x=Math.PI/2;return g}}
 const CROPS={tohum_pamuk:{out:'pamuk',n:4,s:35,hex:'#f6f3ea',f:10},tohum_civit:{out:'civit',n:4,s:35,hex:'#3d6680',f:10},tohum_kokboya:{out:'kokboya',n:4,s:35,hex:'#b23a2a',f:10},tohum_papatya:{out:'papatya',n:4,s:35,hex:'#f2c230',f:10},tohum_keten:{out:'keten',n:4,s:45,hex:'#8fb4d9',f:14,t:2}};
@@ -932,7 +932,7 @@ const rk=K.st.k;if(rk==='cila'){m.roughness=0.3;m.color.set(shade(K.p.sheet,-0.1
 function paintHex(){if(!K.color||!K.color.id)return K.p.sheet;if(K.painted)return K.color.hex;return '#'+new THREE.Color(K.p.sheet).lerp(new THREE.Color(K.color.hex),K.pn/K.pcN).getHexString()}
 function mkPaint(){const bb=new THREE.Box3().setFromObject(K.model.g),cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2,rx=(bb.max.x-bb.min.x)/2,rz=(bb.max.z-bb.min.z)/2,c=[];
 for(let x=-rx;x<=rx;x+=0.045)for(let z=-rz;z<=rz;z+=0.045)if((x/rx)**2+(z/rz)**2<=1)c.push({p:V(cx+x,Y+0.12,cz+z),on:false});K.pc=c;K.ptop=bb.max.y+0.005;TL.br.userData.tip.material.color.set(K.color.hex);K.pcN=c.length||1;K.pn=0}
-function paintAt(p){sThr(sfx.brush,0.3);toolAt(p,'br',K.ptop);K.pc.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.085){c.on=true;K.pn++}});const cv=K.pn/K.pcN;K.model.um.color.set(paintHex());tipStep('Boyandı: %'+Math.round(cv*100));
+function paintAt(p){sThr(sfx.brush,0.3);toolAt(p,'br',K.ptop);K.pc.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.085){c.on=true;K.pn++}});const cv=K.pn/K.pcN;K.model.um.color.set(paintHex());K.model.um.roughness=0.45;tipStep('Boyandı: %'+Math.round(cv*100));
 if(cv>=0.9){K.pc=null;K.painted=true;K.rubbing=false;sfx.good();build(false);renderDesign();tipStep('Boya tamam · Sürükleyip çevir, sonra Bitir')}}
 function bDesign(){K.work.clear();K.painted=false;K.pc=null;K.pn=0;K.pcN=1;K.nat={hex:K.p.sheet,ad:'Doğal'};K.color=K.p.need.boya?null:K.nat;K.rx=K.ry=0;K.style=K.p.styles?(G.order.style||K.p.styles[0]):null;build(true);renderDesign()}
 function build(pop){if(K.model)K.work.remove(K.model.g);K.model=K.p.build(paintHex(),K.style,K);K.model.g.position.copy(BC);K.model.g.scale.setScalar(1.6);K.work.add(K.model.g);applySpin();
