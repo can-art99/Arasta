@@ -125,6 +125,12 @@ input{font:inherit;font-size:16px;width:100%;padding:8px 10px;border:2px solid v
 #openB{position:absolute;right:10px;top:calc(env(safe-area-inset-top) + 54px);background:var(--tl);color:var(--cr);border-color:var(--tlD);box-shadow:0 2px 0 var(--tlD)}
 #openB.cl{background:var(--tr);border-color:#6e2a1c;box-shadow:0 2px 0 #6e2a1c}
 .lbl.cnt{padding:0 6px;font-size:12px;border-radius:9px;min-width:22px;box-shadow:0 1px 0 var(--ln)}
+#vitB{position:absolute;right:10px;top:calc(env(safe-area-inset-top) + 92px)}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--tl);height:34px}
+.hgv{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0}
+.hgv b{font:400 32px 'DM Serif Display',Georgia,serif;min-width:90px;text-align:center;color:var(--tl)}
+.hgv .btn{min-height:40px;padding:4px 12px}
+.hq{font-size:16px!important;opacity:1!important;font-style:italic}
 .hide{display:none!important}
 </style>
 </head>
@@ -144,6 +150,7 @@ input{font:inherit;font-size:16px;width:100%;padding:8px 10px;border:2px solid v
       <div style="display:flex;gap:5px"><div class="pill" id="tierP">K1</div><button class="pill" id="musB" aria-label="Müzik">♪</button><button class="pill" id="menuB" aria-label="Menü">☰</button></div>
     </div>
     <button class="pill hide" id="openB">Açık</button>
+    <button class="pill hide" id="vitB">Vitrin</button>
     <div id="pat" class="hide"><i></i></div>
     <div id="card" class="hide"></div>
     <div id="tip" class="hide"></div>
@@ -180,7 +187,7 @@ const cam=new THREE.PerspectiveCamera(62,1,0.05,80);
 const V=(x,y,z)=>new THREE.Vector3(x,y,z);
 const OI=20,OB=-20,OP=40,OD=-40;
 const VIEWS={home:{p:V(0,1.75,3.6),l:V(0,1.05,-1.2)},bench:{p:V(0,3.3,2.36),l:V(0,1.1,1.63)},
-islik:{p:V(OI,8.2,4.5),l:V(OI,0,-0.8)},bahce:{p:V(OB,8.6,9.1),l:V(OB,0,1.0)},pazar:{p:V(OP,7,6.8),l:V(OP,0,-0.3)},depo:{p:V(OD,2.1,3.5),l:V(OD,1.9,-2.85)}};
+islik:{p:V(OI,8.2,4.5),l:V(OI,0,-0.8)},bahce:{p:V(OB,8.6,9.1),l:V(OB,0,1.0)},pazar:{p:V(OP,7,6.8),l:V(OP,0,-0.3)},depo:{p:V(OD,2.1,3.5),l:V(OD,1.9,-2.85)},vitrin:{p:V(-1.75,1.72,-1.45),l:V(2.7,1.62,-1.45)}};
 const camCur={p:VIEWS.home.p.clone(),l:VIEWS.home.l.clone()};let sway=1,view='home';
 let W=1,H=1,dpr=1;
 function resize(){W=frame.clientWidth;H=frame.clientHeight;dpr=Math.min(devicePixelRatio,2);R.setSize(W,H,false);cam.aspect=W/H;cam.updateProjectionMatrix();fx.width=W*dpr;fx.height=H*dpr}
@@ -342,7 +349,7 @@ const dL=new THREE.PointLight('#ffc888',2.1,16,2);dL.position.set(OD,3.2,1.2);dL
 const LIGHTS={home:[[sun,1.5],[lamp,1.4],[benchL,0.7],[hemi,0.45]],islik:[[iL1,2.3],[iL2,0.9],[hemi,0.85]],bahce:[[gSun,1.35],[hemi,0.85]],pazar:[[pSun,1.05],[hemi,0.55]],depo:[[dL,2.1],[hemi,0.75]]};
 const SHAD={home:[sun,lamp],islik:[iL1],bahce:[gSun],pazar:[pSun],depo:[dL]};
 const BGS={home:'#2b1d12',islik:'#1e140c',bahce:'#a9d3e8',pazar:'#a9d3e8',depo:'#1e140c'};
-function setLights(v){const k=v==='bench'?'home':v;[sun,lamp,benchL,iL1,iL2,gSun,pSun,dL].forEach(l=>{l.visible=false;l.castShadow=false});LIGHTS[k].forEach(([l,i])=>{l.intensity=i;l.visible=true});SHAD[k].forEach(l=>l.castShadow=true);S.background.set(BGS[k])}
+function setLights(v){const k=(v==='bench'||v==='vitrin')?'home':v;[sun,lamp,benchL,iL1,iL2,gSun,pSun,dL].forEach(l=>{l.visible=false;l.castShadow=false});LIGHTS[k].forEach(([l,i])=>{l.intensity=i;l.visible=true});SHAD[k].forEach(l=>l.castShadow=true);S.background.set(BGS[k])}
 
 /* ---------- dükkan ---------- */
 for(let i=0;i<9;i++)add(B(0.66,0.05,9),M(i%2?'#7a4a2a':'#6c4024'),-2.64+i*0.66,0,0);
@@ -357,8 +364,10 @@ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.7,1.3,5,4,1,true),new TH
 shaft.position.set(0.6,1.4,-1.6);shaft.rotation.set(1.1,0.785,0);S.add(shaft);
 const shelfItems=[()=>shoeModel('#6e3d1f','Bağcıklı'),()=>cuzdanModel('#a3302a'),()=>cantaModel('#2c3e6b','Kısa sap'),()=>kemerModel('#262220'),()=>atkiModel('#a3302a'),()=>shoeModel('#262220','Tokalı')];
 [-2.7,2.7].forEach((x,si)=>{for(let k=0;k<3;k++){add(B(0.45,0.06,2.6),M('#6e4122'),x,0.9+k*0.7,-1.4);
-for(let j=0;j<3;j++){const it=shelfItems[(j+k+si*2)%shelfItems.length]();it.g.scale.setScalar(0.85);it.g.position.set(x,0.93+k*0.7,-2.3+j*0.85);it.g.rotation.y=x<0?-1.2:1.2;S.add(it.g)}}});
+if(x>0)continue;for(let j=0;j<3;j++){const it=shelfItems[(j+k+si*2)%shelfItems.length]();it.g.scale.setScalar(0.85);it.g.position.set(x,0.93+k*0.7,-2.3+j*0.85);it.g.rotation.y=x<0?-1.2:1.2;S.add(it.g)}}});
 add(B(1.2,0.9,0.7),M('#7a4a2a'),-2.2,0.45,-3.4);add(B(0.8,0.6,0.6),M('#8b5a2b'),-2.3,1.2,-3.4);
+const VIT=new THREE.Group();S.add(VIT);const VSL=[];for(let k=0;k<3;k++)for(let j=0;j<3;j++)VSL.push(V(2.7,0.93+k*0.7,-2.3+j*0.85));
+add(B(0.05,0.32,1.0),M('#5a3519'),2.92,2.95,-1.45);
 function canTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t}
 function kilim(c,w,h){c.fillStyle='#b5533c';c.fillRect(0,0,w,h);c.fillStyle='#f0e2c4';c.fillRect(10,10,w-20,h-20);c.fillStyle='#8e3a2a';c.fillRect(18,18,w-36,h-36);
 const n=4,cw=(w-36)/n;for(let i=0;i<n;i++){const cx=18+cw*(i+0.5),cy=h/2;[[cw*0.46,'#f0e2c4'],[cw*0.34,'#2f6b5a'],[cw*0.22,'#e3b24a'],[cw*0.1,'#8e3a2a']].forEach(([r,col])=>{c.fillStyle=col;c.beginPath();c.moveTo(cx,cy-r*1.5);c.lineTo(cx+r,cy);c.lineTo(cx,cy+r*1.5);c.lineTo(cx-r,cy);c.closePath();c.fill()})}
@@ -493,6 +502,29 @@ const c=CROPS[o.seed];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;burst(o.g.pos
 PL.forEach(plotSync);
 function label(v,pos,txt,below){const el=document.createElement('div');el.className='lbl hide'+(below?' below':'');if(txt)el.textContent=txt;$('labels').appendChild(el);const o={el,pos,v,last:'',below,hid:true};LBL.push(o);return o}
 
+/* ---------- el aletleri ---------- */
+const TOOL=new THREE.Group();TOOL.visible=false;TOOL.userData={t:null,down:false,last:0,mv:0,lp:null};S.add(TOOL);const TL={};
+function tl(n,fn){const g=new THREE.Group(),inner=new THREE.Group();g.add(inner);fn(inner,g);g.visible=false;TOOL.add(g);TL[n]=g;return g}
+const steel=M('#c8ccd0',0.25);
+tl('sc',(i,g)=>{i.position.set(0,0.02,0.11);i.rotation.x=-0.3;[1,-1].forEach(sg=>{const bl=new THREE.Group();put(bl,B(0.014,0.004,0.13),steel,0,0,-0.065);const h=put(bl,new THREE.TorusGeometry(0.026,0.008,5,14),M('#b5533c'),sg*0.02,0,0.05);h.rotation.x=Math.PI/2;i.add(bl);g.userData[sg>0?'a':'b']=bl});put(i,Cy(0.008,0.008,0.012,8),M('#4a4a50'),0,0.004,0)});
+function brushT(n,tip){tl(n,(i,g)=>{i.rotation.x=0.55;const t=put(i,new THREE.ConeGeometry(0.016,0.05,8),M(tip,0.9),0,0.025,0);t.rotation.x=Math.PI;g.userData.tip=t;put(i,Cy(0.013,0.013,0.035,8),M('#b8bcc0',0.35),0,0.065,0);put(i,Cy(0.009,0.012,0.2,8),M('#a0703c'),0,0.18,0)})}
+brushT('br','#6e3d1f');brushT('gl','#efe6c8');
+tl('blk',(i)=>{put(i,B(0.15,0.045,0.095),M('#c9955a'),0,0.035,0);put(i,B(0.15,0.012,0.095),M('#8a8478',1),0,0.006,0)});
+tl('kn',(i)=>{i.rotation.x=-0.5;const b=put(i,new THREE.CylinderGeometry(0.055,0.055,0.006,16,1,false,-Math.PI/2,Math.PI),steel,0,0.004,0.0);put(i,B(0.024,0.022,0.12),M('#5a3519'),0,0.012,0.11)});
+tl('cl',(i)=>{const c=put(i,new THREE.SphereGeometry(0.07,10,6),M('#efe2c4',1),0,0.022,0);c.scale.set(1.15,0.38,0.9);const c2=put(i,new THREE.SphereGeometry(0.04,8,6),M('#e2d2ae',1),0.03,0.04,0.02);c2.scale.set(1,0.6,1)});
+tl('nd',(i)=>{i.rotation.x=0.45;put(i,Cy(0.0035,0.002,0.16,6),steel,0,0.08,0);const th=put(i,Cy(0.002,0.002,0.12,4),M('#b5533c'),0.015,0.12,0.02);th.rotation.z=0.5});
+tl('pn',(i)=>{i.rotation.x=0.35;put(i,Cy(0.014,0.01,0.12,10),steel,0,0.06,0);put(i,Cy(0.026,0.026,0.05,10),M('#5a3519'),0,0.145,0)});
+function toolSet(t){if(TOOL.userData.t===t)return;TOOL.userData.t=t;for(const k in TL)TL[k].visible=k===t;TOOL.rotation.set(0,0,0)}
+function toolAt(p,t,y){toolSet(t);const U=TOOL.userData;TOOL.visible=true;U.down=true;U.last=tt;const yy=y!=null?y:(K?K.top:Y)+0.004;
+if(U.lp){const dx=p.x-U.lp.x,dz=p.z-U.lp.z,d=Math.hypot(dx,dz);if(d>0.003){U.mv=tt;if(t==='sc'||t==='kn'){const tg=Math.atan2(-dx,-dz);let a=tg-TOOL.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));TOOL.rotation.y+=a*0.35}}}
+U.lp=p.clone();TOOL.position.set(p.x,yy,p.z)}
+function toolUp(){TOOL.userData.down=false;TOOL.userData.lp=null}
+function stab(pos,k){const t={dik:'nd',yapistir:'gl',delik:'pn'}[k];if(!t)return;toolSet(t);TOOL.visible=true;const U=TOOL.userData;U.down=false;U.last=tt+0.3;TOOL.rotation.set(0,0,0);
+TOOL.position.set(pos.x,pos.y,pos.z);tween(0.22,k2=>TOOL.position.y=pos.y+0.004+Math.abs(1-2*k2)*0.12)}
+function toolTick(){const U=TOOL.userData;if(!TOOL.visible)return;if(G.phase!=='craft'||(!U.down&&tt-U.last>0.7)){TOOL.visible=false;return}
+if(U.t==='sc'){const a=tt-U.mv<0.15?0.05+0.24*Math.abs(Math.sin(tt*15)):0.26;TL.sc.userData.a.rotation.y=a;TL.sc.userData.b.rotation.y=-a}
+else if((U.t==='blk'||U.t==='cl'||U.t==='br')&&tt-U.mv<0.15)TOOL.rotation.y=Math.sin(tt*22)*0.18}
+
 /* ---------- pazar ---------- */
 function figure(x,z,col){const g=new THREE.Group();put(g,B(0.44,0.45,0.28),M('#3a2f28'),0,0.22,0);put(g,Cy(0.25,0.32,0.95,8),M(col),0,0.92,0);put(g,new THREE.SphereGeometry(0.22,10,8),M('#e0b088'),0,1.62,0);put(g,Cy(0.24,0.27,0.1,8),M('#8a3a28'),0,1.82,0);g.position.set(x,0,z);S.add(g);return g}
 add(B(18,0.1,18),M('#c4ad82'),OP,-0.05,-1).castShadow=false;
@@ -536,7 +568,7 @@ function depoSync(){DEP.forEach(d=>{const n=G.inv[d.k];if(n!==d.n){d.n=n;d.o.vis
 
 /* ---------- oyun durumu ---------- */
 const G={gold:180,rep:0,n:1,inv:{},order:null,phase:'idle',step:null,tier:1,first:true,deliv:[],market:[],mktT:0,disc:1,haggled:false};
-Object.assign(G,{st:{deliv:0,five:0,earned:0,coll:0,proc:0,harv:0,lost:0,plots:0},cat:{},ach:{},unl:['cuzdan'],shop:{ad:'Benim Dükkanım',logo:'star',col:'#a3302a'},snd:true,mus:true,open:true,started:false});
+Object.assign(G,{st:{deliv:0,five:0,earned:0,coll:0,proc:0,harv:0,lost:0,plots:0,sold:0},cat:{},stock:[],sid:0,ach:{},unl:['cuzdan'],shop:{ad:'Benim Dükkanım',logo:'star',col:'#a3302a'},snd:true,mus:true,open:true,started:false});
 Object.keys(MATS).forEach(k=>G.inv[k]=0);
 Object.assign(G.inv,{deri:1,iplik:1,boya_kahve:1,hamderi:1,pamuk:2,tutkal:1});
 const TIERS={1:0,2:12,3:30};
@@ -546,12 +578,12 @@ const ACH=[{id:'ilk',ad:'İlk satış',desc:'Bir sipariş teslim et',get:()=>G.s
 {id:'zen',ad:'Dolu kasa',desc:'Toplam 1000 altın kazan',get:()=>G.st.earned,goal:1000,gold:100},{id:'top',ad:'Toplayıcı',desc:'50 malzeme topla',get:()=>G.st.coll,goal:50,gold:50},
 {id:'isl',ad:'Çalışkan atölye',desc:'Atölyede 20 üretim yap',get:()=>G.st.proc,goal:20,gold:60},{id:'cif',ad:'Çiftçi',desc:'10 hasat yap',get:()=>G.st.harv,goal:10,gold:60},
 {id:'ara',ad:'Toprak sahibi',desc:'3 arazi satın al',get:()=>G.st.plots,goal:3,gold:80},{id:'kol',ad:'Tam koleksiyon',desc:'Tüm ürünleri başarıyla üret',get:()=>Object.keys(G.cat).length,goal:PRODS.length,gold:300},
-{id:'k3',ad:'Büyük usta',desc:'Kademe 3 ol',get:()=>G.tier,goal:3,gold:150}];
+{id:'vit',ad:'Vitrin satıcısı',desc:'Vitrinden 5 ürün sat',get:()=>G.st.sold,goal:5,gold:60},{id:'k3',ad:'Büyük usta',desc:'Kademe 3 ol',get:()=>G.tier,goal:3,gold:150}];
 function checkAch(){ACH.forEach(a=>{if(!G.ach[a.id]&&a.get()>=a.goal){G.ach[a.id]=1;G.gold+=a.gold;hud();toast(`Başarım: ${a.ad}<br>+${a.gold} altın`,2400);sfx.fan()}})}
 function checkUnl(){PRODS.filter(unlocked).forEach(p=>{if(!G.unl.includes(p.id)){G.unl.push(p.id);setTimeout(()=>{toast(`Yeni ürün açıldı: ${p.ad}`,2600);sfx.fan()},2300)}})}
 const SK='kraft-save-v1';let saveN=0;
-let save=function(){try{localStorage.setItem(SK,JSON.stringify({gold:G.gold,rep:G.rep,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,ach:G.ach,unl:G.unl,shop:G.shop,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-tt):0}))}))}catch(e){}};
-function load(){try{const d=JSON.parse(localStorage.getItem(SK));if(!d)return;['gold','rep','n','tier','first','snd','mus','open','daily','streak'].forEach(k=>{if(d[k]!=null)G[k]=d[k]});Object.assign(G.inv,d.inv);Object.assign(G.st,d.st);G.cat=d.cat||{};G.ach=d.ach||{};G.unl=d.unl||G.unl;Object.assign(G.shop,d.shop);
+let save=function(){try{localStorage.setItem(SK,JSON.stringify({gold:G.gold,rep:G.rep,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,stock:G.stock,sid:G.sid,ach:G.ach,unl:G.unl,shop:G.shop,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-tt):0}))}))}catch(e){}};
+function load(){try{const d=JSON.parse(localStorage.getItem(SK));if(!d)return;['gold','rep','n','tier','first','snd','mus','open','daily','streak'].forEach(k=>{if(d[k]!=null)G[k]=d[k]});Object.assign(G.inv,d.inv);Object.assign(G.st,d.st);G.cat=d.cat||{};G.stock=(d.stock||[]).filter(it=>PRODS.some(p=>p.id===it.pid));G.sid=d.sid||0;G.ach=d.ach||{};G.unl=d.unl||G.unl;Object.assign(G.shop,d.shop);
 (d.plots||[]).forEach((q,i)=>{const o=PL[i];if(!o)return;o.own=!!q.own;o.seed=CROPS[q.seed]?q.seed:null;o.w=!!q.w;if(o.seed){o.dur=CROPS[o.seed].s;o.end=q.rem||0}})}catch(e){}}
 const tierOf=r=>r>=TIERS[3]?3:r>=TIERS[2]?2:1;
 const MARKET=[{k:'hamderi',f:18},{k:'deri',f:38},{k:'iplik',f:14},{k:'taban',f:16},{k:'toka',f:14},{k:'kaucuk',f:12},{k:'kurum',f:6},{k:'tutkal',f:5},
@@ -576,20 +608,24 @@ function hasAll(o){return Object.entries(o).every(([k,n])=>G.inv[k]>=n)}
 function giveAll(o,s){Object.entries(o).forEach(([k,n])=>G.inv[k]+=n*(s||1))}
 function hud(){ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;ui.tier.textContent='K'+G.tier+' · Sıra '+Q.length}
 function renderCard(){const o=G.order;if(!o||G.phase==='craft'||G.phase==='result'){show(ui.card,false);return}
+if(o.buy){const it=G.stock.find(x=>x.id===o.buy);ui.card.innerHTML=`<h4>Vitrin müşterisi</h4>${it?desc(it)+' · '+it.price+' altın':'Ürün satılmış'}`;show(ui.card,true);return}
 const rows=Object.entries(o.p.need).map(([k,n])=>{if(k==='boya'){const want=G.inv['boya_'+o.color.id]>0;return `<div class="${want?'ok':anyPaint()?'mid':'no'}">${want?'✓':anyPaint()?'~':'✗'} ${o.color.ad} boya</div>`}
 const ok=G.inv[k]>=n;return `<div class="${ok?'ok':'no'}">${ok?'✓':'✗'} ${MATS[k].ad}${n>1?' ×'+n:''} <span style="opacity:.6">(${G.inv[k]})</span></div>`}).join('');
 if(view!=='home'){const miss=Object.entries(o.p.need).filter(([k,n])=>k==='boya'?G.inv['boya_'+o.color.id]<1:G.inv[k]<n).map(([k])=>k==='boya'?o.color.ad+' boya':MATS[k].ad);
 ui.card.innerHTML=`<h4>${o.p.ad}</h4>${miss.length?'<span class="no">Eksik: '+miss.join(', ')+'</span>':'<span class="ok">Malzemeler tamam</span>'}`;show(ui.card,true);return}
 ui.card.innerHTML=`<h4>Sipariş #${G.n} · ${o.p.ad}</h4>${o.color?o.color.ad:'Doğal'}${o.style?' · '+o.style:''} · ${o.budget} altın${o.hurry?' · <span class="mid">Acele</span>':''}<div style="margin-top:3px">${rows}</div>`;show(ui.card,true)}
 function refresh(){hud();renderCard();show($('zoom'),zoomable());depoSync();{const ob=$('openB');show(ob,view==='home'&&G.phase!=='craft'&&G.phase!=='result');ob.textContent=G.open?'Açık':'Kapalı';ob.classList.toggle('cl',!G.open)}const busy=G.phase==='craft'||G.phase==='result';
-document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList.toggle('on',b.dataset.v===view||(b.dataset.v==='home'&&view==='bench'))});
-if(G.phase==='active'&&view==='home')actions(hasNeed(G.order.p)?[btn('Tezgaha geç','g',startCraft)]:[btn('Malzeme eksik','l',()=>toast('Eksikleri Pazar, Bahçe ve Atölye\'den tamamla',2000))]);
+document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList.toggle('on',b.dataset.v===view||(b.dataset.v==='home'&&(view==='bench'||view==='vitrin')))});
+{const vb=$('vitB');show(vb,view==='home'&&!busy);vb.textContent=`Vitrin ${G.stock.length}/9`}
+if(view==='vitrin'){if(G.phase==='ordering'&&G.order&&G.order.buy)buyActions();else actions([btn('Yeni ürün yap','l',openFree,G.phase!=='idle'),btn('Dükkana dön','g',()=>go('home'))])}
+else if(G.phase==='active'&&view==='home'){const m=matchStock(G.order),L=hasNeed(G.order.p)?[btn('Tezgaha geç','g',startCraft)]:[btn('Malzeme eksik','l',()=>toast('Eksikleri Pazar, Bahçe ve Atölye\'den tamamla',2000))];if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));actions(L)}
+else if(G.phase==='idle'&&view==='home')actions([btn('Serbest üret','l',openFree)]);
 else if(G.phase==='active')actions([]);}
 let switching=false;
 function go(v){if(v===view||G.phase==='craft'||switching)return;switching=true;sfx.swoosh();PT.clear();tap=pinch=null;ui.fade.style.opacity=1;setTimeout(()=>{view=v;setLights(v);ZM.z=ZM.t=1;ZM.px=ZM.pz=0;sway=v==='home'?1:0.3;
 const T=VIEWS[v];camCur.l.copy(T.l);camCur.p.copy(T.p).sub(T.l).multiplyScalar(1.14).add(T.l);moveCam(T,0.75);
-show(ui.bub,v==='home'&&ui.bub.innerHTML&&(G.phase==='ordering'||G.phase==='result'||G.bubOn));refresh();if(G.phase==='ordering'&&v!=='home')actions([]);else if(G.phase==='ordering')orderActions();
-tip(null);if(v==='islik')toast('Bir araca ya da etiketine dokun',1400);else if(v==='bahce')toast('Toplamak için dokun<br>İki parmakla yakınlaştır',1800);else if(v==='pazar')toast('Bir tezgaha dokun',1300);else if(v==='depo')toast('Liste için raflara dokun',1400);
+show(ui.bub,v==='home'&&ui.bub.innerHTML&&(G.phase==='ordering'||G.phase==='result'||G.bubOn));refresh();if(G.phase==='ordering'&&v!=='home'&&v!=='vitrin')actions([]);else if(G.phase==='ordering'&&v==='home')orderActions();
+tip(null);if(v==='islik')toast('Bir araca ya da etiketine dokun',1400);else if(v==='bahce')toast('Toplamak için dokun<br>İki parmakla yakınlaştır',1800);else if(v==='pazar')toast('Bir tezgaha dokun',1300);else if(v==='vitrin')toast(G.stock.length?'Fiyatını değiştirmek için ürüne dokun':'Vitrin boş<br>Yeni ürün yap ile doldur',1700);else if(v==='depo')toast('Liste için raflara dokun',1400);
 switching=false;requestAnimationFrame(()=>ui.fade.style.opacity=0)},190)}
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{go(b.dataset.v)});
 
@@ -647,27 +683,71 @@ head.position.y=1.78;g.add(head);g.position.copy(DOOR);S.add(g);return {g,head,t
 function walk(c,to,dur,done){const id=++c.tok,fr=c.g.position.clone();if(fr.distanceTo(to)>0.05)c.g.rotation.y=Math.atan2(to.x-fr.x,to.z-fr.z);c.walking=true;tween(dur,k=>{if(id===c.tok)c.g.position.lerpVectors(fr,to,k)},()=>{if(id!==c.tok)return;c.walking=false;done&&done()})}
 function mkOrder(){const pool=PRODS.filter(unlocked),p=G.first?PRODS[0]:pick(pool),color=p.need.boya?(G.first?PAINTS[0]:pick(PAINTS)):null,style=p.styles&&Math.random()<0.6?pick(p.styles):null;
 return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)/5)*5,hurry:!G.first&&Math.random()<0.3}}
-function spawn(){if(Q.length>=3)return;const c=makeCustomer(),o=c.order=mkOrder(),h=o.hurry;c.acc=c.accMax=G.first?9999:h?25:40;c.dead=c.deadMax=G.first?9999:(h?80:150)+o.p.steps.length*12;c.wait=h?60:100;
+function spawn(){if(Q.length>=3)return;const c=makeCustomer(),pv=G.stock.filter(x=>x.price>0);
+if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
+else{const o=c.order=mkOrder(),h=o.hurry;c.acc=c.accMax=G.first?9999:h?25:40;c.dead=c.deadMax=G.first?9999:(h?80:150)+o.p.steps.length*12;c.wait=h?60:100}
 c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];hud();seat(c)}
 function seat(c){const i=Q.indexOf(c);if(i<0)return;c.at=false;const to=SLOT[i];walk(c,to,Math.max(0.5,c.g.position.distanceTo(to)/1.5),()=>{c.g.rotation.y=0;c.at=true;if(Q[0]===c&&G.phase==='idle')present(c)})}
-function present(c){const o=G.order=c.order;G.phase='ordering';G.bubOn=true;sfx.bell();
+function present(c){const o=G.order=c.order;G.phase='ordering';G.bubOn=true;sfx.bell();if(o.buy){presentBuy(c,o);return}
 say(`${o.hurry?'<b>Acelem var!</b> ':pick(['Merhaba usta! ','İyi günler! ','Selam! '])}${o.color?o.color.ad+' ':''}${o.style?o.style.toLowerCase()+' ':''}${o.p.ad.toLowerCase()} istiyorum. Bütçem ${o.budget} altın${o.hurry?', zamanında biterse %20 fazlasını veririm':''}.`);
 refresh();if(view==='home')orderActions();else toast('Dükkana müşteri geldi',1800)}
 function leave(c){const i=Q.indexOf(c);if(i<0)return;Q.splice(i,1);cust=Q[0]||null;c.g.visible=G.phase!=='craft';walk(c,DOOR,2,()=>S.remove(c.g));
-if(i===0){G.order=null;G.phase='idle';G.bubOn=false;say(null);actions([]);refresh()}hud();Q.forEach((x,j)=>{if(j>=i)seat(x)})}
-function lose(c,msg,rp){G.st.lost++;G.rep=Math.max(0,G.rep-rp);toast(`${msg}<br>İtibar −${rp}`,2400);sfx.bad();leave(c)}
+if(i===0&&(!G.order||G.order===c.order)){G.order=null;G.phase='idle';G.bubOn=false;say(null);actions([]);refresh()}hud();Q.forEach((x,j)=>{if(j>=i)seat(x)})}
+function lose(c,msg,rp){G.st.lost++;G.rep=Math.max(0,G.rep-rp);toast(rp?`${msg}<br>İtibar −${rp}`:msg,2400);sfx.bad();leave(c)}
 function custTick(dt){if(!G.started)return;if(G.open){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:22+Math.random()*24;spawn()}}
 for(let i=Q.length-1;i>=0;i--){const c=Q[i];if(!c.at)continue;
-if(i>0){c.wait-=dt;if(c.wait<=0){G.st.lost++;toast('Sırada bekleyen müşteri sıkılıp gitti',1800);sfx.bad();leave(c)}}
-else if(G.phase==='ordering'){c.acc-=dt;if(c.acc<=0)lose(c,'Müşteri beklemekten sıkıldı ve gitti',1)}
+const mine=G.order&&G.order===c.order;
+if(i>0||(!mine&&G.phase!=='idle')){c.wait-=dt;if(c.wait<=0){G.st.lost++;toast('Sırada bekleyen müşteri sıkılıp gitti',1800);sfx.bad();leave(c)}}
+else if(G.phase==='ordering'){if(modalMode!=='haggle')c.acc-=dt;if(c.acc<=0)lose(c,'Müşteri beklemekten sıkıldı ve gitti',1)}
 else if(G.phase==='active'||G.phase==='craft'){c.dead-=dt;if(c.dead<=0){if(G.phase==='craft'){c.dead=0;if(K)K.late=true}else lose(c,'Sipariş yetişmedi, müşteri gitti',2)}}}}
 function patUI(){const c=Q[0],el=$('pat');let v=-1;if(c&&c.at){if(G.phase==='ordering'&&c.accMax<9000)v=c.acc/c.accMax;else if((G.phase==='active'||G.phase==='craft')&&c.deadMax<9000)v=c.dead/c.deadMax}
 show(el,v>=0);if(v>=0){const b=el.firstChild;b.style.width=(v*100)+'%';b.style.background=v>0.5?'#9be37a':v>0.25?'#ffcf3a':'#ff7a5a'}}
 function setOpen(v,quiet){G.open=v;doorM.color.set(v?'#f6d38a':'#5e5044');opM.color.set(v?'#2f6b5a':'#b5533c');if(quiet)return;sfx.bell();
 if(!v){Q.slice(1).forEach(leave);if(G.phase==='ordering'&&!G.first)leave(Q[0]);toast('Dükkan kapandı<br>Yeni müşteri gelmeyecek',1900)}else{if(!G.first)spawnT=Math.min(spawnT,4);toast('Dükkan açıldı',1200)}refresh();save()}
 $('openB').onclick=()=>setOpen(!G.open);
-function orderActions(){actions([btn('Siparişi al','g',acceptOrder),btn('Reddet','r',rejectOrder)])}
-function acceptOrder(){if(G.phase!=='ordering')return;G.phase='active';say('Harika, bekliyorum!');setTimeout(()=>{if(G.phase==='active'){G.bubOn=false;say(null)}},1800);refresh();
+const r5=v=>Math.max(5,Math.round(v/5)*5);
+const pr=it=>PRODS.find(x=>x.id===it.pid);
+const itemVal=it=>pr(it).base*(0.55+0.12*it.stars);
+const sugg=it=>r5(itemVal(it)*1.05);
+const desc=it=>`${it.col?paintOf(it.col).ad.toLowerCase()+' ':''}${it.style?it.style.toLowerCase()+' ':''}${pr(it).ad.toLowerCase()}`;
+function matchStock(o){if(!o||o.buy||o.free)return null;return G.stock.filter(it=>it.pid===o.p.id&&(!o.color||it.col===o.color.id)&&(!o.style||it.style===o.style)).sort((a,b)=>b.stars-a.stars)[0]||null}
+function orderActions(){const o=G.order;if(!o)return;if(o.buy){buyActions();return}const L=[btn('Siparişi al','g',()=>acceptOrder())];if(!o.haggled)L.push(btn('Pazarlık','',haggleOrder));
+const m=matchStock(o);if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));L.push(btn('Reddet','r',rejectOrder));actions(L)}
+let HG=null;
+function haggle(o){HG=Object.assign({round:1},o);renderH()}
+function renderH(){const h=`<h3>Pazarlık</h3><p class="hq">“${HG.line}”</p>
+<div class="brk"><span>Müşterinin teklifi</span><b>${HG.offer} altın</b></div><div class="brk"><span>Tur</span><b>${HG.round} / 3</b></div>
+<div class="grp">Senin istediğin fiyat</div><div class="hgv"><button class="btn l" data-hd="-5">−5</button><b id="hv">${HG.ask}</b><button class="btn l" data-hd="5">+5</button></div>
+<input type="range" id="hr" min="${HG.lo}" max="${HG.hi}" step="5" value="${HG.ask}" aria-label="Fiyat">
+<div class="pk" style="justify-content:center;margin-top:10px"><button class="btn g" id="hOff">Teklif ver</button><button class="btn" id="hAcc">${HG.offer} altına anlaş</button><button class="btn r" id="hBack">Vazgeç</button></div>`;
+openSheet('haggle',h);const hv=$('hv'),hr=$('hr'),setA=v=>{HG.ask=clamp(v,HG.lo,HG.hi);hv.textContent=HG.ask;hr.value=HG.ask};
+hr.oninput=()=>setA(+hr.value);ui.sheet.querySelectorAll('[data-hd]').forEach(b=>b.onclick=()=>setA(HG.ask+ +b.dataset.hd));
+$('hOff').onclick=hOffer;$('hAcc').onclick=()=>hDeal(HG.offer);$('hBack').onclick=hBack}
+function hClose(){show(ui.modal,false);modalMode=null;const h=HG;HG=null;return h}
+function hBack(){if(!HG)return;const h=hClose();h.onBack&&h.onBack()}
+function hDeal(p){if(!HG)return;const h=hClose();sfx.good();h.onDeal(p)}
+function hOffer(){if(!HG)return;const a=HG.ask;if(a<=HG.max){hDeal(a);return}const big=a>HG.max*1.35;HG.round+=big?2:1;
+if(HG.round>3){const h=hClose();sfx.bad();h.onBreak();return}
+HG.offer=Math.min(HG.max,r5(HG.offer+(HG.max-HG.offer)*0.55));HG.line=big?`${a} mı? Çok fazla! En fazla ${HG.offer} veririm.`:HG.round===3?`Son teklifim ${HG.offer} altın.`:pick([`Biraz artırayım: ${HG.offer} altın.`,`${HG.offer} olsun, anlaşalım.`,`En fazla ${HG.offer} verebilirim.`]);sfx.tap();renderH()}
+function haggleOrder(){const o=G.order,c=Q[0];if(!o||o.haggled||G.phase!=='ordering')return;if(o.hmax==null)o.hmax=r5(o.budget*(1.08+Math.random()*0.35+(o.hurry?0.15:0)));
+haggle({line:`Bütçem ${o.budget} altın, ne dersin?`,offer:o.budget,max:o.hmax,ask:r5(o.budget*1.25),lo:o.budget,hi:r5(o.budget*1.8),
+ onDeal:p=>{o.budget=p;o.haggled=true;acceptOrder(`Anlaştık, ${p} altın!`)},onBreak:()=>{o.haggled=true;lose(c,'Pazarlık bozuldu, müşteri gitti',1)},onBack:()=>{o.haggled=true;orderActions()}})}
+function rmStock(it){G.stock=G.stock.filter(x=>x!==it);vitrinSync()}
+function levelUp(){const nt=tierOf(G.rep);if(nt>G.tier){G.tier=nt;restock();setTimeout(()=>{toast(`Kademe ${nt} açıldı!<br>Yeni araçlar ve malzemeler`,2600);sfx.fan()},1500)}checkUnl()}
+function stockDeliver(it){const o=G.order,c=Q[0];if(!o||!c||!G.stock.includes(it))return;rmStock(it);const st=it.stars;let pay=Math.round(o.budget*(0.6+0.08*st));if(o.hurry)pay+=Math.round(o.budget*0.2);if(st===5)pay+=15;
+G.gold+=pay;G.st.earned+=pay;G.st.deliv++;if(st===5)G.st.five++;G.rep=Math.max(0,G.rep+(st>=3?st:-1));if(G.first){G.first=false;spawnT=5}G.phase='leaving';G.order=null;G.n++;levelUp();
+say(st>=4?'Hazır varmış, harika! Teşekkürler.':'Olur, idare eder.');sfx.coin();toast('+'+pay+' altın',1200);actions([]);refresh();save();setTimeout(()=>{G.bubOn=false;say(null);leave(c)},1300)}
+function presentBuy(c,o){const it=G.stock.find(x=>x.id===o.buy);if(!it){say('Aradığım ürün satılmış galiba... Başka zaman.');actions([]);setTimeout(()=>{if(Q[0]===c)leave(c)},1700);return}
+c.wtp=r5(itemVal(it)*(0.85+Math.random()*0.45));o.ok=it.price<=c.wtp;o.offer=o.ok?it.price:Math.min(it.price-5,r5(c.wtp*0.82));
+say(o.ok?`Vitrindeki ${desc(it)} çok güzel! ${it.price} altına alıyorum.`:`Vitrindeki ${desc(it)} hoşuma gitti ama ${it.price} altın fazla. ${o.offer} olur mu?`);
+refresh();if(view==='home'||view==='vitrin')buyActions();else toast('Vitrin için müşteri geldi',1800)}
+function buyActions(){const o=G.order,c=Q[0],it=o&&G.stock.find(x=>x.id===o.buy);if(!it){actions([]);return}
+if(o.ok)actions([btn(`Sat · ${it.price} altın`,'g',()=>sale(it,it.price)),btn('Vazgeç','r',rejectOrder)]);
+else{const L=[btn(`${o.offer} altına sat`,'g',()=>sale(it,o.offer))];if(!o.haggled)L.push(btn('Pazarlık','',()=>{o.haggled=true;haggle({line:`${o.offer} altın verebilirim.`,offer:o.offer,max:c.wtp,ask:it.price,lo:o.offer,hi:Math.max(it.price,r5(c.wtp*1.6)),
+ onDeal:p=>sale(it,p),onBreak:()=>lose(c,'Müşteri vazgeçip gitti',0),onBack:buyActions})}));L.push(btn('Reddet','r',rejectOrder));actions(L)}}
+function sale(it,p){const c=Q[0];if(!G.stock.includes(it))return;rmStock(it);G.gold+=p;G.st.earned+=p;G.st.sold++;sfx.coin();toast(`+${p} altın`,1200);say('Teşekkürler, güle güle kullanırım!');
+G.phase='leaving';G.order=null;actions([]);refresh();save();setTimeout(()=>{G.bubOn=false;say(null);if(c)leave(c)},1200)}
+function acceptOrder(msg){if(G.phase!=='ordering')return;G.phase='active';say(msg||'Harika, bekliyorum!');setTimeout(()=>{if(G.phase==='active'){G.bubOn=false;say(null)}},1800);refresh();
 if(G.first)setTimeout(()=>toast('Kartta neyin eksik olduğu yazıyor.<br>Eksikleri bahçeden topla, atölyede işle.',3200),600)}
 function rejectOrder(){if(G.phase!=='ordering')return;leave(Q[0])}
 
@@ -675,7 +755,7 @@ function rejectOrder(){if(G.phase!=='ordering')return;leave(Q[0])}
 let modalMode=null;
 function openSheet(mode,html){if(modalMode!==mode)ui.sheet.scrollTop=0;modalMode=mode;ui.sheet.innerHTML=html;show(ui.modal,true)}
 function closeSheet(){show(ui.modal,false);modalMode=null;refresh()}
-ui.modal.addEventListener('click',e=>{if(e.target===ui.modal&&modalMode!=='result')closeSheet()});
+ui.modal.addEventListener('click',e=>{if(e.target!==ui.modal||modalMode==='result')return;if(modalMode==='haggle')hBack();else closeSheet()});
 const closeBtn='<div style="margin-top:12px;text-align:center"><button class="btn g" data-close>Kapat</button></div>';
 function wire(){ui.sheet.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeSheet)}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -711,6 +791,18 @@ const n=$('shopN');if(n)n.oninput=()=>{G.shop.ad=n.value.trim()||'Dükkanım';$(
 const sb=$('sndB');if(sb)sb.onclick=()=>{G.snd=!G.snd;save();renderMenu()};const m2=$('mus2');if(m2)m2.onclick=()=>{musSet(!G.mus);save();renderMenu()};
 const rb=$('rstB');if(rb)rb.onclick=()=>{if(!rstArm){rstArm=true;renderMenu();return}try{localStorage.removeItem(SK)}catch(e){}save=()=>{};location.reload()}}
 $('menuB').onclick=()=>{if(G.phase!=='craft'&&G.phase!=='result')renderMenu()};
+const VL=VSL.map((p,i)=>{const l=label('vitrin',V(p.x-0.05,p.y+0.42,p.z),'',false);l.el.classList.add('stl');l.off=true;l.el.onclick=()=>{const it=G.stock[i];if(it)openItem(it)};return l});
+function vitLabels(){VL.forEach((l,i)=>{const it=G.stock[i];l.off=!it;if(it)l.el.innerHTML=`${it.price} altın<small>${'★'.repeat(it.stars)}</small>`})}
+function vitrinSync(){VIT.clear();G.stock.slice(0,9).forEach((it,i)=>{const p=pr(it),m=p.build(it.col?paintOf(it.col).hex:p.sheet,it.style,{cila:true});m.g.scale.setScalar(1.05);m.g.position.copy(VSL[i]);m.g.rotation.y=-Math.PI/2+0.35;m.g.userData.sid=it.id;
+const h=new THREE.Mesh(B(0.5,0.5,0.6),HID);h.position.y=0.22;m.g.add(h);VIT.add(m.g)});vitLabels();if(typeof hud==='function')refresh()}
+function openItem(it){if(G.phase==='craft'||G.phase==='result')return;const p=pr(it);
+const draw=()=>{openSheet('item',`<h3>${p.ad}</h3><p>${desc(it)} · ${'★'.repeat(it.stars)}</p><div class="grp">Vitrin fiyatı</div><div class="hgv"><button class="btn l" data-pd="-10">−10</button><button class="btn l" data-pd="-5">−5</button><b>${it.price}</b><button class="btn l" data-pd="5">+5</button><button class="btn l" data-pd="10">+10</button></div>
+<p style="text-align:center">Önerilen: <b>${sugg(it)}</b> altın · Pahalıysa müşteri pazarlık eder, ucuzsa hemen alır.</p>`+closeBtn);wire();ui.sheet.querySelectorAll('[data-pd]').forEach(b=>b.onclick=()=>{it.price=clamp(it.price+ +b.dataset.pd,5,999);vitLabels();save();draw()})};draw()}
+function openFree(){if(G.phase!=='idle'){toast('Önce sıradaki müşteriyle ilgilen',1500);return}if(G.stock.length>=9){toast('Vitrin dolu (9 ürün)<br>Önce biraz satış yap',1800);return}
+const h='<h3>Serbest üretim</h3><p>Ürünü yap, vitrine koy, fiyatını sen belirle.</p>'+PRODS.filter(unlocked).map(p=>{const miss=Object.entries(p.need).filter(([k,n])=>k==='boya'?!anyPaint():G.inv[k]<n).map(([k,n])=>k==='boya'?'boya':MATS[k].ad+(n>1?' ×'+n:''));
+return `<div class="row"><img class="ic" src="${ICON[p.id]}" alt=""><div class="n">${p.ad}<small>${miss.length?'<span class="no">Eksik: '+miss.join(', ')+'</span>':'Malzemeler tamam · '+p.steps.length+' adım'}</small></div><button class="btn" data-fp="${p.id}" ${miss.length?'disabled':''}>Üret</button></div>`}).join('');
+openSheet('free',h+closeBtn);wire();ui.sheet.querySelectorAll('[data-fp]').forEach(b=>b.onclick=()=>{const p=PRODS.find(x=>x.id===b.dataset.fp);if(!hasNeed(p)||G.phase!=='idle')return;show(ui.modal,false);modalMode=null;G.order={p,color:null,style:null,budget:p.base,free:true};startCraft()})}
+$('vitB').onclick=()=>go('vitrin');
 let mTab='pazar';
 function openMarket(){if(G.phase==='craft'||G.phase==='result')return;renderMarket()}
 function renderMarket(){const tabs=`<div class="tabs"><button class="btn ${mTab==='pazar'?'':'l'}" data-tab="pazar">Pazar</button><button class="btn ${mTab==='ted'?'':'l'}" data-tab="ted">Tedarikçi</button><button class="btn ${mTab==='tohum'?'':'l'}" data-tab="tohum">Tohumcu</button></div>`;let h;
@@ -727,7 +819,7 @@ ui.sheet.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const m=G.market
 ui.sheet.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const s=SUPPLY[+b.dataset.s];if(G.gold<s.f)return;G.gold-=s.f;G.deliv.push({items:s.items,end:tt+DELAY});hud();toast('Sipariş verildi',1000);renderMarket()});
 ui.sheet.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const k=b.dataset.t,f=CROPS[k].f;if(G.gold<f)return;G.gold-=f;G.inv[k]++;sfx.coin();hud();renderMarket()});
 const hb=$('hag');if(hb)hb.onclick=()=>{G.haggled=true;if(Math.random()<0.55){G.disc=0.8;toast('Tüccar: Peki, senin için %20 indirim!',1800)}else toast('Tüccar: Bu fiyatlar son fiyat!',1600);renderMarket()}}
-function openDepo(){if(G.phase==='craft'||G.phase==='result')return;let h='<h3>Depo</h3>';
+function openDepo(){if(G.phase==='craft'||G.phase==='result')return;let h='<h3>Depo</h3>';if(G.stock.length)h+='<div class="grp">Hazır ürünler (vitrinde)</div>'+G.stock.map(it=>`<div class="row"><img class="ic" src="${ICON[it.pid]}" alt=""><div class="n">${pr(it).ad}<small>${desc(it)} · ${'★'.repeat(it.stars)}</small></div><b>${it.price} altın</b></div>`).join('');
 ['Ham madde','İşlenmiş','Yardımcı','Tohum'].forEach(gr=>{h+=`<div class="grp">${gr}</div><div class="grid">`+Object.keys(MATS).filter(k=>MATS[k].g===gr).map(k=>`<div class="cell ${G.inv[k]?'':'zero'}">${img(k)}<b>${G.inv[k]}</b>${MATS[k].ad}</div>`).join('')+'</div>'});
 openSheet('depo',h+closeBtn);wire()}
 const io=o=>Object.entries(o).map(([k,n])=>`<span class="io">${img(k)}×${n}</span>`).join(' ');
@@ -765,7 +857,7 @@ function bTrace(){const sh=K.p.shape(),pts=sh.getPoints(40);let x0=9,x1=-9,y0=9,
 K.sheet=put(K.work,B(x1-x0+0.1,K.p.wood?0.03:0.012,y1-y0+0.1),M(K.p.sheet),BC.x+(x0+x1)/2,(Y+K.top)/2,BC.z-(y0+y1)/2);
 K.path=shapePts(sh,110,BC,K.top-Y+0.002);K.cov=new Array(110).fill(false);K.strokes=[];K.dev=0;K.devN=0;K.covP=0;
 actions([btn('Kesimi bitir','',eTrace,true)])}
-function cutPoint(p){sThr(sfx.cut,0.17);const st=K.strokes[K.strokes.length-1];st.push(p);let m=9;K.path.forEach((q,i)=>{const d=Math.hypot(q.x-p.x,q.z-p.z);if(d<m)m=d;if(d<0.035)K.cov[i]=true});
+function cutPoint(p){sThr(sfx.cut,0.17);toolAt(p,'sc');const st=K.strokes[K.strokes.length-1];st.push(p);let m=9;K.path.forEach((q,i)=>{const d=Math.hypot(q.x-p.x,q.z-p.z);if(d<m)m=d;if(d<0.035)K.cov[i]=true});
 K.dev+=Math.min(m,0.1);K.devN++;const c=K.cov.filter(Boolean).length/K.cov.length;K.covP=c;tipStep('Kesildi: %'+Math.round(c*100));
 const b=ui.act.querySelector('button');if(b)b.disabled=c<0.5;if(c>=0.94)eTrace()}
 function eTrace(){if(G.step!=='trace')return;const ad=K.devN?K.dev/K.devN:0.1,s=clamp(K.covP,0,1)*clamp(1-(ad-0.01)/0.05,0.2,1);
@@ -777,7 +869,7 @@ const ringScale=t=>3.2-t*2.4;
 function nextDot(){if(G.step!=='rhythm')return;K.ri++;if(K.ri>=K.rp.length){K.dot=null;stepDone(K.rs.reduce((a,b)=>a+b,0)/K.rs.length);return}
 const k=K.st.k,m=k==='yapistir'?mesh(Cy(0.016,0.016,0.006,10),M('#f4ecd0')):mesh(Cy(k==='delik'?0.012:0.007,k==='delik'?0.012:0.007,0.004,8),M('#1d1612'));
 m.position.copy(K.rp[K.ri]);K.work.add(m);K.dot={m,t:0,live:true};tipStep(`${STEPTXT[k][1]} · ${K.ri+1}/${K.rp.length}`)}
-function rhythmTap(){const D=K.dot;if(!D||!D.live)return;D.live=false;const e=Math.abs(ringScale(D.t)-1),s=clamp(1-e/1.3,0,1);K.rs.push(s);dotDone(D,s)}
+function rhythmTap(){const D=K.dot;if(!D||!D.live)return;D.live=false;const e=Math.abs(ringScale(D.t)-1),s=clamp(1-e/1.3,0,1);K.rs.push(s);stab(D.m.position,K.st.k);dotDone(D,s)}
 function dotDone(D,s){if(s>0)({dik:sfx.stitch,yapistir:sfx.glue,delik:sfx.punch})[K.st.k]();else sfx.bad();if(K.st.k==='yapistir'){D.m.scale.set(1.5,1,1.5);D.m.material.color.set(s>0.6?'#ffe08a':'#d8c9a0')}
 if(K.st.k==='dik'&&s>0&&K.prev)lineSeg(K.work,K.prev,D.m.position,'#f4ecd8',0.007);if(K.st.k==='dik')K.prev=D.m.position.clone();
 toast(s>0.8?'Tam zamanında!':s>0.4?'İyi':s>0?'Erken':'Kaçtı',450);setTimeout(nextDot,280)}
@@ -796,22 +888,24 @@ function bRub(){const sh=K.p.shape(),poly=sh.getPoints(40);let x0=9,x1=-9,y0=9,y
 const cells=[];for(let x=x0;x<=x1;x+=0.03)for(let y=y0;y<=y1;y+=0.03)if(pip(x,y,poly))cells.push({p:V(BC.x+x,K.top,BC.z-y),on:false});
 K.cells=cells;K.rubN=0;K.rubT0=-1;K.rubbing=false}
 function pip(x,y,p){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){if(((p[i].y>y)!==(p[j].y>y))&&(x<(p[j].x-p[i].x)*(y-p[i].y)/(p[j].y-p[i].y)+p[i].x))c=!c}return c}
-function rubAt(p){if(K.rubT0<0)K.rubT0=tt;sThr(({zimpara:sfx.sand,incelt:sfx.skive})[K.st.k]||sfx.wax,0.14);K.cells.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.05){c.on=true;K.rubN++}});const cv=K.rubN/K.cells.length;tipStep('Tamamlandı: %'+Math.round(cv*100));if(cv>=0.92)eRub()}
+function rubAt(p){if(K.rubT0<0)K.rubT0=tt;toolAt(p,({zimpara:'blk',incelt:'kn'})[K.st.k]||'cl');sThr(({zimpara:sfx.sand,incelt:sfx.skive})[K.st.k]||sfx.wax,0.14);K.cells.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.05){c.on=true;K.rubN++}});const cv=K.rubN/K.cells.length;tipStep('Tamamlandı: %'+Math.round(cv*100));if(cv>=0.92)eRub()}
 function eRub(){if(G.step!=='rub')return;K.rubbing=false;const s=clamp(1.2-(tt-K.rubT0)/7,0.4,1),m=K.piece.material;
 const rk=K.st.k;if(rk==='cila'){m.roughness=0.3;m.color.set(shade(K.p.sheet,-0.1));K.cila=true}else if(rk==='parlat')m.roughness=0.35;else if(rk==='zimpara')m.color.set(shade(K.p.sheet,0.1));K.cells=null;stepDone(s)}
 function paintHex(){if(!K.color||!K.p.need.boya)return K.p.sheet;if(K.painted)return K.color.hex;return '#'+new THREE.Color(K.p.sheet).lerp(new THREE.Color(K.color.hex),K.pn/K.pcN).getHexString()}
 function mkPaint(){const bb=new THREE.Box3().setFromObject(K.model.g),cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2,rx=(bb.max.x-bb.min.x)/2,rz=(bb.max.z-bb.min.z)/2,c=[];
-for(let x=-rx;x<=rx;x+=0.045)for(let z=-rz;z<=rz;z+=0.045)if((x/rx)**2+(z/rz)**2<=1)c.push({p:V(cx+x,Y+0.12,cz+z),on:false});K.pc=c;K.pcN=c.length||1;K.pn=0}
-function paintAt(p){sThr(sfx.brush,0.3);K.pc.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.085){c.on=true;K.pn++}});const cv=K.pn/K.pcN;K.model.um.color.set(paintHex());tipStep('Boyandı: %'+Math.round(cv*100));
+for(let x=-rx;x<=rx;x+=0.045)for(let z=-rz;z<=rz;z+=0.045)if((x/rx)**2+(z/rz)**2<=1)c.push({p:V(cx+x,Y+0.12,cz+z),on:false});K.pc=c;K.ptop=bb.max.y+0.005;TL.br.userData.tip.material.color.set(K.color.hex);K.pcN=c.length||1;K.pn=0}
+function paintAt(p){sThr(sfx.brush,0.3);toolAt(p,'br',K.ptop);K.pc.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.085){c.on=true;K.pn++}});const cv=K.pn/K.pcN;K.model.um.color.set(paintHex());tipStep('Boyandı: %'+Math.round(cv*100));
 if(cv>=0.9){K.pc=null;K.painted=true;K.rubbing=false;sfx.good();build(false);renderDesign();tipStep('Boya tamam · Bitir\'e dokun')}}
 function bDesign(){K.work.clear();K.painted=false;K.pc=null;K.pn=0;K.pcN=1;K.color=K.p.need.boya?null:{hex:K.p.sheet};K.style=K.p.styles?(G.order.style||K.p.styles[0]):null;build(true);renderDesign()}
 function build(pop){if(K.model)K.work.remove(K.model.g);K.model=K.p.build(paintHex(),K.style,K);K.model.g.position.copy(BC);K.model.g.scale.setScalar(1.6);K.work.add(K.model.g);
 if(pop){const g=K.model.g;g.scale.set(1.6,0.08,1.6);tween(0.45,k=>g.scale.set(1.6,0.08+1.52*k,1.6))}}
 function renderDesign(){const L=[];if(K.p.need.boya)PAINTS.filter(p=>G.inv['boya_'+p.id]>0).forEach(p=>{const b=btn('','col'+(K.color===p?' sel':''),()=>{if(K.color===p)return;K.color=p;K.painted=false;K.pn=0;K.pcN=1;sfx.drop();build(false);mkPaint();renderDesign();tipStep('Parmağınla boyayı ürüne sür')});b.style.background=p.hex;b.setAttribute('aria-label',p.ad);L.push(b)});
 if(K.p.styles)K.p.styles.forEach(st=>L.push(btn(st,'l'+(K.style===st?' sel':''),()=>{K.style=st;build(false);renderDesign()})));
-L.push(btn('Bitir','g',finish,!K.color||(!!K.p.need.boya&&!K.painted)));actions(L);tipStep(G.order.color||G.order.style?`Sipariş: ${[G.order.color&&G.order.color.ad,G.order.style].filter(Boolean).join(' · ')}`:'Doğal ahşap · cilalı')}
+L.push(btn('Bitir','g',finish,!K.color||(!!K.p.need.boya&&!K.painted)));actions(L);tipStep(G.order.free?'Serbest tasarım · rengi ve modeli sen seç':G.order.color||G.order.style?`Sipariş: ${[G.order.color&&G.order.color.ad,G.order.style].filter(Boolean).join(' · ')}`:'Doğal ahşap · cilalı')}
 const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 function finish(){if(!K.color||(K.p.need.boya&&!K.painted))return;const o=G.order;if(K.p.need.boya)G.inv['boya_'+K.color.id]--;G.step=null;actions([]);tip(null);
+if(o.free){const work=avg(K.scores),stars=clamp(Math.round(work*5)-(K.skips?1:0),1,5),it={id:++G.sid,pid:K.p.id,col:K.p.need.boya?K.color.id:null,style:K.style,stars};it.price=sugg(it);K.res={item:it};
+Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';moveCam(VIEWS.home,1.1,()=>{sway=1;showFree()});tween(1.1,k=>{g.position.lerpVectors(fr,V(2.3,1.6,-1.0),k);g.scale.setScalar(1.6-0.8*k)});return}
 const work=avg(K.scores),colorOk=!o.color||K.color.id===o.color.id,styleOk=!o.style||K.style===o.style,late=K.late,B0=o.budget,L=[];let pay=B0;
 const cut=(t,f)=>{const v=Math.round(B0*f);if(v>0){L.push([t,-v]);pay-=v}};
 if(work<0.85)cut('İşçilik kusuru',(0.85-work)*0.6);if(K.skips)cut(`Eksik adım ×${K.skips}`,0.12*K.skips);if(!colorOk)cut('Yanlış renk',0.3);if(!styleOk)cut('Yanlış model',0.2);if(late)cut('Geç teslim',0.25);
@@ -819,6 +913,12 @@ const stars=clamp(Math.round((0.7*work+0.3*((colorOk?0.6:0)+(styleOk?0.4:0)))*5)
 if(o.hurry&&!late){const v=Math.round(B0*0.2);L.push(['Acele bonusu',v]);pay+=v}if(stars===5){L.push(['Bahşiş',15]);pay+=15}
 pay=Math.max(Math.round(B0*0.15),pay);K.res={stars,pay,L,colorOk,styleOk,late};
 Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';moveCam(VIEWS.home,1.1,()=>{sway=1;showResult()});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar(1.6-0.6*k)})}
+function showFree(){G.phase='result';refresh();const it=K.res.item,pct=v=>'%'+Math.round(v*100);sfx.good();
+openSheet('result',`<h3>${pr(it).ad} vitrine kondu</h3><div class="stars">${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></div><div style="margin-top:8px">`+K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('')+
+`</div><div class="tot">Vitrin fiyatı: ${it.price} altın</div><p>Fiyatı Vitrin'de ürüne dokunarak değiştirebilirsin.</p><div style="text-align:center"><button class="btn g" id="freeOk">Tamam</button></div>`);$('freeOk').onclick=freeDone}
+function freeDone(){show(ui.modal,false);modalMode=null;const it=K.res.item,w=K.work,g=K.model.g;G.stock.push(it);
+if(it.stars>=3){const e=G.cat[it.pid]||(G.cat[it.pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,it.stars)}
+tween(0.3,k=>g.scale.setScalar(Math.max(0.01,0.8*(1-k))),()=>craft.remove(w));G.phase='idle';G.order=null;vitrinSync();levelUp();save();refresh();if(Q[0]&&Q[0].at)present(Q[0])}
 function showResult(){G.phase='result';refresh();const r=K.res,o=G.order;G.bubOn=true;if(r.stars>=4)sfx.good();else sfx.bad();
 say(r.late?'Çok geç kaldınız ama...':r.stars>=5?'Muhteşem olmuş, elinize sağlık!':r.stars>=4?'Çok güzel, teşekkürler!':!r.colorOk?'Bu renk istediğim değildi!':!r.styleOk?'Ben başka bir model istemiştim...':K.skips?'Bu yarım kalmış gibi...':r.stars>=3?'Fena değil.':'Hmm, biraz özensiz...');
 const pct=v=>'%'+Math.round(v*100);
@@ -829,7 +929,7 @@ openSheet('result',h);$('deliver').onclick=deliver}
 function deliver(){show(ui.modal,false);modalMode=null;const r=K.res,c=Q[0],pid=G.order.p.id;G.gold+=r.pay;G.st.earned+=r.pay;G.st.deliv++;if(r.stars===5)G.st.five++;G.rep=Math.max(0,G.rep+(r.stars>=3?r.stars:-1));
 if(r.stars>=3){const e=G.cat[pid]||(G.cat[pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,r.stars)}
 if(G.first){G.first=false;spawnT=5}G.phase='leaving';G.order=null;G.n++;
-const nt=tierOf(G.rep);if(nt>G.tier){G.tier=nt;restock();setTimeout(()=>{toast(`Kademe ${nt} açıldı!<br>Yeni araçlar ve malzemeler`,2600);sfx.fan()},1500)}checkUnl();
+levelUp();
 refresh();actions([]);const g=K.model.g,w=K.work;tween(0.4,k=>g.scale.setScalar(Math.max(0.01,1-k)),()=>craft.remove(w));toast('+'+r.pay+' altın',1200);sfx.coin();if(r.stars===5)sfx.fan();save();
 setTimeout(()=>{G.bubOn=false;say(null);leave(c)},1300)}
 
@@ -851,6 +951,7 @@ function worldTap(e){setRay(e);
 if(view==='islik'){const h=ray.intersectObjects(ST.map(s=>s.g),true)[0];if(h){let o=h.object;while(o&&!o.userData.st)o=o.parent;if(o)stationTap(o.userData.st)}}
 else if(view==='pazar'){const h=ray.intersectObjects(STALLS,true)[0];if(h){let o=h.object;while(o&&!o.userData.tab)o=o.parent;if(o)marketTab(o.userData.tab)}}
 else if(view==='depo'){if(ray.intersectObject(DHIT)[0])openDepo()}
+else if(view==='vitrin'){const h=ray.intersectObjects(VIT.children,true)[0];if(h){let o=h.object;while(o&&o.userData.sid==null)o=o.parent;if(o){const it=G.stock.find(x=>x.id===o.userData.sid);if(it)openItem(it)}}}
 else if(view==='bahce'){const h=ray.intersectObjects(COLL.filter(o=>o.userData.coll.alive),true)[0];if(!h){const q=ray.intersectObjects(PL.map(o=>o.g),true)[0];if(q){let o=q.object;while(o&&!o.userData.plot)o=o.parent;if(o)plotTap(o.userData.plot)}return}let o=h.object;while(o&&!o.userData.coll)o=o.parent;
 const c=o.userData.coll;c.alive=false;c.t=tt+40;G.inv[c.mat]++;G.st.coll++;sfx.pick();floatTxt(e.clientX,e.clientY,img(c.mat)+'+1');const y0=o.position.y;
 tween(0.3,k=>{o.scale.copy(c.base).multiplyScalar(Math.max(0.01,1-k));o.position.y=y0+k*0.35},()=>{o.visible=false;o.position.y=y0});refresh()}}
@@ -862,7 +963,7 @@ if(G.phase==='craft'&&K){const st=G.step;
  else if(st==='rub'&&K.cells){const p=hit(e,K.top);if(p){K.rubbing=true;rubAt(p);canvas.setPointerCapture(e.pointerId)}}
  else if(st==='design'&&K.pc){const p=hit(e,Y+0.12);if(p){K.rubbing=true;paintAt(p);canvas.setPointerCapture(e.pointerId)}}
  return}
-if(!zoomable()||switching)return;
+if(!(zoomable()||view==='vitrin')||switching)return;
 PT.set(e.pointerId,{x:e.clientX,y:e.clientY});try{canvas.setPointerCapture(e.pointerId)}catch(_){}
 if(PT.size===1)tap={x:e.clientX,y:e.clientY,moved:false};
 else if(PT.size===2){const a=[...PT.values()];pinch={d:Math.max(20,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)),z:ZM.t};if(tap)tap.moved=true}});
@@ -870,14 +971,14 @@ canvas.addEventListener('pointermove',e=>{
 if(PT.has(e.pointerId)){const p=PT.get(e.pointerId),dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
  if(PT.size===2&&pinch){const a=[...PT.values()];setZoom(pinch.z*Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)/pinch.d)}
  else if(tap){if(!tap.moved&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>8)tap.moved=true;
-  if(tap.moved){const w=VIEWS[view].p.distanceTo(VIEWS[view].l)*1.2/H/ZM.z;ZM.px-=dx*w;ZM.pz-=dy*w*1.35;clampPan()}}
+  if(tap.moved&&zoomable()){const w=VIEWS[view].p.distanceTo(VIEWS[view].l)*1.2/H/ZM.z;ZM.px-=dx*w;ZM.pz-=dy*w*1.35;clampPan()}}
  return}
 if(!K)return;
 if(dragging&&G.step==='drag'&&K.drag){const p=hit(e,K.top);if(p){K.drag.obj.position.x=clamp(p.x+dragging.dx,-0.6,0.6);K.drag.obj.position.z=clamp(p.z+dragging.dz,1.2,2.12)}}
 else if(drawing&&G.step==='trace'&&K.path){const p=hit(e,K.top);if(p){const st=K.strokes[K.strokes.length-1],l=st[st.length-1];if(!l||Math.hypot(l.x-p.x,l.z-p.z)>0.006)cutPoint(p)}}
 else if(K.rubbing&&G.step==='rub'&&K.cells){const p=hit(e,K.top);if(p)rubAt(p)}
 else if(K.rubbing&&G.step==='design'&&K.pc){const p=hit(e,Y+0.12);if(p)paintAt(p)}});
-const up=e=>{if(PT.has(e.pointerId)){PT.delete(e.pointerId);if(PT.size<2)pinch=null;if(PT.size===0){if(tap&&!tap.moved&&e.type==='pointerup')worldTap(e);tap=null}return}
+const up=e=>{toolUp();if(PT.has(e.pointerId)){PT.delete(e.pointerId);if(PT.size<2)pinch=null;if(PT.size===0){if(tap&&!tap.moved&&e.type==='pointerup')worldTap(e);tap=null}return}
 if(dragging&&G.step==='drag'&&K&&K.drag){dragging=null;eDrag()}dragging=null;drawing=false;if(K)K.rubbing=false};
 canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
 
@@ -906,13 +1007,13 @@ if(K&&G.step==='rhythm'&&K.dot&&K.dot.live){K.dot.t+=dt;if(ringScale(K.dot.t)<0.
 if(K&&G.step==='hold'&&K.holding){K.hv+=dt*60;const f=$('gf');if(f)f.style.width=Math.min(100,K.hv)+'%';if(K.plate)K.plate.position.y=Y+0.26-Math.min(1,K.hv/100)*0.2;if(K.hv>=100)eHold()}
 secT+=dt;if(secT>0.25){secT=0;tick();stationLabels()}
 const a=pg.attributes.position;for(let i=0;i<DN;i++){a.setY(i,a.getY(i)+Math.sin(tt*0.6+i)*0.0015);a.setX(i,a.getX(i)+Math.cos(tt*0.4+i*1.7)*0.0012)}a.needsUpdate=true;
-custTick(dt);Q.forEach((c,i)=>{c.head.rotation.y=Math.sin(tt*0.9+i)*0.25;c.g.position.y=c.walking?Math.abs(Math.sin(tt*9))*0.05:Math.abs(Math.sin(tt*1.6+i))*0.012});
+custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';c.head.rotation.y=Math.sin(tt*0.9+i)*0.25;c.g.position.y=c.walking?Math.abs(Math.sin(tt*9))*0.05:Math.abs(Math.sin(tt*1.6+i))*0.012});
 if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.job)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
-AWN.visible=camCur.p.y<2.05;if(lamp.visible)lamp.intensity=1.35+Math.sin(tt*2.3)*0.05;
+AWN.visible=camCur.p.y<2.05;toolTick();if(lamp.visible)lamp.intensity=1.35+Math.sin(tt*2.3)*0.05;
 ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1;cam.position.copy(camCur.p).sub(camCur.l).divideScalar(zz).add(camCur.l);
 cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.9)*0.01*sway;cam.position.z+=ZM.pz;look.copy(camCur.l);look.x+=ZM.px;look.z+=ZM.pz;cam.lookAt(look);
 R.render(S,cam);drawFx();drawLabels();requestAnimationFrame(loop)}
-load();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
+load();vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
 setLights('home');hud();refresh();loop();
 const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.textContent=G.mus?'Müzik açık':'Müzik kapalı';spS.textContent=G.snd?'Ses açık':'Ses kapalı';$('musB').classList.toggle('off',!G.mus)};spSync();
 spM.onclick=()=>{G.mus=!G.mus;spSync()};spS.onclick=()=>{G.snd=!G.snd;spSync()};
