@@ -443,7 +443,7 @@ const ST=[
 const SP=[[-1.25,-2.9],[1.25,-2.9],[-1.25,-0.6],[1.25,-0.6],[-1.25,1.7],[1.25,1.7]];
 ST.forEach((s,i)=>{const g=new THREE.Group(),m=new THREE.Group(),x=OI+SP[i][0],z=SP[i][1];s.mk(m);m.scale.setScalar(1.15);m.position.y=0.06;g.add(m);s.m=m;s.wheel=m.userData.wheel;s.liq=m.userData.liq;
 s.base=put(g,Cy(0.95,0.98,0.06,28),M('#6e4a2c'),0,0.03,0);const h=new THREE.Mesh(Cy(0.95,0.95,1.7,12),HID);h.position.y=0.85;g.add(h);
-g.position.set(x,0,z);g.userData.st=s;S.add(g);s.g=g;s.job=null;s.ready=null;s.lbl=label('islik',V(x,0.08,z+0.38),null,true);s.lbl.el.classList.add('stl');s.lbl.el.onclick=()=>stationTap(s)});
+g.position.set(x,0,z);g.userData.st=s;S.add(g);s.g=g;s.jobs=[];s.lvl=1;s.ready=null;s.lbl=label('islik',V(x,0.08,z+0.38),null,true);s.lbl.el.classList.add('stl');s.lbl.el.onclick=()=>stationTap(s)});
 
 /* ---------- bahçe ---------- */
 add(B(30,0.1,34),M('#86a852'),OB,-0.05,-5).castShadow=false;
@@ -570,7 +570,7 @@ function depoSync(){DEP.forEach(d=>{const n=G.inv[d.k];if(n!==d.n){d.n=n;d.o.vis
 
 /* ---------- oyun durumu ---------- */
 const G={gold:180,rep:0,n:1,inv:{},order:null,phase:'idle',step:null,tier:1,first:true,deliv:[],market:[],mktT:0,disc:1,haggled:false};
-Object.assign(G,{st:{deliv:0,five:0,earned:0,coll:0,proc:0,harv:0,lost:0,plots:0,sold:0},cat:{},stock:[],sid:0,ach:{},unl:['cuzdan','kemer','ayakkabi'],shop:{ad:'Benim Dükkanım',logo:'star',col:'#a3302a'},snd:true,mus:true,open:true,started:false,day:1,tm:0,night:false,ds:null});
+Object.assign(G,{st:{deliv:0,five:0,earned:0,coll:0,proc:0,harv:0,lost:0,plots:0,sold:0},cat:{},stock:[],sid:0,ach:{},unl:['cuzdan','kemer','ayakkabi'],shop:{ad:'Benim Dükkanım',logo:'star',col:'#a3302a'},snd:true,mus:true,open:true,stLv:{},started:false,day:1,tm:0,night:false,ds:null});
 Object.keys(MATS).forEach(k=>G.inv[k]=0);
 Object.assign(G.inv,{deri:1,iplik:1,boya_kahve:1,hamderi:1,pamuk:2,tutkal:1});
 const TIERS={1:0,2:12,3:30};
@@ -584,8 +584,8 @@ const ACH=[{id:'ilk',ad:'İlk satış',desc:'Bir sipariş teslim et',get:()=>G.s
 function checkAch(){ACH.forEach(a=>{if(!G.ach[a.id]&&a.get()>=a.goal){G.ach[a.id]=1;G.gold+=a.gold;hud();toast(`Başarım: ${a.ad}<br>+${a.gold} altın`,2400);sfx.fan()}})}
 function checkUnl(){PRODS.filter(unlocked).forEach(p=>{if(!G.unl.includes(p.id)){G.unl.push(p.id);setTimeout(()=>{toast(`Yeni ürün açıldı: ${p.ad}`,2600);sfx.fan()},2300)}})}
 const SK='kraft-save-v1';let saveN=0;
-let save=function(){try{localStorage.setItem(SK,JSON.stringify({gold:G.gold,rep:G.rep,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,stock:G.stock,sid:G.sid,ach:G.ach,unl:G.unl,shop:G.shop,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,day:G.day,tm:G.tm,night:G.night,ds:G.ds,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-tt):0}))}))}catch(e){}};
-function load(){try{const d=JSON.parse(localStorage.getItem(SK));if(!d)return;['gold','rep','n','tier','first','snd','mus','open','daily','streak','day','tm','night','ds'].forEach(k=>{if(d[k]!=null)G[k]=d[k]});Object.assign(G.inv,d.inv);Object.assign(G.st,d.st);G.cat=d.cat||{};G.stock=(d.stock||[]).filter(it=>PRODS.some(p=>p.id===it.pid));G.sid=d.sid||0;G.ach=d.ach||{};G.unl=d.unl||G.unl;Object.assign(G.shop,d.shop);
+let save=function(){try{localStorage.setItem(SK,JSON.stringify({gold:G.gold,rep:G.rep,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,stLv:G.stLv,stock:G.stock,sid:G.sid,ach:G.ach,unl:G.unl,shop:G.shop,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,day:G.day,tm:G.tm,night:G.night,ds:G.ds,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-tt):0}))}))}catch(e){}};
+function load(){try{const d=JSON.parse(localStorage.getItem(SK));if(!d)return;['gold','rep','n','tier','first','snd','mus','open','daily','streak','day','tm','night','ds'].forEach(k=>{if(d[k]!=null)G[k]=d[k]});Object.assign(G.inv,d.inv);Object.assign(G.st,d.st);G.cat=d.cat||{};G.stLv=d.stLv||{};G.stock=(d.stock||[]).filter(it=>PRODS.some(p=>p.id===it.pid));G.sid=d.sid||0;G.ach=d.ach||{};G.unl=d.unl||G.unl;Object.assign(G.shop,d.shop);
 (d.plots||[]).forEach((q,i)=>{const o=PL[i];if(!o)return;o.own=!!q.own;o.seed=CROPS[q.seed]?q.seed:null;o.w=!!q.w;if(o.seed){o.dur=CROPS[o.seed].s;o.end=q.rem||0}})}catch(e){}}
 const tierOf=r=>r>=TIERS[3]?3:r>=TIERS[2]?2:1;
 const MARKET=[{k:'hamderi',f:18},{k:'deri',f:38},{k:'iplik',f:14},{k:'taban',f:16},{k:'toka',f:14},{k:'kaucuk',f:12},{k:'kurum',f:6},{k:'tutkal',f:5},
@@ -840,19 +840,22 @@ const hb=$('hag');if(hb)hb.onclick=()=>{G.haggled=true;if(Math.random()<0.55){G.
 function openDepo(){if(G.phase==='craft'||G.phase==='result')return;let h='<h3>Depo</h3>';if(G.stock.length)h+='<div class="grp">Hazır ürünler (vitrinde)</div>'+G.stock.map(it=>`<div class="row"><img class="ic" src="${ICON[it.pid]}" alt=""><div class="n">${pr(it).ad}<small>${desc(it)} · ${'★'.repeat(it.stars)}</small></div><b>${it.price} altın</b></div>`).join('');
 ['Ham madde','İşlenmiş','Yardımcı','Tohum'].forEach(gr=>{h+=`<div class="grp">${gr}</div><div class="grid">`+Object.keys(MATS).filter(k=>MATS[k].g===gr).map(k=>`<div class="cell ${G.inv[k]?'':'zero'}">${img(k)}<b>${G.inv[k]}</b>${MATS[k].ad}</div>`).join('')+'</div>'});
 openSheet('depo',h+closeBtn);wire()}
+const UPC={1:150,2:400};
 const io=o=>Object.entries(o).map(([k,n])=>`<span class="io">${img(k)}×${n}</span>`).join(' ');
 function openStation(s){if(G.phase==='craft'||G.phase==='result')return;const lk=G.tier<s.tier;let h=`<h3>${s.ad}</h3>`;
 if(lk)h+=`<p>Kilitli · Kademe ${s.tier}'de açılır (itibar ${TIERS[s.tier]})</p>`;
-else if(s.ready)h+=`<p>Hazır: ${io(s.ready)}</p><div style="text-align:center;margin:6px"><button class="btn g" id="col">Topla</button></div>`;
-else if(s.job)h+=`<p>Çalışıyor: ${io(s.job.r.out)} · <b id="stT"></b></p>`;else h+='<p>Bir tarif seç</p>';
+else{const nx=UPC[s.lvl];h+=`<div class="brk"><span>Kapasite</span><b>${s.jobs.length} / ${s.lvl} üretim</b></div>`+(nx?`<div style="text-align:right;margin:6px 0"><button class="btn l" id="upB" ${G.gold<nx?'disabled':''}>Kapasiteyi ${s.lvl+1===2?"2'ye":"3'e"} çıkar · ${nx} altın</button></div>`:'<p>Kapasite en üst seviyede</p>');
+if(s.ready)h+=`<p>Hazır: ${io(s.ready)}</p><div style="text-align:center;margin:6px"><button class="btn g" id="col">Topla</button></div>`;
+if(s.jobs.length)h+=s.jobs.map((j,i)=>`<p>Çalışıyor: ${io(j.r.out)} · <b data-j="${i}"></b></p>`).join('');else if(!s.ready)h+='<p>Bir tarif seç</p>'}
 h+=s.rec.map((r,i)=>{const rl=r.tier&&G.tier<r.tier;const nm=o=>Object.entries(o).map(([k,n])=>n+' '+MATS[k].ad.toLowerCase()).join(' + '),miss=Object.entries(r.in).filter(([k,n])=>G.inv[k]<n);
-return `<div class="row">${io(r.in)}<span class="arrow">→</span>${io(r.out)}<div class="n">${MATS[Object.keys(r.out)[0]].ad}<small>${nm(r.in)} · ${r.s} sn${rl?' · Kademe '+r.tier:''}</small><small class="${miss.length?'no':'ok'}">Elinde: ${Object.keys(r.in).map(k=>G.inv[k]+' '+MATS[k].ad.toLowerCase()).join(', ')}</small></div><button class="btn" data-r="${i}" ${lk||rl||!hasAll(r.in)||s.job||s.ready?'disabled':''}>Başlat</button></div>`}).join('');
+return `<div class="row">${io(r.in)}<span class="arrow">→</span>${io(r.out)}<div class="n">${MATS[Object.keys(r.out)[0]].ad}<small>${nm(r.in)} · ${r.s} sn${rl?' · Kademe '+r.tier:''}</small><small class="${miss.length?'no':'ok'}">Elinde: ${Object.keys(r.in).map(k=>G.inv[k]+' '+MATS[k].ad.toLowerCase()).join(', ')}</small></div><button class="btn" data-r="${i}" ${lk||rl||!hasAll(r.in)||s.jobs.length>=s.lvl?'disabled':''}>Başlat</button></div>`}).join('');
 openSheet('st:'+s.id,h+closeBtn);wire();updTimers();
+const ub=$('upB');if(ub)ub.onclick=()=>{const c=UPC[s.lvl];if(!c||G.gold<c)return;G.gold-=c;s.lvl++;G.stLv[s.id]=s.lvl;sfx.coin();sfx.fan();toast(`${s.ad}: aynı anda ${s.lvl} üretim`,1600);save();refresh();openStation(s)};
 const c=$('col');if(c)c.onclick=()=>{giveAll(s.ready);G.st.proc++;sfx.pick();toast('+ '+Object.entries(s.ready).map(([k,n])=>n+' '+MATS[k].ad).join(', '),1400);s.ready=null;refresh();openStation(s)};
-ui.sheet.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=s.rec[+b.dataset.r];if(!hasAll(r.in)||s.job||s.ready)return;giveAll(r.in,-1);s.job={r,end:tt+r.s};sfx.start();if(s.liq){const pc=PAINTS.find(p=>'boya_'+p.id===Object.keys(r.out)[0]);s.liq.material.color.set(pc?pc.hex:'#e8dcb0')}refresh();openStation(s)})}
+ui.sheet.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=s.rec[+b.dataset.r];if(!hasAll(r.in)||s.jobs.length>=s.lvl)return;giveAll(r.in,-1);s.jobs.push({r,end:tt+r.s});sfx.start();if(s.liq){const pc=PAINTS.find(p=>'boya_'+p.id===Object.keys(r.out)[0]);s.liq.material.color.set(pc?pc.hex:'#e8dcb0')}refresh();openStation(s)})}
 function updTimers(){const m=$('mkT');if(m)m.textContent=Math.max(0,Math.ceil(G.mktT-tt))+' sn';
 ui.sheet.querySelectorAll('[data-d]').forEach(e=>{const d=G.deliv[+e.dataset.d];if(d)e.textContent=Math.max(0,Math.ceil(d.end-tt))+' sn'});
-if(modalMode&&modalMode.startsWith('st:')){const s=ST.find(x=>'st:'+x.id===modalMode),e=$('stT');if(e&&s.job)e.textContent=Math.max(0,Math.ceil(s.job.end-tt))+' sn'}}
+if(modalMode&&modalMode.startsWith('st:')){const s=ST.find(x=>'st:'+x.id===modalMode);ui.sheet.querySelectorAll('[data-j]').forEach(e=>{const j=s.jobs[+e.dataset.j];if(j)e.textContent=Math.max(0,Math.ceil(j.end-tt))+' sn'})}}
 let secT=0;
 const NIGHT=new THREE.Color('#34405e'),WDAY=new THREE.Color('#ffe6a8'),WNIGHT=new THREE.Color('#3e4c78');
 function dayLight(){const f=clamp((G.tm-480)/240,0,1),k=(view==='bench'||view==='vitrin')?'home':view;LIGHTS[k].forEach(([l,i])=>{if(l===sun||l===gSun||l===pSun)l.intensity=i*(1-0.7*f);else if(l===hemi)l.intensity=i*(1-0.35*f)});
@@ -867,7 +870,7 @@ $('newDay').onclick=()=>{show(ui.modal,false);modalMode=null;G.day++;G.tm=0;G.ni
 function tick(){updTimers();dayTick();dayLight();hud();giftTick();plotTick();patUI();checkAch();if(++saveN>20){saveN=0;save()}
 if(tt>G.mktT){restock();if(modalMode==='market')renderMarket()}
 for(let i=G.deliv.length-1;i>=0;i--)if(tt>=G.deliv[i].end){giveAll(G.deliv[i].items);toast('Tedarikçi geldi: '+Object.entries(G.deliv[i].items).map(([k,n])=>n+' '+MATS[k].ad).join(', '),2000);G.deliv.splice(i,1);refresh();if(modalMode==='market')renderMarket()}
-ST.forEach(s=>{if(s.job&&tt>=s.job.end){s.ready=s.job.r.out;s.job=null;sfx.ready();if(modalMode==='st:'+s.id)openStation(s);else if(view!=='islik')toast(s.ad+': üretim bitti',1400)}});
+ST.forEach(s=>{const dn=s.jobs.filter(j=>tt>=j.end);if(!dn.length)return;s.jobs=s.jobs.filter(j=>tt<j.end);s.ready=s.ready||{};dn.forEach(j=>Object.entries(j.r.out).forEach(([k,n])=>s.ready[k]=(s.ready[k]||0)+n));sfx.ready();if(modalMode==='st:'+s.id)openStation(s);else if(view!=='islik')toast(s.ad+': üretim bitti',1400)});
 COLL.forEach(o=>{const c=o.userData.coll;if(!c.alive&&tt>=c.t){c.alive=true;o.visible=true;tween(0.4,k=>o.scale.copy(c.base).multiplyScalar(Math.max(0.01,k)))}})}
 
 /* ---------- tezgah üretimi ---------- */
@@ -1034,8 +1037,8 @@ if(G.step==='design'&&K.pc){ctx.fillStyle='rgba(255,250,235,.6)';K.pc.forEach(c=
 if(G.step==='rub'&&K.cells){const ci=K.st.k==='cila'||K.st.k==='parlat';ctx.fillStyle=ci?'rgba(255,250,235,.55)':'rgba(90,60,30,.55)';K.cells.forEach((c,i)=>{if(c.on)return;const s=scr(c.p);ctx.beginPath();ctx.arc(s[0]+(i%3-1)*2,s[1]+(i%2)*2,ci?3.5:2.5,0,Math.PI*2);ctx.fill()})}}
 function drawLabels(){for(const o of LBL){if(o.v!==view||switching||o.off){if(!o.hid){o.el.classList.add('hide');o.hid=true}continue}
 const s=scr(o.pos);if(o.hid){o.el.classList.remove('hide');o.hid=false}o.el.style.transform=`translate(${s[0].toFixed(1)}px,${s[1].toFixed(1)}px) translate(-50%,${o.below?'0':'-100%'})`}}
-function stationLabels(){ST.forEach(s=>{const lk=G.tier<s.tier,st=lk?0:s.ready?3:s.job?2:1;
-const t=lk?`${s.ad}<small>Kademe ${s.tier}</small>`:s.ready?`${s.ad}<small>Hazır! Topla</small>`:s.job?`${s.ad}<small>${Math.max(0,Math.ceil(s.job.end-tt))} sn</small>`:`${s.ad}<small>Boşta</small>`;
+function stationLabels(){ST.forEach(s=>{const lk=G.tier<s.tier,st=lk?0:s.ready?3:s.jobs.length?2:1,cap=s.lvl>1?` · ${s.jobs.length}/${s.lvl}`:'';
+const t=lk?`${s.ad}<small>Kademe ${s.tier}</small>`:s.ready?`${s.ad}<small>Hazır! Topla${cap}</small>`:s.jobs.length?`${s.ad}<small>${Math.max(0,Math.ceil(Math.min(...s.jobs.map(j=>j.end))-tt))} sn${cap}</small>`:`${s.ad}<small>Boşta${cap}</small>`;
 if(t!==s.lbl.last){s.lbl.el.innerHTML=t;s.lbl.last=t;s.lbl.el.classList.toggle('lock',lk);s.lbl.el.classList.toggle('rdy',st===3);s.base.material.color.set(['#3d2c20','#6e4a2c','#b8742a','#6fae4a'][st])}})}
 
 /* ---------- döngü ---------- */
@@ -1049,12 +1052,12 @@ secT+=dt;if(secT>0.25){secT=0;tick();stationLabels()}
 const a=pg.attributes.position;for(let i=0;i<DN;i++){a.setY(i,a.getY(i)+Math.sin(tt*0.6+i)*0.0015);a.setX(i,a.getX(i)+Math.cos(tt*0.4+i*1.7)*0.0012)}a.needsUpdate=true;
 custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';if(c.mix)return;c.head.rotation.y=Math.sin(tt*0.9+i)*0.25;c.g.position.y=c.walking?Math.abs(Math.sin(tt*9))*0.05:Math.abs(Math.sin(tt*1.6+i))*0.012});
 ALLC.forEach(c=>{if(c.mix)c.mix.update(dt)});if(DOORH){const tg=(G.open&&!G.night)||ALLC.some(c=>c.walking)?-1.55:0;DOORH.rotation.y+=(tg-DOORH.rotation.y)*Math.min(1,dt*4)}
-if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.job)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
+if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.jobs.length)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
 AWN.visible=camCur.p.y<2.05;toolTick();if(lamp.visible)lamp.intensity=1.35+Math.sin(tt*2.3)*0.05;
 ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1;cam.position.copy(camCur.p).sub(camCur.l).divideScalar(zz).add(camCur.l);
 cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.9)*0.01*sway;cam.position.z+=ZM.pz;look.copy(camCur.l);look.x+=ZM.px;look.z+=ZM.pz;cam.lookAt(look);
 R.render(S,cam);drawFx();drawLabels();requestAnimationFrame(loop)}
-load();if(!G.ds)G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
+load();ST.forEach(s=>s.lvl=G.stLv[s.id]||1);if(!G.ds)G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
 setLights('home');hud();refresh();loop();
 const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.textContent=G.mus?'Müzik açık':'Müzik kapalı';spS.textContent=G.snd?'Ses açık':'Ses kapalı';$('musB').classList.toggle('off',!G.mus)};spSync();
 spM.onclick=()=>{G.mus=!G.mus;spSync()};spS.onclick=()=>{G.snd=!G.snd;spSync()};
