@@ -204,7 +204,7 @@ islik:{p:V(OI,11.8,5.6),l:V(OI,0,0.45)},bahce:{p:V(OB,8.6,9.1),l:V(OB,0,1.0)},pa
 const camCur={p:VIEWS.home.p.clone(),l:VIEWS.home.l.clone()};let sway=1,view='home';
 let W=1,H=1,dpr=1;
 function resize(){W=frame.clientWidth;H=frame.clientHeight;dpr=Math.min(devicePixelRatio,2);R.setSize(W,H,false);cam.aspect=W/H;cam.updateProjectionMatrix();fx.width=W*dpr;fx.height=H*dpr}
-addEventListener('resize',resize);resize();
+addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,300));document.addEventListener('visibilitychange',()=>setTimeout(resize,200));if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe(frame);resize();
 
 const M=(c,r)=>new THREE.MeshStandardMaterial({color:c,flatShading:true,roughness:r==null?0.85:r});
 const glow=c=>new THREE.MeshBasicMaterial({color:c});
@@ -309,7 +309,7 @@ const b=buckle();b.position.set(0.14,0.02,0);b.rotation.y=Math.PI/2;g.add(b);put
 function cantaModel(hex,style){const g=new THREE.Group(),um=M(hex,0.6),dk=M(shade(hex,-0.3),0.6);
 const body=mesh(ext(rrect(0.36,0.26,0.05),0.12,0.02),um);body.position.set(0,0.15,-0.06);g.add(body);
 put(g,B(0.37,0.12,0.02),dk,0,0.22,0.085);const b=buckle();b.scale.setScalar(0.5);b.rotation.x=Math.PI/2;b.position.set(0,0.17,0.1);g.add(b);
-const r=style==='Uzun askı'?0.22:0.1,h=mesh(new THREE.TorusGeometry(r,style==='Uzun askı'?0.01:0.016,5,24,Math.PI),dk);h.position.set(0,0.28,0);g.add(h);
+if(style==='Uzun askı'){const h=mesh(new THREE.TorusGeometry(0.165,0.009,5,28,Math.PI),dk);h.scale.y=1.9;h.position.set(0,0.27,0);g.add(h);[-1,1].forEach(k=>{put(g,B(0.03,0.05,0.13),dk,k*0.168,0.25,0)})}else{[-1,1].forEach(k=>{const h=mesh(new THREE.TorusGeometry(0.075,0.014,6,20,Math.PI),dk);h.position.set(0,0.275,k*0.035);g.add(h);[-1,1].forEach(j=>put(g,B(0.03,0.02,0.015),dk,j*0.075,0.28,k*0.035))})}
 for(let i=0;i<10;i++)put(g,B(0.012,0.006,0.006),M('#f4ecd8'),-0.16+i*0.035,0.035,0.085);return {g,um}}
 function atkiModel(hex){const g=new THREE.Group(),um=M(hex,0.9),lt=M(shade(hex,0.25),0.9);
 for(let i=0;i<3;i++){const b=put(g,B(0.36,0.03,0.13),i%2?lt:um,0,0.015+i*0.03,0);b.rotation.y=(i-1)*0.18}
@@ -326,7 +326,7 @@ const PRODS=[
  steps:[{t:'trace'},{t:'rhythm',k:'dik',n:10},{t:'hold',ad:'Katlama'},{t:'design'}]},
 {id:'kemer',ad:'Kemer',tier:1,base:65,need:{deri:1,toka:1,boya:1},sheet:'#9c6b4e',shape:()=>rrect(0.1,0.8,0.04),build:kemerModel,
  steps:[{t:'trace'},{t:'rhythm',k:'delik',line:true,n:5},{t:'drag',what:'toka'},{t:'design'}]},
-{id:'ayakkabi',ad:'Ayakkabı',tier:1,base:125,need:{deri:1,taban:1,iplik:1,tutkal:1,boya:1},sheet:'#9c6b4e',shape:()=>soleShape(1.12),styles:['Bağcıklı','Tokalı'],build:shoeModel,
+{id:'ayakkabi',ad:'Ayakkabı',tier:1,base:125,need:{deri:1,taban:1,iplik:1,tutkal:1,boya:1},sheet:'#9c6b4e',shape:()=>soleShape(1.12),styles:['Bağcıklı','Tokalı'],build:(h,st,k)=>SHOEB(h,st,k),
  steps:[{t:'trace'},{t:'rhythm',k:'dik',n:10},{t:'rhythm',k:'yapistir',n:6,sc:0.7},{t:'drag',what:'taban'},{t:'hold'},{t:'design'}]},
 {id:'canta',ad:'Çanta',tier:2,base:170,need:{deri:2,iplik:1,toka:1,boya:1},sheet:'#9c6b4e',shape:()=>rrect(0.46,0.62,0.06),styles:['Kısa sap','Uzun askı'],build:cantaModel,
  steps:[{t:'trace'},{t:'rhythm',k:'dik',n:12},{t:'drag',what:'toka'},{t:'hold'},{t:'design'}]},
@@ -337,10 +337,11 @@ const PRODS=[
 {id:'tabure',ad:'Tabure',tier:3,base:130,need:{kereste:2,tutkal:1,balmumu:1},sheet:'#c9955a',wood:true,shape:()=>circleShape(0.27),build:tabureModel,
  steps:[{t:'trace'},{t:'rhythm',k:'yapistir',n:3,sc:0.5},{t:'rub',k:'zimpara'},{t:'rub',k:'cila'},{t:'design'}]}];
 const GLC={},GLW={};
-function glbProd(n,size,fb){return (hex,style,k)=>{const src=GLC[n];if(!src)return fb(hex,style,k);const g=new THREE.Group(),um=M(hex,0.6),m=src.scene.clone();
-m.traverse(o=>{if(o.isMesh){const a=(Array.isArray(o.material)?o.material:[o.material]).map(mt=>/brown/i.test(mt.name)&&!/dark/i.test(mt.name)?um:mt);o.material=a.length>1?a:a[0]}});
+function glbProd(n,size,fb,re){return (hex,style,k)=>{const src=GLC[n];if(!src)return fb(hex,style,k);const g=new THREE.Group(),um=M(hex,0.6),m=src.scene.clone();
+m.traverse(o=>{if(o.isMesh){const a=(Array.isArray(o.material)?o.material:[o.material]).map(mt=>(re?re.test(mt.name):/brown/i.test(mt.name)&&!/dark/i.test(mt.name))?um:mt);o.material=a.length>1?a:a[0]}});
 m.updateMatrixWorld(true);let bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(V(0,0,0));m.scale.multiplyScalar(size/Math.max(sz.x,sz.z));m.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(m);
 m.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);g.add(m);return {g,um}}}
+var SHOEB=glbProd('pair_of_shoes',0.48,shoeModel,/lambert4SG/);glb('pair_of_shoes',()=>{});
 PRODS.push({id:'sirt',ad:'Sırt çantası',tier:2,base:190,need:{deri:2,iplik:1,toka:1,boya:1},sheet:'#9c6b4e',shape:()=>rrect(0.5,0.6,0.07),build:glbProd('backpack',0.42,cantaModel),
  steps:[{t:'trace'},{t:'rub',k:'incelt'},{t:'rhythm',k:'dik',n:12},{t:'drag',what:'toka'},{t:'hold'},{t:'rub',k:'parlat'},{t:'design'}]});
 const STEPTXT={trace:['Kesim','Kesik çizgiyi parmağınla takip et'],dik:['Dikiş','Halka noktaya oturduğunda dokun'],yapistir:['Yapıştırma','Halka noktaya oturduğunda dokun'],
@@ -1144,7 +1145,7 @@ if(K.ghost&&K.ghost[K.ri])K.ghost[K.ri].visible=false;m.position.copy(K.rp[K.ri]
 function rhythmTap(){const D=K.dot;if(!D||!D.live)return;D.live=false;const e=Math.abs(ringScale(D.t)-1),s=clamp(1-e/1.3,0,1);K.rs.push(s);stab(D.m.position,K.st.k);dotDone(D,s)}
 function dotDone(D,s){if(s>0)({dik:sfx.stitch,yapistir:sfx.glue,delik:sfx.punch})[K.st.k]();else sfx.bad();if(K.st.k==='yapistir'){const gm=D.m;gm.material.color.set(s>0.6?'#ffe9a8':'#d8c9a0');tween(0.25,k=>gm.scale.set(1+0.9*k,1+k,1+0.9*k))}
 if(K.st.k==='delik'&&s>0){const hm=D.m;tween(0.15,k=>hm.scale.set(1+0.4*k,1,1+0.4*k));puff(hm.position,4,'#c9a37a')}
-if(K.st.k==='dik'&&s>0&&K.prev){const ln=lineSeg(K.work,K.prev,D.m.position,'#efe0b8',0.009),pz=ln.position.clone(),a=K.prev.clone();ln.scale.z=0.01;tween(0.16,k=>{ln.scale.z=Math.max(0.01,k);ln.position.lerpVectors(a,pz,k)})}if(K.st.k==='dik')K.prev=D.m.position.clone();
+if((K.st.k==='dik'||K.st.k==='yapistir')&&K.prev&&!K.st.pts){const gl=K.st.k==='yapistir',ln=lineSeg(K.work,K.prev,D.m.position,gl?(s>0?'#f7ecc4':'#cfc4a0'):(s>0?'#efe0b8':'#8a6a4a'),gl?0.022:0.009),pz=ln.position.clone(),a=K.prev.clone();ln.scale.z=0.01;tween(0.16,k=>{ln.scale.z=Math.max(0.01,k);ln.position.lerpVectors(a,pz,k)})}if(K.st.k==='dik'||K.st.k==='yapistir')K.prev=D.m.position.clone();if(K.ri===K.rp.length-1&&!K.st.pts&&!K.st.line&&(K.st.k==='dik'||K.st.k==='yapistir')&&K.rp.length>2){const gl=K.st.k==='yapistir';const l2=lineSeg(K.work,D.m.position,K.rp[0],gl?'#f7ecc4':'#efe0b8',gl?0.022:0.009);l2.scale.z=0.01;setTimeout(()=>tween(0.2,k=>l2.scale.z=Math.max(0.01,k)),120)}
 toast(s>0.8?'Tam zamanında!':s>0.4?'İyi':s>0?'Erken':'Kaçtı',450);setTimeout(nextDot,280)}
 function bDrag(){const w=K.st.what;let obj,tgt,out;
 if(w==='taban'){obj=flat(soleShape(1),0.03,'#2a221d');tgt=V(BC.x,K.top+0.005,BC.z);out=soleShape(1);obj.position.set(-0.47,K.top+0.02,1.95)}
@@ -1281,7 +1282,7 @@ if(t!==s.lbl.last){s.lbl.el.innerHTML=t;s.lbl.last=t;s.lbl.el.classList.toggle('
 
 /* ---------- döngü ---------- */
 const clock=new THREE.Clock(),look=V(0,0,0);
-function loop(){const dt=Math.min(clock.getDelta(),0.05);tt+=dt;
+function loop(){const dt=Math.min(clock.getDelta(),0.05);tt+=dt;if(frame.clientWidth!==W||frame.clientHeight!==H)resize();
 for(let i=tweens.length-1;i>=0;i--){const w=tweens[i];w.t+=dt;const k=Math.min(1,w.t/w.dur);w.fn(ease(k));if(k>=1){tweens.splice(i,1);w.done&&w.done()}}
 if(K&&G.step==='rhythm'&&K.dot&&K.dot.live){K.dot.t+=dt;if(ringScale(K.dot.t)<0.45){K.dot.live=false;K.rs.push(0);dotDone(K.dot,0)}}
 if(K&&G.step==='hold'&&K.holding){K.hv+=dt*60;const f=$('gf');if(f)f.style.width=Math.min(100,K.hv)+'%';pressPos(K.hv);if(K.hv>=100)eHold()}
