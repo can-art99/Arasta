@@ -91,6 +91,7 @@ button.pill.off{opacity:.5;text-decoration:line-through}
 .lbl{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:var(--cr);color:var(--ink);border:2px solid var(--ln);box-shadow:0 2px 0 var(--ln);border-radius:10px;padding:3px 8px;font-size:12px;font-weight:600;text-align:center;white-space:nowrap;line-height:1.25}
 .lbl small{display:block;font-size:11px;color:var(--tl)}
 .lbl.lock{opacity:.6}
+.lbl.sm,.lbl.stl.sm{font-size:10px;padding:2px 7px;border-width:1.5px;border-radius:8px;box-shadow:0 1px 0 var(--ln);line-height:1.2}.lbl.sm small{font-size:9px}
 .lbl.stl{pointer-events:auto;cursor:pointer;font-size:13px;padding:5px 11px;border-radius:12px}
 .lbl.rdy{background:var(--tl);color:var(--cr);animation:pulse .7s infinite alternate}.lbl.rdy small{color:#d6f0c8}
 .lbl.wat{background:#3f7fa8;color:#eaf6ff;animation:pulse .7s infinite alternate}.lbl.wat small{color:#d4ecff}
@@ -515,7 +516,7 @@ const ST=[
 const SP=[[-1.25,-3.1],[1.25,-3.1],[-1.25,-1.25],[1.25,-1.25],[-1.25,0.6],[1.25,0.6],[-1.25,2.45],[1.25,2.45]];
 ST.forEach((s,i)=>{const g=new THREE.Group(),m=new THREE.Group(),x=OI+SP[i][0],z=SP[i][1];s.mk(m);m.scale.setScalar(0.98);if(s.id==='testere')place('wb_big',{par:m,swap:1,w:1.05,ry:Math.PI});m.position.y=0.06;g.add(m);s.m=m;s.wheel=m.userData.wheel;s.liq=m.userData.liq;
 s.base=put(g,Cy(0.84,0.87,0.06,28),M('#6e4a2c'),0,0.03,0);const h=new THREE.Mesh(Cy(0.95,0.95,1.7,12),HID);h.position.y=0.85;g.add(h);
-g.position.set(x,0,z);g.userData.st=s;S.add(g);s.g=g;s.jobs=[];s.lvl=1;s.ready=null;s.lbl=label('islik',V(x,0.08,z+0.38),null,true);s.lbl.el.classList.add('stl');s.lbl.el.onclick=()=>stationTap(s)});
+g.position.set(x,0,z);g.userData.st=s;S.add(g);s.g=g;s.jobs=[];s.lvl=1;s.ready=null;s.lbl=label('islik',V(x,0.08,z+0.86),null,true);s.lbl.el.classList.add('stl','sm');s.lbl.el.onclick=()=>stationTap(s)});
 
 /* ---------- bahçe ---------- */
 function mkSut(){const g=new THREE.Group();put(g,Cy(0.1,0.08,0.18,10),M('#a9afb5',0.35),0,0.09,0);put(g,Cy(0.092,0.092,0.012,10),M('#fbf8f0'),0,0.176,0);const h=put(g,new THREE.TorusGeometry(0.09,0.008,4,12,Math.PI),M('#6f757a',0.35),0,0.18,0);return g}
@@ -598,7 +599,7 @@ for(let i=0;i<46;i++){const t=add(new THREE.ConeGeometry(0.05,0.16,4),M(i%2?'#6f
 const bed=(x,z,w,d)=>{add(B(w+0.14,0.07,d+0.14),M('#8a6a44'),x,0.035,z);add(B(w,0.09,d),M('#6b4a30'),x,0.045,z)};
 const COLL=[];
 function coll(mat,obj,x,y,z,hr){obj.position.set(x,y,z);obj.add(new THREE.Mesh(new THREE.SphereGeometry(hr||0.2,6,5),HID));obj.userData.coll={mat,alive:true,t:0,base:obj.scale.clone()};S.add(obj);COLL.push(obj);return obj}
-const patch=(ad,x,z,h)=>label('bahce',V(x,h||0.5,z),ad,false);
+const patch=(ad,x,z,h)=>{const o=label('bahce',V(x,0.02,z+0.5),ad,true);o.el.classList.add('sm');return o};
 const FX=OB-11,FO=OB+11,PETS=[],BOB=[];function cl(m,o,x,y,z,hr,rt){coll(m,o,x,y,z,hr).userData.coll.rt=rt;return o}
 const RA=-3.4,RB=-1.3,RC=0.8,RD=2.7,XL=OB-1.9,XM=OB,XR=OB+1.9;
 pine(XL,RA,1.5);[[-0.15,0.38,0.2],[0.03,0.62,0.22],[0.17,0.42,0.18]].forEach(p=>{const d=mesh(new THREE.SphereGeometry(0.06,8,6),M('#e0a030',0.2));d.scale.y=1.3;coll('recine',d,XL+p[0],p[1],RA+p[2],0.16)});patch('Çam ağacı',XL,RA,1.05);
@@ -628,7 +629,7 @@ const PL=[[XL,RD,60],[XR,RD,120],[XL,RE,200],[XM,RE,300],[XR,RE,450]].map(q=>{co
 const lockG=new THREE.Group();put(lockG,B(1.35,0.02,0.8),M('#779a4c'),0,0.012,0).castShadow=false;put(lockG,B(0.05,0.42,0.05),M('#8a6a44'),0,0.21,0);put(lockG,B(0.46,0.24,0.04),M('#e6d5b0'),0,0.46,0);g.add(lockG);
 const bedG=new THREE.Group();put(bedG,B(1.49,0.07,0.94),M('#8a6a44'),0,0.035,0);put(bedG,B(1.35,0.09,0.8),M('#6b4a30'),0,0.045,0);for(let k=0;k<4;k++)put(bedG,B(1.25,0.02,0.05),M('#5a3c26'),0,0.095,-0.27+k*0.18);g.add(bedG);
 const crop=new THREE.Group();crop.position.y=0.09;g.add(crop);const h=new THREE.Mesh(B(1.5,0.5,0.95),HID);h.position.y=0.25;g.add(h);
-const o={g,lockG,bedG,crop,cost:q[2],own:false,seed:null,end:0,dur:1};g.userData.plot=o;o.lbl=label('bahce',V(q[0],0.55,q[1]),'',false);o.lbl.el.classList.add('stl');o.lbl.el.onclick=()=>plotTap(o);return o});
+const o={g,lockG,bedG,crop,cost:q[2],own:false,seed:null,end:0,dur:1};g.userData.plot=o;o.lbl=label('bahce',V(q[0],0.02,q[1]+0.5),'',true);o.lbl.el.classList.add('stl','sm');o.lbl.el.onclick=()=>plotTap(o);return o});
 function plotSync(o){o.lockG.visible=!o.own;o.bedG.visible=o.own;o.crop.clear();if(o.seed){o.crop.add(cropMesh(CROPS[o.seed].hex));if(!o.w)o.crop.scale.setScalar(0.12)}}
 function burst(c,hex,n,mode){for(let i=0;i<n;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(mode==='w'?0.028:0.035,5,4),new THREE.MeshStandardMaterial({color:hex,roughness:0.3,transparent:mode==='w',opacity:0.85}));
 const x=c.x+(Math.random()-0.5)*1.1,z=c.z+(Math.random()-0.5)*0.6,y0=mode==='up'?0.2:0.9+Math.random()*0.4,d=0.45+Math.random()*0.35,dl=Math.random()*0.25;m.position.set(x,y0,z);m.visible=false;S.add(m);
