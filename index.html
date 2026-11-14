@@ -290,10 +290,10 @@ for(let i=0;i<10;i++)put(g,B(0.012,0.006,0.006),M('#f4ecd8'),-0.16+i*0.035,0.035
 function atkiModel(hex){const g=new THREE.Group(),um=M(hex,0.9),lt=M(shade(hex,0.25),0.9);
 for(let i=0;i<3;i++){const b=put(g,B(0.36,0.03,0.13),i%2?lt:um,0,0.015+i*0.03,0);b.rotation.y=(i-1)*0.18}
 for(let i=0;i<6;i++){put(g,B(0.01,0.008,0.04),um,-0.2,0.08,-0.05+i*0.02);put(g,B(0.01,0.008,0.04),um,0.2,0.08,-0.05+i*0.02)}return {g,um}}
-function kasikModel(hex,style,k){const g=new THREE.Group(),um=M('#c9955a',k&&k.cila?0.3:0.85);
+function kasikModel(hex,style,k){const g=new THREE.Group(),um=M(hex||'#c9955a',k&&k.cila?0.3:0.85);
 const bw=mesh(new THREE.SphereGeometry(0.1,12,8,0,Math.PI*2,Math.PI/2,Math.PI/2),um);bw.material.side=THREE.DoubleSide;bw.scale.set(0.75,0.35,1);bw.position.set(0,0.04,-0.12);g.add(bw);
 const hd=put(g,B(0.035,0.02,0.32),um,0,0.05,0.13);hd.rotation.x=-0.12;return {g,um}}
-function tabureModel(hex,style,k){const g=new THREE.Group(),um=M('#c9955a',k&&k.cila?0.3:0.85);
+function tabureModel(hex,style,k){const g=new THREE.Group(),um=M(hex||'#c9955a',k&&k.cila?0.3:0.85);
 put(g,Cy(0.2,0.2,0.05,14),um,0,0.4,0);for(let i=0;i<3;i++){const a=i/3*Math.PI*2,l=put(g,Cy(0.02,0.025,0.4,6),um,Math.cos(a)*0.14,0.19,Math.sin(a)*0.14);l.rotation.z=-Math.cos(a)*0.12;l.rotation.x=Math.sin(a)*0.12}
 const rg=put(g,new THREE.TorusGeometry(0.15,0.01,4,20),um,0,0.15,0);rg.rotation.x=Math.PI/2;return {g,um}}
 
@@ -320,7 +320,7 @@ Object.assign(STEPTXT,{incelt:['Kenar inceltme','Kenarları parmağınla ovala']
 const S2={cuzdan:[T,IN,dik(10),{t:'hold',ad:'Katlama'},PA,D],kemer:[T,IN,{t:'rhythm',k:'delik',line:true,n:5},{t:'drag',what:'toka'},PA,D],
 ayakkabi:[T,IN,dik(10),{t:'rhythm',k:'yapistir',n:6,sc:0.7},{t:'drag',what:'taban'},{t:'hold'},PA,D],canta:[T,IN,dik(12),{t:'drag',what:'toka'},{t:'hold'},PA,D],
 atki:[T,dik(10),{t:'hold',ad:'Ütü'},D],tabure:[T,{t:'rhythm',k:'yapistir',n:3,sc:0.5},{t:'hold',ad:'Sıkıştırma'},{t:'rub',k:'zimpara'},{t:'rub',k:'cila'},D]};
-const AF={kemer:['cuzdan',1],ayakkabi:['kemer',1],canta:['ayakkabi',2],tabure:['kasik',1]};PRODS.forEach(p=>{if(S2[p.id])p.steps=S2[p.id];p.after=AF[p.id]})}
+const AF={canta:['ayakkabi',2],tabure:['kasik',1]};PRODS.forEach(p=>{if(S2[p.id])p.steps=S2[p.id];p.after=AF[p.id]})}
 const PHASE={trace:'Hazırlık',incelt:'Hazırlık',dik:'Birleştirme',yapistir:'Birleştirme',delik:'Birleştirme',taban:'Birleştirme',toka:'Birleştirme',hold:'Birleştirme',zimpara:'Bitiriş',cila:'Bitiriş',parlat:'Bitiriş',design:'Bitiriş'};
 const stepKey=s=>s.t==='rhythm'||s.t==='rub'?s.k:s.t==='drag'?s.what:s.t;
 
@@ -356,7 +356,7 @@ for(let i=0;i<9;i++)add(B(0.66,0.05,9),M(i%2?'#7a4a2a':'#6c4024'),-2.64+i*0.66,0
 const wallM=M('#9a6a42'),beam=M('#5a3519');
 add(B(6,3.4,0.15),wallM,0,1.7,-4);add(B(0.15,3.4,9),wallM,-3,1.7,0);add(B(0.15,3.4,9),wallM,3,1.7,0);
 for(let i=0;i<5;i++)add(B(0.2,0.2,9),beam,-2.4+i*1.2,3.3,0);
-add(B(1.6,1.2,0.05),glow('#ffe6a8'),1.2,2,-3.9).castShadow=false;
+const winM=glow('#ffe6a8');add(B(1.6,1.2,0.05),winM,1.2,2,-3.9).castShadow=false;
 [[1.8,0.1,0.15,1.2,2.65],[1.8,0.1,0.15,1.2,1.35],[0.08,1.2,0.12,1.2,2],[1.6,0.08,0.12,1.2,2]].forEach(b=>add(B(b[0],b[1],b[2]),beam,b[3],b[4],-3.88));
 const doorM=glow('#f6d38a'),opM=glow('#2f6b5a');add(B(1.2,2.3,0.05),doorM,-1.4,1.15,-3.9).castShadow=false;add(B(0.46,0.2,0.03),opM,-1.4,1.75,-3.84).castShadow=false;
 add(B(1.4,0.12,0.18),beam,-1.4,2.36,-3.88);add(B(0.12,2.36,0.18),beam,-2.06,1.18,-3.88);add(B(0.12,2.36,0.18),beam,-0.74,1.18,-3.88);
@@ -458,33 +458,33 @@ for(let i=0;i<46;i++){const t=add(new THREE.ConeGeometry(0.05,0.16,4),M(i%2?'#6f
 const bed=(x,z,w,d)=>{add(B(w+0.14,0.07,d+0.14),M('#8a6a44'),x,0.035,z);add(B(w,0.09,d),M('#6b4a30'),x,0.045,z)};
 const COLL=[];
 function coll(mat,obj,x,y,z,hr){obj.position.set(x,y,z);obj.add(new THREE.Mesh(new THREE.SphereGeometry(hr||0.2,6,5),HID));obj.userData.coll={mat,alive:true,t:0,base:obj.scale.clone()};S.add(obj);COLL.push(obj);return obj}
-const patch=(ad,x,z)=>label('bahce',V(x,0.02,z+0.62),ad,true);
+const patch=(ad,x,z,h)=>label('bahce',V(x,h||0.5,z),ad,false);
 const RA=-3.4,RB=-1.3,RC=0.8,RD=2.7,XL=OB-1.9,XM=OB,XR=OB+1.9;
-pine(XL,RA,1.5);[[-0.15,0.38,0.2],[0.03,0.62,0.22],[0.17,0.42,0.18]].forEach(p=>{const d=mesh(new THREE.SphereGeometry(0.06,8,6),M('#e0a030',0.2));d.scale.y=1.3;coll('recine',d,XL+p[0],p[1],RA+p[2],0.16)});patch('Çam ağacı',XL,RA);
+pine(XL,RA,1.5);[[-0.15,0.38,0.2],[0.03,0.62,0.22],[0.17,0.42,0.18]].forEach(p=>{const d=mesh(new THREE.SphereGeometry(0.06,8,6),M('#e0a030',0.2));d.scale.y=1.3;coll('recine',d,XL+p[0],p[1],RA+p[2],0.16)});patch('Çam ağacı',XL,RA,1.05);
 add(Cy(0.13,0.18,1.3,7),M('#5a3b22'),XM,0.65,RA);add(new THREE.IcosahedronGeometry(0.75,0),M('#5f8a3a'),XM,1.8,RA);add(new THREE.IcosahedronGeometry(0.45,0),M('#6c9a44'),XM+0.5,1.5,RA+0.2);
-for(let i=0;i<4;i++)coll('ceviz',mesh(new THREE.DodecahedronGeometry(0.065),M('#6b4a2b')),XM-0.36+i*0.24,0.06,RA+0.42+(i%2)*0.14);patch('Ceviz ağacı',XM,RA);
+for(let i=0;i<4;i++)coll('ceviz',mesh(new THREE.DodecahedronGeometry(0.065),M('#6b4a2b')),XM-0.36+i*0.24,0.06,RA+0.42+(i%2)*0.14);patch('Ceviz ağacı',XM,RA,1.05);
 [[-0.25,-0.18],[0.25,-0.18],[-0.25,0.18],[0.25,0.18]].forEach(p=>add(B(0.06,0.3,0.06),M('#5a3519'),XR+p[0],0.15,RA+p[1]));
 ['#e0c070','#d4b25e','#e0c070'].forEach((c,i)=>add(B(0.56,0.22,0.48),M(c),XR,0.41+i*0.23,RA));add(B(0.68,0.07,0.6),M('#8a5530'),XR,1.02,RA);add(B(0.18,0.03,0.02),M('#2a1c10'),XR,0.36,RA+0.245);
-[-0.2,0.2].forEach(dx=>coll('balmumu',mesh(Cy(0.1,0.1,0.05,6),M('#e8b84a',0.5)),XR+dx,0.03,RA+0.5));patch('Arı kovanı',XR,RA);
+[-0.2,0.2].forEach(dx=>coll('balmumu',mesh(Cy(0.1,0.1,0.05,6),M('#e8b84a',0.5)),XR+dx,0.03,RA+0.5));patch('Arı kovanı',XR,RA,1.2);
 bed(XL,RB,1.35,0.85);[-0.33,0.33].forEach(dx=>{add(new THREE.IcosahedronGeometry(0.3,0),M('#4f7a3a'),XL+dx,0.36,RB-0.05);for(let i=0;i<3;i++){const a=0.4+i*1.15;coll('pamuk',mesh(new THREE.IcosahedronGeometry(0.085,0),M('#f6f3ea')),XL+dx+Math.cos(a)*0.24,0.46+(i%2)*0.14,RB+Math.sin(a)*0.24)}});patch('Pamuk',XL,RB);
 bed(XM,RB,1.35,0.85);{const b=add(new THREE.IcosahedronGeometry(0.34,0),M('#3f6a34'),XM,0.38,RB-0.08);b.scale.set(1.6,1,1)}
 [-0.42,-0.14,0.14,0.42].forEach((dx,i)=>coll('bogurtlen',mesh(new THREE.DodecahedronGeometry(0.075),M('#5e3a6e',0.4)),XM+dx,0.4+(i%2)*0.14,RB+0.22));patch('Böğürtlen',XM,RB);
 function sheep(x,z,f){[[-0.1,-0.13],[0.1,-0.13],[-0.1,0.13],[0.1,0.13]].forEach(p=>add(Cy(0.03,0.03,0.22,5),M('#3a2f28'),x+p[0],0.11,z+p[1]));
 add(B(0.24,0.2,0.42),M('#e6ddcc'),x,0.32,z);add(new THREE.SphereGeometry(0.1,8,6),M('#3a2f28'),x+f*0.04,0.44,z+0.29);[-1,1].forEach(s=>add(B(0.07,0.03,0.04),M('#3a2f28'),x+f*0.04+s*0.11,0.49,z+0.27));
 const w=mesh(new THREE.IcosahedronGeometry(0.27,1),M('#f4efe4',1));w.scale.set(1,0.85,1.25);coll('yun',w,x,0.37,z,0.3)}
-sheep(XR-0.4,RB,1);sheep(XR+0.4,RB-0.15,-1);patch('Koyun',XR,RB);
+sheep(XR-0.4,RB,1);sheep(XR+0.4,RB-0.15,-1);patch('Koyun',XR,RB,0.7);
 bed(XL,RC,1.35,0.8);for(let i=0;i<3;i++){const g=new THREE.Group();put(g,Cy(0.012,0.012,0.3,4),M('#3f5a2c'),0,0.15,0);for(let j=0;j<4;j++){const l=put(g,new THREE.SphereGeometry(0.08,6,4),M('#3d6680'),Math.cos(j*1.6)*0.07,0.18+j*0.04,Math.sin(j*1.6)*0.07);l.scale.set(1,0.35,0.6)}coll('civit',g,XL-0.4+i*0.4,0.09,RC+(i%2)*0.16-0.05)}patch('Çivit',XL,RC);
 bed(XM,RC,1.35,0.8);for(let i=0;i<4;i++){const g=new THREE.Group();put(g,Cy(0.012,0.012,0.26,4),M('#4f7a3a'),0,0.13,0);const f=put(g,Cy(0.08,0.08,0.02,8),M('#f2c230'),0,0.27,0);f.rotation.x=0.5;put(g,new THREE.SphereGeometry(0.03,6,5),M('#8a4a1a'),0,0.285,0.014);coll('papatya',g,XM-0.42+i*0.28,0.09,RC+(i%2)*0.18-0.06)}patch('Sarı çiçek',XM,RC);
 bed(XR,RC,1.35,0.8);for(let i=0;i<3;i++){const g=new THREE.Group();put(g,new THREE.ConeGeometry(0.05,0.22,5),M('#b23a2a'),0,0.06,0).rotation.z=Math.PI;for(let j=0;j<3;j++){const l=put(g,new THREE.ConeGeometry(0.05,0.25,4),M('#4f7a3a'),(j-1)*0.05,0.3,0);l.rotation.z=(j-1)*0.4}coll('kokboya',g,XR-0.4+i*0.4,0.09,RC+(i%2)*0.16-0.05)}patch('Kök boya',XR,RC);
 for(let i=0;i<3;i++){const l=mesh(Cy(0.1,0.11,0.6,8),M('#6b4528'));l.rotation.z=Math.PI/2;coll('kutuk',l,XM-0.3+i*0.05,0.1+(i===2?0.18:0),RD+(i===2?0:(i-0.5)*0.22),0.26)}
-add(Cy(0.2,0.23,0.3,9),M('#7a5230'),XM+0.65,0.15,RD);{const a=add(B(0.04,0.4,0.04),M('#5a3519'),XM+0.65,0.48,RD);a.rotation.z=0.5;add(B(0.14,0.1,0.03),M('#9a9aa0',0.4),XM+0.56,0.36,RD)}patch('Odun yığını',XM,RD);
+add(Cy(0.2,0.23,0.3,9),M('#7a5230'),XM+0.65,0.15,RD);{const a=add(B(0.04,0.4,0.04),M('#5a3519'),XM+0.65,0.48,RD);a.rotation.z=0.5;add(B(0.14,0.1,0.03),M('#9a9aa0',0.4),XM+0.56,0.36,RD)}patch('Odun yığını',XM,RD,0.6);
 const RE=4.6;
 function cropMesh(hex){const g=new THREE.Group();for(let i=0;i<4;i++){const x=-0.45+i*0.3,z=(i%2)*0.16-0.08;put(g,new THREE.ConeGeometry(0.05,0.26,5),M('#4f7a3a'),x,0.13,z);put(g,new THREE.DodecahedronGeometry(0.06),M(hex),x,0.29,z)}return g}
 const PL=[[XL,RD,60],[XR,RD,120],[XL,RE,200],[XM,RE,300],[XR,RE,450]].map(q=>{const g=new THREE.Group();g.position.set(q[0],0,q[1]);S.add(g);
 const lockG=new THREE.Group();put(lockG,B(1.35,0.02,0.8),M('#779a4c'),0,0.012,0).castShadow=false;put(lockG,B(0.05,0.42,0.05),M('#8a6a44'),0,0.21,0);put(lockG,B(0.46,0.24,0.04),M('#e6d5b0'),0,0.46,0);g.add(lockG);
 const bedG=new THREE.Group();put(bedG,B(1.49,0.07,0.94),M('#8a6a44'),0,0.035,0);put(bedG,B(1.35,0.09,0.8),M('#6b4a30'),0,0.045,0);for(let k=0;k<4;k++)put(bedG,B(1.25,0.02,0.05),M('#5a3c26'),0,0.095,-0.27+k*0.18);g.add(bedG);
 const crop=new THREE.Group();crop.position.y=0.09;g.add(crop);const h=new THREE.Mesh(B(1.5,0.5,0.95),HID);h.position.y=0.25;g.add(h);
-const o={g,lockG,bedG,crop,cost:q[2],own:false,seed:null,end:0,dur:1};g.userData.plot=o;o.lbl=label('bahce',V(q[0],0.02,q[1]+0.62),'',true);o.lbl.el.classList.add('stl');o.lbl.el.onclick=()=>plotTap(o);return o});
+const o={g,lockG,bedG,crop,cost:q[2],own:false,seed:null,end:0,dur:1};g.userData.plot=o;o.lbl=label('bahce',V(q[0],0.55,q[1]),'',false);o.lbl.el.classList.add('stl');o.lbl.el.onclick=()=>plotTap(o);return o});
 function plotSync(o){o.lockG.visible=!o.own;o.bedG.visible=o.own;o.crop.clear();if(o.seed){o.crop.add(cropMesh(CROPS[o.seed].hex));if(!o.w)o.crop.scale.setScalar(0.12)}}
 function burst(c,hex,n,mode){for(let i=0;i<n;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(mode==='w'?0.028:0.035,5,4),new THREE.MeshStandardMaterial({color:hex,roughness:0.3,transparent:mode==='w',opacity:0.85}));
 const x=c.x+(Math.random()-0.5)*1.1,z=c.z+(Math.random()-0.5)*0.6,y0=mode==='up'?0.2:0.9+Math.random()*0.4,d=0.45+Math.random()*0.35,dl=Math.random()*0.25;m.position.set(x,y0,z);m.visible=false;S.add(m);
@@ -568,7 +568,7 @@ function depoSync(){DEP.forEach(d=>{const n=G.inv[d.k];if(n!==d.n){d.n=n;d.o.vis
 
 /* ---------- oyun durumu ---------- */
 const G={gold:180,rep:0,n:1,inv:{},order:null,phase:'idle',step:null,tier:1,first:true,deliv:[],market:[],mktT:0,disc:1,haggled:false};
-Object.assign(G,{st:{deliv:0,five:0,earned:0,coll:0,proc:0,harv:0,lost:0,plots:0,sold:0},cat:{},stock:[],sid:0,ach:{},unl:['cuzdan'],shop:{ad:'Benim Dükkanım',logo:'star',col:'#a3302a'},snd:true,mus:true,open:true,started:false});
+Object.assign(G,{st:{deliv:0,five:0,earned:0,coll:0,proc:0,harv:0,lost:0,plots:0,sold:0},cat:{},stock:[],sid:0,ach:{},unl:['cuzdan','kemer','ayakkabi'],shop:{ad:'Benim Dükkanım',logo:'star',col:'#a3302a'},snd:true,mus:true,open:true,started:false,day:1,tm:0,night:false,ds:null});
 Object.keys(MATS).forEach(k=>G.inv[k]=0);
 Object.assign(G.inv,{deri:1,iplik:1,boya_kahve:1,hamderi:1,pamuk:2,tutkal:1});
 const TIERS={1:0,2:12,3:30};
@@ -582,8 +582,8 @@ const ACH=[{id:'ilk',ad:'İlk satış',desc:'Bir sipariş teslim et',get:()=>G.s
 function checkAch(){ACH.forEach(a=>{if(!G.ach[a.id]&&a.get()>=a.goal){G.ach[a.id]=1;G.gold+=a.gold;hud();toast(`Başarım: ${a.ad}<br>+${a.gold} altın`,2400);sfx.fan()}})}
 function checkUnl(){PRODS.filter(unlocked).forEach(p=>{if(!G.unl.includes(p.id)){G.unl.push(p.id);setTimeout(()=>{toast(`Yeni ürün açıldı: ${p.ad}`,2600);sfx.fan()},2300)}})}
 const SK='kraft-save-v1';let saveN=0;
-let save=function(){try{localStorage.setItem(SK,JSON.stringify({gold:G.gold,rep:G.rep,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,stock:G.stock,sid:G.sid,ach:G.ach,unl:G.unl,shop:G.shop,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-tt):0}))}))}catch(e){}};
-function load(){try{const d=JSON.parse(localStorage.getItem(SK));if(!d)return;['gold','rep','n','tier','first','snd','mus','open','daily','streak'].forEach(k=>{if(d[k]!=null)G[k]=d[k]});Object.assign(G.inv,d.inv);Object.assign(G.st,d.st);G.cat=d.cat||{};G.stock=(d.stock||[]).filter(it=>PRODS.some(p=>p.id===it.pid));G.sid=d.sid||0;G.ach=d.ach||{};G.unl=d.unl||G.unl;Object.assign(G.shop,d.shop);
+let save=function(){try{localStorage.setItem(SK,JSON.stringify({gold:G.gold,rep:G.rep,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,stock:G.stock,sid:G.sid,ach:G.ach,unl:G.unl,shop:G.shop,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,day:G.day,tm:G.tm,night:G.night,ds:G.ds,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-tt):0}))}))}catch(e){}};
+function load(){try{const d=JSON.parse(localStorage.getItem(SK));if(!d)return;['gold','rep','n','tier','first','snd','mus','open','daily','streak','day','tm','night','ds'].forEach(k=>{if(d[k]!=null)G[k]=d[k]});Object.assign(G.inv,d.inv);Object.assign(G.st,d.st);G.cat=d.cat||{};G.stock=(d.stock||[]).filter(it=>PRODS.some(p=>p.id===it.pid));G.sid=d.sid||0;G.ach=d.ach||{};G.unl=d.unl||G.unl;Object.assign(G.shop,d.shop);
 (d.plots||[]).forEach((q,i)=>{const o=PL[i];if(!o)return;o.own=!!q.own;o.seed=CROPS[q.seed]?q.seed:null;o.w=!!q.w;if(o.seed){o.dur=CROPS[o.seed].s;o.end=q.rem||0}})}catch(e){}}
 const tierOf=r=>r>=TIERS[3]?3:r>=TIERS[2]?2:1;
 const MARKET=[{k:'hamderi',f:18},{k:'deri',f:38},{k:'iplik',f:14},{k:'taban',f:16},{k:'toka',f:14},{k:'kaucuk',f:12},{k:'kurum',f:6},{k:'tutkal',f:5},
@@ -606,7 +606,8 @@ const anyPaint=()=>PAINTS.some(p=>G.inv['boya_'+p.id]>0);
 function hasNeed(p){return Object.entries(p.need).every(([k,n])=>k==='boya'?anyPaint():G.inv[k]>=n)}
 function hasAll(o){return Object.entries(o).every(([k,n])=>G.inv[k]>=n)}
 function giveAll(o,s){Object.entries(o).forEach(([k,n])=>G.inv[k]+=n*(s||1))}
-function hud(){ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;ui.tier.textContent='K'+G.tier+' · Sıra '+Q.length}
+function hud(){ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;ui.tier.textContent='K'+G.tier+' · '+clockTxt()}
+function clockTxt(){if(G.night)return 'Akşam';const m=480+Math.floor(G.tm),h=Math.floor(m/60);return (h<10?'0':'')+h+':'+String(m%60).padStart(2,'0')}
 function renderCard(){const o=G.order;if(!o||G.phase==='craft'||G.phase==='result'){show(ui.card,false);return}
 if(o.buy){const it=G.stock.find(x=>x.id===o.buy);ui.card.innerHTML=`<h4>Vitrin müşterisi</h4>${it?desc(it)+' · '+it.price+' altın':'Ürün satılmış'}`;show(ui.card,true);return}
 const rows=Object.entries(o.p.need).map(([k,n])=>{if(k==='boya'){const want=G.inv['boya_'+o.color.id]>0;return `<div class="${want?'ok':anyPaint()?'mid':'no'}">${want?'✓':anyPaint()?'~':'✗'} ${o.color.ad} boya</div>`}
@@ -614,12 +615,13 @@ const ok=G.inv[k]>=n;return `<div class="${ok?'ok':'no'}">${ok?'✓':'✗'} ${MA
 if(view!=='home'){const miss=Object.entries(o.p.need).filter(([k,n])=>k==='boya'?G.inv['boya_'+o.color.id]<1:G.inv[k]<n).map(([k])=>k==='boya'?o.color.ad+' boya':MATS[k].ad);
 ui.card.innerHTML=`<h4>${o.p.ad}</h4>${miss.length?'<span class="no">Eksik: '+miss.join(', ')+'</span>':'<span class="ok">Malzemeler tamam</span>'}`;show(ui.card,true);return}
 ui.card.innerHTML=`<h4>Sipariş #${G.n} · ${o.p.ad}</h4>${o.color?o.color.ad:'Doğal'}${o.style?' · '+o.style:''} · ${o.budget} altın${o.hurry?' · <span class="mid">Acele</span>':''}<div style="margin-top:3px">${rows}</div>`;show(ui.card,true)}
-function refresh(){hud();renderCard();show($('zoom'),zoomable());depoSync();{const ob=$('openB');show(ob,view==='home'&&G.phase!=='craft'&&G.phase!=='result');ob.textContent=G.open?'Açık':'Kapalı';ob.classList.toggle('cl',!G.open)}const busy=G.phase==='craft'||G.phase==='result';
+function refresh(){hud();renderCard();show($('zoom'),zoomable());depoSync();{const ob=$('openB');show(ob,view==='home'&&G.phase!=='craft'&&G.phase!=='result');ob.textContent=G.night?'Akşam':G.open?'Açık':'Kapalı';ob.classList.toggle('cl',G.night||!G.open)}const busy=G.phase==='craft'||G.phase==='result';
 document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList.toggle('on',b.dataset.v===view||(b.dataset.v==='home'&&(view==='bench'||view==='vitrin')))});
 {const vb=$('vitB');show(vb,view==='home'&&!busy);vb.textContent=`Vitrin ${G.stock.length}/9`}
 if(view==='vitrin'){if(G.phase==='ordering'&&G.order&&G.order.buy)buyActions();else actions([btn('Yeni ürün yap','l',openFree,G.phase!=='idle'),btn('Dükkana dön','g',()=>go('home'))])}
 else if(G.phase==='active'&&view==='home'){const m=matchStock(G.order),L=hasNeed(G.order.p)?[btn('Tezgaha geç','g',startCraft)]:[btn('Malzeme eksik','l',()=>toast('Eksikleri Pazar, Bahçe ve Atölye\'den tamamla',2000))];if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));actions(L)}
-else if(G.phase==='idle'&&view==='home')actions([btn('Serbest üret','l',openFree)]);
+else if(G.phase==='idle'&&view==='home')actions(G.night&&!Q.length?[btn('Günü bitir','g',endDay),btn('Serbest üret','l',openFree)]:[btn('Serbest üret','l',openFree)]);
+else if(G.phase==='idle')actions([]);
 else if(G.phase==='active')actions([]);}
 let switching=false;
 function go(v){if(v===view||G.phase==='craft'||switching)return;switching=true;sfx.swoosh();PT.clear();tap=pinch=null;ui.fade.style.opacity=1;setTimeout(()=>{view=v;setLights(v);ZM.z=ZM.t=1;ZM.px=ZM.pz=0;sway=v==='home'?1:0.3;
@@ -681,7 +683,8 @@ head.add(mesh(new THREE.SphereGeometry(0.24,12,10),M(pick(['#e8b58c','#c98d63','
 if(Math.random()<0.6)put(head,Cy(0.2,0.3,0.18,8),M(pick(['#5a3519','#2a2420','#7a5a3a'])),0,0.22,0);
 head.position.y=1.78;g.add(head);g.position.copy(DOOR);S.add(g);return {g,head,tok:0,at:false}}
 function walk(c,to,dur,done){const id=++c.tok,fr=c.g.position.clone();if(fr.distanceTo(to)>0.05)c.g.rotation.y=Math.atan2(to.x-fr.x,to.z-fr.z);c.walking=true;tween(dur,k=>{if(id===c.tok)c.g.position.lerpVectors(fr,to,k)},()=>{if(id!==c.tok)return;c.walking=false;done&&done()})}
-function mkOrder(){const pool=PRODS.filter(unlocked),p=G.first?PRODS[0]:pick(pool),color=p.need.boya?(G.first?PAINTS[0]:pick(PAINTS)):null,style=p.styles&&Math.random()<0.6?pick(p.styles):null;
+function mkOrder(){const pool=PRODS.filter(unlocked),p=pick(pool),color=p.need.boya?pick(PAINTS):null,style=p.styles&&Math.random()<0.6?pick(p.styles):null;
+if(G.first)Object.entries(p.need).forEach(([k,n])=>{const key=k==='boya'?'boya_'+color.id:k;G.inv[key]=Math.max(G.inv[key],n)});
 return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)/5)*5,hurry:!G.first&&Math.random()<0.3}}
 function spawn(){if(Q.length>=3)return;const c=makeCustomer(),pv=G.stock.filter(x=>x.price>0);
 if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
@@ -694,7 +697,7 @@ refresh();if(view==='home')orderActions();else toast('Dükkana müşteri geldi',
 function leave(c){const i=Q.indexOf(c);if(i<0)return;Q.splice(i,1);cust=Q[0]||null;c.g.visible=G.phase!=='craft';walk(c,DOOR,2,()=>S.remove(c.g));
 if(i===0&&(!G.order||G.order===c.order)){G.order=null;G.phase='idle';G.bubOn=false;say(null);actions([]);refresh()}hud();Q.forEach((x,j)=>{if(j>=i)seat(x)})}
 function lose(c,msg,rp){G.st.lost++;G.rep=Math.max(0,G.rep-rp);toast(rp?`${msg}<br>İtibar −${rp}`:msg,2400);sfx.bad();leave(c)}
-function custTick(dt){if(!G.started)return;if(G.open){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:22+Math.random()*24;spawn()}}
+function custTick(dt){if(!G.started)return;if(G.open&&!G.night){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:22+Math.random()*24;spawn()}}
 for(let i=Q.length-1;i>=0;i--){const c=Q[i];if(!c.at)continue;
 const mine=G.order&&G.order===c.order;
 if(i>0||(!mine&&G.phase!=='idle')){c.wait-=dt;if(c.wait<=0){G.st.lost++;toast('Sırada bekleyen müşteri sıkılıp gitti',1800);sfx.bad();leave(c)}}
@@ -703,8 +706,8 @@ else if(G.phase==='active'||G.phase==='craft'){c.dead-=dt;if(c.dead<=0){if(G.pha
 function patUI(){const c=Q[0],el=$('pat');let v=-1;if(c&&c.at){if(G.phase==='ordering'&&c.accMax<9000)v=c.acc/c.accMax;else if((G.phase==='active'||G.phase==='craft')&&c.deadMax<9000)v=c.dead/c.deadMax}
 show(el,v>=0);if(v>=0){const b=el.firstChild;b.style.width=(v*100)+'%';b.style.background=v>0.5?'#9be37a':v>0.25?'#ffcf3a':'#ff7a5a'}}
 function setOpen(v,quiet){G.open=v;doorM.color.set(v?'#f6d38a':'#5e5044');opM.color.set(v?'#2f6b5a':'#b5533c');if(quiet)return;sfx.bell();
-if(!v){Q.slice(1).forEach(leave);if(G.phase==='ordering'&&!G.first)leave(Q[0]);toast('Dükkan kapandı<br>Yeni müşteri gelmeyecek',1900)}else{if(!G.first)spawnT=Math.min(spawnT,4);toast('Dükkan açıldı',1200)}refresh();save()}
-$('openB').onclick=()=>setOpen(!G.open);
+if(!v){toast('Dükkan kapandı<br>İçerdekiler kalır, yeni müşteri gelmez',2000)}else{if(!G.first)spawnT=Math.min(spawnT,4);toast('Dükkan açıldı',1200)}refresh();save()}
+$('openB').onclick=()=>{if(G.night){toast('Akşam oldu<br>Dükkan yarın sabah açılır',1600);return}setOpen(!G.open)};
 const r5=v=>Math.max(5,Math.round(v/5)*5);
 const pr=it=>PRODS.find(x=>x.id===it.pid);
 const itemVal=it=>pr(it).base*(0.55+0.12*it.stars);
@@ -835,7 +838,17 @@ function updTimers(){const m=$('mkT');if(m)m.textContent=Math.max(0,Math.ceil(G.
 ui.sheet.querySelectorAll('[data-d]').forEach(e=>{const d=G.deliv[+e.dataset.d];if(d)e.textContent=Math.max(0,Math.ceil(d.end-tt))+' sn'});
 if(modalMode&&modalMode.startsWith('st:')){const s=ST.find(x=>'st:'+x.id===modalMode),e=$('stT');if(e&&s.job)e.textContent=Math.max(0,Math.ceil(s.job.end-tt))+' sn'}}
 let secT=0;
-function tick(){updTimers();giftTick();plotTick();patUI();checkAch();if(++saveN>20){saveN=0;save()}
+const NIGHT=new THREE.Color('#34405e'),WDAY=new THREE.Color('#ffe6a8'),WNIGHT=new THREE.Color('#3e4c78');
+function dayLight(){const f=clamp((G.tm-480)/240,0,1),k=(view==='bench'||view==='vitrin')?'home':view;LIGHTS[k].forEach(([l,i])=>{if(l===sun||l===gSun||l===pSun)l.intensity=i*(1-0.7*f);else if(l===hemi)l.intensity=i*(1-0.35*f)});
+S.background.set(BGS[k]);if(k==='bahce'||k==='pazar')S.background.lerp(NIGHT,0.8*f);winM.color.copy(WDAY).lerp(WNIGHT,f)}
+let warned=false;
+function dayTick(){if(!G.started||G.night)return;if(G.tm>=660&&!warned){warned=true;toast('Kapanışa bir saat kaldı',1600)}
+if(G.tm>=720){G.tm=720;G.night=true;sfx.bell();toast('Akşam oldu, kapanış saati<br>Yeni müşteri gelmeyecek',2400);refresh();save()}}
+function endDay(){const d=G.ds||{earned:0,deliv:0,sold:0,lost:0},E=G.st.earned-d.earned;
+openSheet('day',`<h3>${G.day}. gün bitti</h3><p>${esc(G.shop.ad)} · günün özeti</p><div class="brk"><span>Kazanç</span><b>${E} altın</b></div><div class="brk"><span>Teslim edilen sipariş</span><b>${G.st.deliv-d.deliv}</b></div>
+<div class="brk"><span>Vitrinden satış</span><b>${G.st.sold-d.sold}</b></div><div class="brk"><span>Kaçan müşteri</span><b>${G.st.lost-d.lost}</b></div><div style="text-align:center;margin-top:14px"><button class="btn g" id="newDay">Yeni güne başla</button></div>`);
+$('newDay').onclick=()=>{show(ui.modal,false);modalMode=null;G.day++;G.tm=0;G.night=false;warned=false;G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};restock();spawnT=3;sfx.fan();save();refresh();dayLight();toast(`${G.day}. gün · Günaydın usta!`,1800)}}
+function tick(){updTimers();dayTick();dayLight();hud();giftTick();plotTick();patUI();checkAch();if(++saveN>20){saveN=0;save()}
 if(tt>G.mktT){restock();if(modalMode==='market')renderMarket()}
 for(let i=G.deliv.length-1;i>=0;i--)if(tt>=G.deliv[i].end){giveAll(G.deliv[i].items);toast('Tedarikçi geldi: '+Object.entries(G.deliv[i].items).map(([k,n])=>n+' '+MATS[k].ad).join(', '),2000);G.deliv.splice(i,1);refresh();if(modalMode==='market')renderMarket()}
 ST.forEach(s=>{if(s.job&&tt>=s.job.end){s.ready=s.job.r.out;s.job=null;sfx.ready();if(modalMode==='st:'+s.id)openStation(s);else if(view!=='islik')toast(s.ad+': üretim bitti',1400)}});
@@ -850,7 +863,7 @@ function tipStep(extra){const s=K.p.steps[K.si],key=stepKey(s),t=STEPTXT[key];ti
 function nextStep(){K.si++;const s=K.p.steps[K.si];K.st=s;G.step=s.t;tipStep();({trace:bTrace,rhythm:bRhythm,drag:bDrag,hold:bHold,rub:bRub,design:bDesign})[s.t]();
 if(s.t!=='design'){const b=btn('Adımı atla','l',skipStep);b.style.cssText='min-height:34px;font-size:13px;padding:2px 10px;opacity:.85';ui.act.appendChild(b)}}
 function skipStep(){const t=G.step;if(!t||t==='design')return;K.skips++;K.skipping=true;
-if(t==='trace'){K.covP=0;eTrace()}else{if(t==='rhythm'){if(K.dot)K.dot.live=false;K.dot=null}else if(t==='drag'&&K.drag){K.work.remove(K.drag.obj);K.drag=null}else if(t==='hold'){K.holding=false;if(K.plate)K.work.remove(K.plate)}else if(t==='rub'){K.cells=null;K.rubbing=false}stepDone(0)}}
+if(t==='trace'){K.covP=0;eTrace()}else{if(t==='rhythm'){if(K.dot)K.dot.live=false;K.dot=null}else if(t==='drag'&&K.drag){K.work.remove(K.drag.obj);K.drag=null}else if(t==='hold'){K.holding=false;if(K.press){K.work.remove(K.press);K.press=null}}else if(t==='rub'){K.cells=null;K.rubbing=false}stepDone(0)}}
 const grade=s=>s>0.85?'Mükemmel!':s>0.6?'İyi!':s>0.35?'Fena değil':'Biraz özensiz';
 function stepDone(s,msg){if(K.skipping){K.skipping=false;s=0;msg='Adım atlandı'}else if(s>0.6)sfx.good();K.scores.push(s);K.names.push(K.st.ad||STEPTXT[stepKey(K.st)][0]);G.step=null;actions([]);toast(msg||grade(s),800);setTimeout(nextStep,850)}
 function bTrace(){const sh=K.p.shape(),pts=sh.getPoints(40);let x0=9,x1=-9,y0=9,y1=-9;pts.forEach(p=>{x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y)});
@@ -863,26 +876,32 @@ const b=ui.act.querySelector('button');if(b)b.disabled=c<0.5;if(c>=0.94)eTrace()
 function eTrace(){if(G.step!=='trace')return;const ad=K.devN?K.dev/K.devN:0.1,s=clamp(K.covP,0,1)*clamp(1-(ad-0.01)/0.05,0.2,1);
 K.work.remove(K.sheet);K.strokes=[];K.path=null;K.piece=flat(K.p.shape(),K.p.wood?0.03:0.012,K.p.sheet);K.piece.position.copy(BC);K.work.add(K.piece);
 tween(0.35,k=>K.piece.position.y=Y+Math.sin(k*Math.PI)*0.05);stepDone(s,s>0.8?'Temiz kesim!':null)}
+function puff(c,n,col){for(let i=0;i<n;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(0.016,5,4),new THREE.MeshBasicMaterial({color:col||'#efe4c8',transparent:true,opacity:0.85}));const a=Math.random()*Math.PI*2,r=0.12+Math.random()*0.18,w=K.work;m.position.copy(c);w.add(m);
+tween(0.45,k=>{m.position.set(c.x+Math.cos(a)*r*k,c.y+0.06*Math.sin(k*Math.PI),c.z+Math.sin(a)*r*k);m.material.opacity=0.85*(1-k);m.scale.setScalar(1+k*1.2)},()=>{w.remove(m);m.geometry.dispose();m.material.dispose()})}}
 function bRhythm(){const s=K.st;let P=[];if(s.line)for(let i=0;i<s.n;i++)P.push(V(BC.x,K.top+0.002,BC.z-0.32+i*0.05));else P=shapePts(K.p.shape(),s.n,BC,K.top-Y+0.002,s.sc||0.86);
-K.rp=P;K.ri=-1;K.rs=[];K.prev=null;setTimeout(nextDot,400)}
+K.rp=P;K.ri=-1;K.rs=[];K.prev=null;const gk=s.k;K.ghost=P.map(q=>{const m=new THREE.Mesh(gk==='yapistir'?Cy(0.014,0.014,0.003,10):Cy(0.006,0.006,0.003,8),new THREE.MeshBasicMaterial({color:gk==='yapistir'?'#fff6d8':'#2a1c12',transparent:true,opacity:0.35}));m.position.copy(q);K.work.add(m);return m});setTimeout(nextDot,400)}
 const ringScale=t=>3.2-t*2.4;
 function nextDot(){if(G.step!=='rhythm')return;K.ri++;if(K.ri>=K.rp.length){K.dot=null;stepDone(K.rs.reduce((a,b)=>a+b,0)/K.rs.length);return}
 const k=K.st.k,m=k==='yapistir'?mesh(Cy(0.016,0.016,0.006,10),M('#f4ecd0')):mesh(Cy(k==='delik'?0.012:0.007,k==='delik'?0.012:0.007,0.004,8),M('#1d1612'));
-m.position.copy(K.rp[K.ri]);K.work.add(m);K.dot={m,t:0,live:true};tipStep(`${STEPTXT[k][1]} · ${K.ri+1}/${K.rp.length}`)}
+if(K.ghost&&K.ghost[K.ri])K.ghost[K.ri].visible=false;m.position.copy(K.rp[K.ri]);K.work.add(m);K.dot={m,t:0,live:true};tipStep(`${STEPTXT[k][1]} · ${K.ri+1}/${K.rp.length}`)}
 function rhythmTap(){const D=K.dot;if(!D||!D.live)return;D.live=false;const e=Math.abs(ringScale(D.t)-1),s=clamp(1-e/1.3,0,1);K.rs.push(s);stab(D.m.position,K.st.k);dotDone(D,s)}
-function dotDone(D,s){if(s>0)({dik:sfx.stitch,yapistir:sfx.glue,delik:sfx.punch})[K.st.k]();else sfx.bad();if(K.st.k==='yapistir'){D.m.scale.set(1.5,1,1.5);D.m.material.color.set(s>0.6?'#ffe08a':'#d8c9a0')}
-if(K.st.k==='dik'&&s>0&&K.prev)lineSeg(K.work,K.prev,D.m.position,'#f4ecd8',0.007);if(K.st.k==='dik')K.prev=D.m.position.clone();
+function dotDone(D,s){if(s>0)({dik:sfx.stitch,yapistir:sfx.glue,delik:sfx.punch})[K.st.k]();else sfx.bad();if(K.st.k==='yapistir'){const gm=D.m;gm.material.color.set(s>0.6?'#ffe9a8':'#d8c9a0');tween(0.25,k=>gm.scale.set(1+0.9*k,1+k,1+0.9*k))}
+if(K.st.k==='delik'&&s>0){const hm=D.m;tween(0.15,k=>hm.scale.set(1+0.4*k,1,1+0.4*k));puff(hm.position,4,'#c9a37a')}
+if(K.st.k==='dik'&&s>0&&K.prev){const ln=lineSeg(K.work,K.prev,D.m.position,'#efe0b8',0.009),pz=ln.position.clone(),a=K.prev.clone();ln.scale.z=0.01;tween(0.16,k=>{ln.scale.z=Math.max(0.01,k);ln.position.lerpVectors(a,pz,k)})}if(K.st.k==='dik')K.prev=D.m.position.clone();
 toast(s>0.8?'Tam zamanında!':s>0.4?'İyi':s>0?'Erken':'Kaçtı',450);setTimeout(nextDot,280)}
 function bDrag(){const w=K.st.what;let obj,tgt,out;
 if(w==='taban'){obj=flat(soleShape(1),0.03,'#2a221d');tgt=V(BC.x,K.top+0.005,BC.z);out=soleShape(1);obj.position.set(-0.47,K.top+0.02,1.95)}
 else{obj=buckle();tgt=V(BC.x,K.top+0.004,BC.z+(K.p.id==='kemer'?0.3:-0.2));out=rrect(0.12,0.09,0.015);obj.position.set(0.47,K.top+0.02,1.98)}
 K.work.add(obj);K.drag={obj,tgt,outline:shapePts(out,48,tgt,0.004)}}
 function eDrag(){sfx.drop();const D=K.drag,d=Math.hypot(D.obj.position.x-D.tgt.x,D.obj.position.z-D.tgt.z),s=clamp(1-d/(K.st.what==='taban'?0.16:0.1),0,1);
-const fr=D.obj.position.clone();tween(0.25,k=>D.obj.position.lerpVectors(fr,D.tgt,k));K.drag=null;stepDone(s,s>0.85?'Tam yerinde!':null)}
-function bHold(){K.hv=0;K.holding=false;K.plate=put(K.work,B(0.52,0.035,0.66),M('#6a6a70',0.4),BC.x,Y+0.26,BC.z);
+const fr=D.obj.position.clone(),ob=D.obj,tg=D.tgt.clone();tween(0.22,k=>{ob.position.lerpVectors(fr,tg,k);ob.position.y=tg.y+0.08*Math.sin(k*Math.PI)},()=>{puff(tg,8);tween(0.18,k=>ob.scale.set(1+0.08*Math.sin(k*Math.PI),1-0.25*Math.sin(k*Math.PI),1+0.08*Math.sin(k*Math.PI)))});K.drag=null;stepDone(s,s>0.85?'Tam yerinde!':null)}
+function bHold(){K.hv=0;K.holding=false;const P=new THREE.Group(),wd=M('#5a3519');[-0.44,0.44].forEach(x=>{put(P,B(0.06,0.74,0.06),wd,x,0.37,0);put(P,B(0.13,0.04,0.13),M('#4a2c14'),x,0.02,0)});put(P,B(1.0,0.07,0.1),wd,0,0.75,0);
+const sc=put(P,Cy(0.017,0.017,0.9,8),M('#9a9aa0',0.35),0,0,0),wh=new THREE.Group(),tr=put(wh,new THREE.TorusGeometry(0.1,0.012,6,20),M('#8a5530'),0,0,0);tr.rotation.x=Math.PI/2;for(let i=0;i<2;i++)put(wh,B(0.22,0.014,0.014),M('#8a5530'),0,0,0).rotation.y=i*Math.PI/2;P.add(wh);
+const pl=new THREE.Group();put(pl,B(0.62,0.04,0.72),M('#8a5530'),0,0,0);put(pl,B(0.64,0.012,0.74),M('#7a7a80',0.35),0,0.026,0);P.add(pl);P.userData={sc,wh,pl};P.position.set(BC.x,K.top+0.6,BC.z);K.press=P;K.work.add(P);pressPos(0);tween(0.35,k=>P.position.y=K.top+0.6*(1-k));
 ui.act.innerHTML='<div class="gauge"><div class="gz"></div><div class="gf" id="gf"></div></div>';const b=btn('Basılı tut','g');b.style.minWidth='60%';
 b.onpointerdown=e=>{e.preventDefault();K.holding=true};b.onpointerup=b.onpointerleave=b.onpointercancel=()=>{if(K.holding)eHold()};b.oncontextmenu=e=>e.preventDefault();ui.act.appendChild(b)}
-function eHold(){if(G.step!=='hold')return;sfx.thud();K.holding=false;const v=K.hv,s=v>=100?0.15:clamp(1-Math.abs(v-74)/38,0,1);const pl=K.plate,y0=pl.position.y;tween(0.3,k=>pl.position.y=y0+k*0.3,()=>K.work.remove(pl));
+function pressPos(v){const P=K&&K.press;if(!P)return;const k=Math.min(1,v/100),py=0.38-0.34*k,U=P.userData;U.pl.position.y=py;U.sc.position.y=py+0.47;U.wh.position.y=py+0.92;U.wh.rotation.y=k*9;if(K.piece)K.piece.scale.z=1-0.35*Math.max(0,k-0.8)/0.2}
+function eHold(){if(G.step!=='hold')return;sfx.thud();K.holding=false;const v=K.hv,s=v>=100?0.15:clamp(1-Math.abs(v-74)/38,0,1),P=K.press,w=K.work;if(P){puff(V(BC.x-0.3,K.top,BC.z),5);puff(V(BC.x+0.3,K.top,BC.z),5);K.press=null;const tmpK={press:P,piece:K.piece};tween(0.3,k=>{const U=P.userData,kk=Math.min(1,v/100)*(1-k),py=0.38-0.34*kk;U.pl.position.y=py;U.sc.position.y=py+0.47;U.wh.position.y=py+0.92;U.wh.rotation.y=kk*9;if(tmpK.piece)tmpK.piece.scale.z=1},()=>tween(0.3,k=>P.position.y=K.top+0.7*k,()=>w.remove(P)))}
 stepDone(s,v>=100?'Fazla bastın!':v<50?'Az bastın':null)}
 function bRub(){const sh=K.p.shape(),poly=sh.getPoints(40);let x0=9,x1=-9,y0=9,y1=-9;poly.forEach(p=>{x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y)});
 const cells=[];for(let x=x0;x<=x1;x+=0.03)for(let y=y0;y<=y1;y+=0.03)if(pip(x,y,poly))cells.push({p:V(BC.x+x,K.top,BC.z-y),on:false});
@@ -891,20 +910,22 @@ function pip(x,y,p){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){if(((
 function rubAt(p){if(K.rubT0<0)K.rubT0=tt;toolAt(p,({zimpara:'blk',incelt:'kn'})[K.st.k]||'cl');sThr(({zimpara:sfx.sand,incelt:sfx.skive})[K.st.k]||sfx.wax,0.14);K.cells.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.05){c.on=true;K.rubN++}});const cv=K.rubN/K.cells.length;tipStep('Tamamlandı: %'+Math.round(cv*100));if(cv>=0.92)eRub()}
 function eRub(){if(G.step!=='rub')return;K.rubbing=false;const s=clamp(1.2-(tt-K.rubT0)/7,0.4,1),m=K.piece.material;
 const rk=K.st.k;if(rk==='cila'){m.roughness=0.3;m.color.set(shade(K.p.sheet,-0.1));K.cila=true}else if(rk==='parlat')m.roughness=0.35;else if(rk==='zimpara')m.color.set(shade(K.p.sheet,0.1));K.cells=null;stepDone(s)}
-function paintHex(){if(!K.color||!K.p.need.boya)return K.p.sheet;if(K.painted)return K.color.hex;return '#'+new THREE.Color(K.p.sheet).lerp(new THREE.Color(K.color.hex),K.pn/K.pcN).getHexString()}
+function paintHex(){if(!K.color||!K.color.id)return K.p.sheet;if(K.painted)return K.color.hex;return '#'+new THREE.Color(K.p.sheet).lerp(new THREE.Color(K.color.hex),K.pn/K.pcN).getHexString()}
 function mkPaint(){const bb=new THREE.Box3().setFromObject(K.model.g),cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2,rx=(bb.max.x-bb.min.x)/2,rz=(bb.max.z-bb.min.z)/2,c=[];
 for(let x=-rx;x<=rx;x+=0.045)for(let z=-rz;z<=rz;z+=0.045)if((x/rx)**2+(z/rz)**2<=1)c.push({p:V(cx+x,Y+0.12,cz+z),on:false});K.pc=c;K.ptop=bb.max.y+0.005;TL.br.userData.tip.material.color.set(K.color.hex);K.pcN=c.length||1;K.pn=0}
 function paintAt(p){sThr(sfx.brush,0.3);toolAt(p,'br',K.ptop);K.pc.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.085){c.on=true;K.pn++}});const cv=K.pn/K.pcN;K.model.um.color.set(paintHex());tipStep('Boyandı: %'+Math.round(cv*100));
-if(cv>=0.9){K.pc=null;K.painted=true;K.rubbing=false;sfx.good();build(false);renderDesign();tipStep('Boya tamam · Bitir\'e dokun')}}
-function bDesign(){K.work.clear();K.painted=false;K.pc=null;K.pn=0;K.pcN=1;K.color=K.p.need.boya?null:{hex:K.p.sheet};K.style=K.p.styles?(G.order.style||K.p.styles[0]):null;build(true);renderDesign()}
-function build(pop){if(K.model)K.work.remove(K.model.g);K.model=K.p.build(paintHex(),K.style,K);K.model.g.position.copy(BC);K.model.g.scale.setScalar(1.6);K.work.add(K.model.g);
+if(cv>=0.9){K.pc=null;K.painted=true;K.rubbing=false;sfx.good();build(false);renderDesign();tipStep('Boya tamam · Sürükleyip çevir, sonra Bitir')}}
+function bDesign(){K.work.clear();K.painted=false;K.pc=null;K.pn=0;K.pcN=1;K.nat={hex:K.p.sheet,ad:'Doğal'};K.color=K.p.need.boya?null:K.nat;K.rx=K.ry=0;K.style=K.p.styles?(G.order.style||K.p.styles[0]):null;build(true);renderDesign()}
+function build(pop){if(K.model)K.work.remove(K.model.g);K.model=K.p.build(paintHex(),K.style,K);K.model.g.position.copy(BC);K.model.g.scale.setScalar(1.6);K.work.add(K.model.g);applySpin();
 if(pop){const g=K.model.g;g.scale.set(1.6,0.08,1.6);tween(0.45,k=>g.scale.set(1.6,0.08+1.52*k,1.6))}}
-function renderDesign(){const L=[];if(K.p.need.boya)PAINTS.filter(p=>G.inv['boya_'+p.id]>0).forEach(p=>{const b=btn('','col'+(K.color===p?' sel':''),()=>{if(K.color===p)return;K.color=p;K.painted=false;K.pn=0;K.pcN=1;sfx.drop();build(false);mkPaint();renderDesign();tipStep('Parmağınla boyayı ürüne sür')});b.style.background=p.hex;b.setAttribute('aria-label',p.ad);L.push(b)});
+function applySpin(){if(!K||!K.model)return;const g=K.model.g,on=Math.abs(K.rx||0)>0.03||Math.abs(K.ry||0)>0.03;g.rotation.set(K.rx||0,K.ry||0,0);g.position.y=BC.y+(on?0.2:0)}
+function renderDesign(){const L=[];if(K.p.wood)L.push(btn('Doğal','l'+(K.color===K.nat?' sel':''),()=>{K.color=K.nat;K.pc=null;K.painted=false;build(false);renderDesign()}));
+if(K.p.need.boya||K.p.wood)PAINTS.filter(p=>G.inv['boya_'+p.id]>0).forEach(p=>{const b=btn('','col'+(K.color===p?' sel':''),()=>{if(K.color===p)return;K.color=p;K.painted=false;K.pn=0;K.pcN=1;K.rx=K.ry=0;sfx.drop();build(false);mkPaint();renderDesign();tipStep('Parmağınla boyayı ürüne sür')});b.style.background=p.hex;b.setAttribute('aria-label',p.ad);L.push(b)});
 if(K.p.styles)K.p.styles.forEach(st=>L.push(btn(st,'l'+(K.style===st?' sel':''),()=>{K.style=st;build(false);renderDesign()})));
-L.push(btn('Bitir','g',finish,!K.color||(!!K.p.need.boya&&!K.painted)));actions(L);tipStep(G.order.free?'Serbest tasarım · rengi ve modeli sen seç':G.order.color||G.order.style?`Sipariş: ${[G.order.color&&G.order.color.ad,G.order.style].filter(Boolean).join(' · ')}`:'Doğal ahşap · cilalı')}
+L.push(btn('Bitir','g',finish,!K.color||(!!K.color.id&&!K.painted)));actions(L);tipStep((G.order.free?'Serbest tasarım':G.order.color||G.order.style?`Sipariş: ${[G.order.color&&G.order.color.ad,G.order.style].filter(Boolean).join(' · ')}`:K.p.wood?'İster boya, ister doğal bırak':'Tasarım')+' · Çevirmek için sürükle')}
 const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
-function finish(){if(!K.color||(K.p.need.boya&&!K.painted))return;const o=G.order;if(K.p.need.boya)G.inv['boya_'+K.color.id]--;G.step=null;actions([]);tip(null);
-if(o.free){const work=avg(K.scores),stars=clamp(Math.round(work*5)-(K.skips?1:0),1,5),it={id:++G.sid,pid:K.p.id,col:K.p.need.boya?K.color.id:null,style:K.style,stars};it.price=sugg(it);K.res={item:it};
+function finish(){if(!K.color||(K.color.id&&!K.painted))return;const o=G.order;if(K.color.id)G.inv['boya_'+K.color.id]--;K.rx=K.ry=0;applySpin();G.step=null;actions([]);tip(null);
+if(o.free){const work=avg(K.scores),stars=clamp(Math.round(work*5)-(K.skips?1:0),1,5),it={id:++G.sid,pid:K.p.id,col:K.color.id||null,style:K.style,stars};it.price=sugg(it);K.res={item:it};
 Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';moveCam(VIEWS.home,1.1,()=>{sway=1;showFree()});tween(1.1,k=>{g.position.lerpVectors(fr,V(2.3,1.6,-1.0),k);g.scale.setScalar(1.6-0.8*k)});return}
 const work=avg(K.scores),colorOk=!o.color||K.color.id===o.color.id,styleOk=!o.style||K.style===o.style,late=K.late,B0=o.budget,L=[];let pay=B0;
 const cut=(t,f)=>{const v=Math.round(B0*f);if(v>0){L.push([t,-v]);pay-=v}};
@@ -962,6 +983,7 @@ if(G.phase==='craft'&&K){const st=G.step;
  else if(st==='rhythm')rhythmTap();
  else if(st==='rub'&&K.cells){const p=hit(e,K.top);if(p){K.rubbing=true;rubAt(p);canvas.setPointerCapture(e.pointerId)}}
  else if(st==='design'&&K.pc){const p=hit(e,Y+0.12);if(p){K.rubbing=true;paintAt(p);canvas.setPointerCapture(e.pointerId)}}
+ else if(st==='design'&&K.model){K.spin={x:e.clientX,y:e.clientY,ry:K.ry||0,rx:K.rx||0};canvas.setPointerCapture(e.pointerId)}
  return}
 if(!(zoomable()||view==='vitrin')||switching)return;
 PT.set(e.pointerId,{x:e.clientX,y:e.clientY});try{canvas.setPointerCapture(e.pointerId)}catch(_){}
@@ -977,8 +999,9 @@ if(!K)return;
 if(dragging&&G.step==='drag'&&K.drag){const p=hit(e,K.top);if(p){K.drag.obj.position.x=clamp(p.x+dragging.dx,-0.6,0.6);K.drag.obj.position.z=clamp(p.z+dragging.dz,1.2,2.12)}}
 else if(drawing&&G.step==='trace'&&K.path){const p=hit(e,K.top);if(p){const st=K.strokes[K.strokes.length-1],l=st[st.length-1];if(!l||Math.hypot(l.x-p.x,l.z-p.z)>0.006)cutPoint(p)}}
 else if(K.rubbing&&G.step==='rub'&&K.cells){const p=hit(e,K.top);if(p)rubAt(p)}
-else if(K.rubbing&&G.step==='design'&&K.pc){const p=hit(e,Y+0.12);if(p)paintAt(p)}});
-const up=e=>{toolUp();if(PT.has(e.pointerId)){PT.delete(e.pointerId);if(PT.size<2)pinch=null;if(PT.size===0){if(tap&&!tap.moved&&e.type==='pointerup')worldTap(e);tap=null}return}
+else if(K.rubbing&&G.step==='design'&&K.pc){const p=hit(e,Y+0.12);if(p)paintAt(p)}
+else if(K.spin&&G.step==='design'){K.ry=K.spin.ry+(e.clientX-K.spin.x)*0.012;K.rx=clamp(K.spin.rx+(e.clientY-K.spin.y)*0.008,-0.9,0.7);applySpin()}});
+const up=e=>{toolUp();if(K)K.spin=null;if(PT.has(e.pointerId)){PT.delete(e.pointerId);if(PT.size<2)pinch=null;if(PT.size===0){if(tap&&!tap.moved&&e.type==='pointerup')worldTap(e);tap=null}return}
 if(dragging&&G.step==='drag'&&K&&K.drag){dragging=null;eDrag()}dragging=null;drawing=false;if(K)K.rubbing=false};
 canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
 
@@ -1004,7 +1027,8 @@ const clock=new THREE.Clock(),look=V(0,0,0);
 function loop(){const dt=Math.min(clock.getDelta(),0.05);tt+=dt;
 for(let i=tweens.length-1;i>=0;i--){const w=tweens[i];w.t+=dt;const k=Math.min(1,w.t/w.dur);w.fn(ease(k));if(k>=1){tweens.splice(i,1);w.done&&w.done()}}
 if(K&&G.step==='rhythm'&&K.dot&&K.dot.live){K.dot.t+=dt;if(ringScale(K.dot.t)<0.45){K.dot.live=false;K.rs.push(0);dotDone(K.dot,0)}}
-if(K&&G.step==='hold'&&K.holding){K.hv+=dt*60;const f=$('gf');if(f)f.style.width=Math.min(100,K.hv)+'%';if(K.plate)K.plate.position.y=Y+0.26-Math.min(1,K.hv/100)*0.2;if(K.hv>=100)eHold()}
+if(K&&G.step==='hold'&&K.holding){K.hv+=dt*60;const f=$('gf');if(f)f.style.width=Math.min(100,K.hv)+'%';pressPos(K.hv);if(K.hv>=100)eHold()}
+if(G.started&&!G.night&&!document.hidden)G.tm+=dt*1.5;
 secT+=dt;if(secT>0.25){secT=0;tick();stationLabels()}
 const a=pg.attributes.position;for(let i=0;i<DN;i++){a.setY(i,a.getY(i)+Math.sin(tt*0.6+i)*0.0015);a.setX(i,a.getX(i)+Math.cos(tt*0.4+i*1.7)*0.0012)}a.needsUpdate=true;
 custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';c.head.rotation.y=Math.sin(tt*0.9+i)*0.25;c.g.position.y=c.walking?Math.abs(Math.sin(tt*9))*0.05:Math.abs(Math.sin(tt*1.6+i))*0.012});
@@ -1013,7 +1037,7 @@ AWN.visible=camCur.p.y<2.05;toolTick();if(lamp.visible)lamp.intensity=1.35+Math.
 ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1;cam.position.copy(camCur.p).sub(camCur.l).divideScalar(zz).add(camCur.l);
 cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.9)*0.01*sway;cam.position.z+=ZM.pz;look.copy(camCur.l);look.x+=ZM.px;look.z+=ZM.pz;cam.lookAt(look);
 R.render(S,cam);drawFx();drawLabels();requestAnimationFrame(loop)}
-load();vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
+load();if(!G.ds)G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
 setLights('home');hud();refresh();loop();
 const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.textContent=G.mus?'Müzik açık':'Müzik kapalı';spS.textContent=G.snd?'Ses açık':'Ses kapalı';$('musB').classList.toggle('off',!G.mus)};spSync();
 spM.onclick=()=>{G.mus=!G.mus;spSync()};spS.onclick=()=>{G.snd=!G.snd;spSync()};
