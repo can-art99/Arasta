@@ -73,7 +73,7 @@ button.pill.off{opacity:.5;text-decoration:line-through}
 .row .n{flex:1;font-size:15px;line-height:1.2;min-width:0}.row .n small{display:block;opacity:.7;font-size:12px}
 .row .btn{padding:3px 11px;min-height:40px;font-size:14px;white-space:nowrap}
 .io{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:600}
-.io img{width:34px;height:34px;border-radius:8px;background:#fffaf0;border:1.5px solid #4a342340}
+.io img{width:30px;height:30px;border-radius:8px;background:#fffaf0;border:1.5px solid #4a342340}
 .arrow{font-size:18px;opacity:.6}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:6px}
 .cell{background:#fffaf0;border:1.5px solid #4a342340;border-radius:12px;padding:5px 3px;text-align:center;font-size:11px;line-height:1.15}
@@ -845,7 +845,8 @@ function openStation(s){if(G.phase==='craft'||G.phase==='result')return;const lk
 if(lk)h+=`<p>Kilitli · Kademe ${s.tier}'de açılır (itibar ${TIERS[s.tier]})</p>`;
 else if(s.ready)h+=`<p>Hazır: ${io(s.ready)}</p><div style="text-align:center;margin:6px"><button class="btn g" id="col">Topla</button></div>`;
 else if(s.job)h+=`<p>Çalışıyor: ${io(s.job.r.out)} · <b id="stT"></b></p>`;else h+='<p>Bir tarif seç</p>';
-h+=s.rec.map((r,i)=>{const rl=r.tier&&G.tier<r.tier;return `<div class="row">${io(r.in)}<span class="arrow">→</span>${io(r.out)}<div class="n"><small>${r.s} sn${rl?' · Kademe '+r.tier:''}</small></div><button class="btn" data-r="${i}" ${lk||rl||!hasAll(r.in)||s.job||s.ready?'disabled':''}>Başlat</button></div>`}).join('');
+h+=s.rec.map((r,i)=>{const rl=r.tier&&G.tier<r.tier;const nm=o=>Object.entries(o).map(([k,n])=>n+' '+MATS[k].ad.toLowerCase()).join(' + '),miss=Object.entries(r.in).filter(([k,n])=>G.inv[k]<n);
+return `<div class="row">${io(r.in)}<span class="arrow">→</span>${io(r.out)}<div class="n">${MATS[Object.keys(r.out)[0]].ad}<small>${nm(r.in)} · ${r.s} sn${rl?' · Kademe '+r.tier:''}</small><small class="${miss.length?'no':'ok'}">Elinde: ${Object.keys(r.in).map(k=>G.inv[k]+' '+MATS[k].ad.toLowerCase()).join(', ')}</small></div><button class="btn" data-r="${i}" ${lk||rl||!hasAll(r.in)||s.job||s.ready?'disabled':''}>Başlat</button></div>`}).join('');
 openSheet('st:'+s.id,h+closeBtn);wire();updTimers();
 const c=$('col');if(c)c.onclick=()=>{giveAll(s.ready);G.st.proc++;sfx.pick();toast('+ '+Object.entries(s.ready).map(([k,n])=>n+' '+MATS[k].ad).join(', '),1400);s.ready=null;refresh();openStation(s)};
 ui.sheet.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=s.rec[+b.dataset.r];if(!hasAll(r.in)||s.job||s.ready)return;giveAll(r.in,-1);s.job={r,end:tt+r.s};sfx.start();if(s.liq){const pc=PAINTS.find(p=>'boya_'+p.id===Object.keys(r.out)[0]);s.liq.material.color.set(pc?pc.hex:'#e8dcb0')}refresh();openStation(s)})}
