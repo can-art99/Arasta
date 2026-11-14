@@ -91,7 +91,7 @@ button.pill.off{opacity:.5;text-decoration:line-through}
 .lbl{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:var(--cr);color:var(--ink);border:2px solid var(--ln);box-shadow:0 2px 0 var(--ln);border-radius:10px;padding:3px 8px;font-size:12px;font-weight:600;text-align:center;white-space:nowrap;line-height:1.25}
 .lbl small{display:block;font-size:11px;color:var(--tl)}
 .lbl.lock{opacity:.6}
-.lbl.dn{pointer-events:auto;cursor:pointer;font-size:9px;font-weight:600;padding:1px 4px;white-space:normal;max-width:56px;line-height:1.1;border-width:1.5px;border-radius:6px;box-shadow:0 1px 0 var(--ln)}.lbl.dn b{font-weight:800;color:var(--tl)}
+.lbl.dn{font-size:9px;font-weight:600;padding:1px 4px;white-space:normal;max-width:56px;line-height:1.1;border-width:1.5px;border-radius:6px;box-shadow:0 1px 0 var(--ln)}.lbl.dn b{font-weight:800;color:var(--tl)}
 .lbl.sm,.lbl.stl.sm{font-size:10px;padding:2px 7px;border-width:1.5px;border-radius:8px;box-shadow:0 1px 0 var(--ln);line-height:1.2}.lbl.sm small{font-size:9px}
 .lbl.stl{pointer-events:auto;cursor:pointer;font-size:13px;padding:5px 11px;border-radius:12px}
 .lbl.rdy{background:var(--tl);color:var(--cr);animation:pulse .7s infinite alternate}.lbl.rdy small{color:#d6f0c8}
@@ -762,11 +762,11 @@ add(B(6.6,4.4,0.15),M('#7a5636'),OD,2.2,-3.25);add(B(0.15,4.4,9),M('#6e4a30'),OD
 const GORD=['Ham madde','İşlenmiş','Yardımcı','Tohum'],DEP=[],DROW=[3.45,2.83,2.21,1.59,0.97,0.35];
 const RFA=M('#8a5a34'),RFB=M('#5a3519');DROW.forEach(y=>add(B(4.0,0.06,0.55),RFA,OD,y-0.03,-2.9));[-2.0,2.0].forEach(x=>add(B(0.1,3.9,0.55),RFB,OD+x,1.95,-2.9));
 Object.keys(MATS).sort((a,b)=>GORD.indexOf(MATS[a].g)-GORD.indexOf(MATS[b].g)).forEach((k,i)=>{const x=OD-1.55+(i%6)*0.62,y=DROW[Math.floor(i/6)%6],o=MATS[k].mk();o.scale.setScalar(2);o.position.set(x,y,-2.9);o.visible=false;S.add(o);
-const l=label('depo',V(x,y+0.02,-2.62),'',true);l.el.classList.add('dn');l.off=true;const hb=new THREE.Mesh(new THREE.SphereGeometry(0.13,6,5),HID);hb.position.y=0.08;o.add(hb);const dd={k,o,l,n:-1};l.el.onclick=()=>depoPick(dd);DEP.push(dd)});
+const l=label('depo',V(x,y+0.02,-2.62),'',true);l.el.classList.add('dn');l.off=true;const hb=new THREE.Mesh(new THREE.SphereGeometry(0.19,6,5),HID);hb.position.y=0.08;o.add(hb);const dd={k,o,l,n:-1};DEP.push(dd)});
 place('rug',{x:OD,y:0.03,z:0.3,w:2.6,ry:Math.PI/2});place('wb_kenney',{x:OD+1.45,z:-1.55,w:0.9,ry:-0.5});const DHIT=new THREE.Mesh(B(4.4,4,0.7),HID);DHIT.position.set(OD,1.95,-2.9);S.add(DHIT);
 add(B(0.75,0.65,0.75),M('#8b5a2b'),OD-2.6,0.33,-1.6);add(B(0.55,0.5,0.55),M('#7a4a2a'),OD-2.6,0.9,-1.65).rotation.y=0.3;add(Cy(0.34,0.3,0.8,10),M('#8a5530'),OD+2.6,0.4,-1.7);{const sk=add(new THREE.SphereGeometry(0.34,8,6),M('#cdbb94'),OD+2.55,0.28,-0.7);sk.scale.y=0.8}
 /* ---------- depo/vitrin kapasite ve düzen ---------- */
-const CAPS={d:{ad:'Malzeme deposu',v:[300,450,600,800],c:[200,400,700]},s:{ad:'Depo ürün rafı',v:[2,4,6],c:[100,250]},v:{ad:'Vitrin',v:[3,6,9],c:[150,300]}};
+const CAPS={d:{ad:'Malzeme deposu',v:[100,150,250,400],c:[150,300,600]},s:{ad:'Depo ürün rafı',v:[2,4,6],c:[100,250]},v:{ad:'Vitrin',v:[3,6,9],c:[150,300]}};
 function capLv(k){if(!G.cap)G.cap={d:0,s:0,v:0};return G.cap[k]||0}
 const OWNER_H='4be73331840233a38bc7128e8f5f66203778469ca1f25f3d2a46de116ba045fc';const capOf=k=>G.owner?99999:CAPS[k].v[capLv(k)],invTotal=()=>Object.values(G.inv).reduce((a,b)=>a+(b>0?b:0),0);
 function depoFull(n){if(invTotal()+(n||1)>capOf('d')){toast(`Depo dolu (${invTotal()}/${capOf('d')})<br>Depoda genişlet ya da malzeme kullan`,1900);sfx.bad&&sfx.bad();return true}return false}
@@ -776,19 +776,21 @@ function toStore(it){if((G.store||[]).length>=stoCap()){toast('Depo ürün rafı
 function toVit(it){if(G.stock.length>=vitCap()){toast('Vitrin dolu',1300);return false}G.store=G.store.filter(x=>x!==it);G.stock.push(it);vitrinSync();storeSync();save();refresh();return true}
 const DSTO=new THREE.Group();S.add(DSTO);
 function storeSync(){DSTO.clear();(G.store||[]).slice(0,6).forEach((it,i)=>{const p=pr(it),m=p.build(it.col?paintOf(it.col).hex:p.sheet,it.style,{cila:true});m.g.scale.setScalar(0.95);m.g.position.set(OD-1.55+i*0.62,DROW[5]+0.01,-2.85);m.g.rotation.y=0.4;m.g.userData.sid=it.id;DSTO.add(m.g)})}
-let dSel=null;
-function depoTap(){const vis=DEP.filter(d=>d.o.visible).map(d=>d.o),h=ray.intersectObjects(vis,true)[0];
- if(h){let o=h.object;while(o&&!vis.includes(o))o=o.parent;const d=DEP.find(x=>x.o===o);if(d)depoPick(d);return}
+let DRG=null,DRGJ=false;const DPL=new THREE.Plane(new THREE.Vector3(0,0,1),2.75),DPT=new THREE.Vector3();
+function slotXY(i){return [OD-1.55+(i%6)*0.62,DROW[Math.floor(i/6)]]}
+function depoTap(){if(DRGJ){DRGJ=false;return}
  const hs=ray.intersectObjects(DSTO.children,true)[0];if(hs){let o=hs.object;while(o&&o.userData.sid==null)o=o.parent;const it=o&&(G.store||[]).find(x=>x.id===o.userData.sid);if(it)storeItem(it);return}
- if(dSel){dSel.l.el.classList.remove('rdy');dSel=null;depoSync(true);return}
  if(ray.intersectObject(DHIT)[0])openDepo()}
 function storeItem(it){openSheet('item',`<h3>${pr(it).ad}</h3><p>${desc(it)} · ${'★'.repeat(it.stars)} · Depoda</p><div class="pk"><button class="btn g" id="tvB">Vitrine koy</button></div>`+closeBtn);wire();$('tvB').onclick=()=>{if(toVit(it)){closeSheet();toast('Vitrine kondu',1100)}}}
-function depoPick(d){if(view!=='depo'||switching)return;
-  if(!dSel){dSel=d;d.l.el.classList.add('rdy');d.o.position.y+=0.08;sfx.tap();toast('Yerini değiştirmek için başka bir malzemeye dokun',1500);return}
-  const a=dSel;a.l.el.classList.remove('rdy');dSel=null;if(a===d){depoSync(true);return}
-  if(!G.dOrd)G.dOrd=DEP.map(x=>x.k);const ia=G.dOrd.indexOf(a.k),ib=G.dOrd.indexOf(d.k);G.dOrd[ia]=d.k;G.dOrd[ib]=a.k;sfx.drop();depoSync(true);save()}
-
-function depoSync(force){let ch=!!force;DEP.forEach(d=>{const n=G.inv[d.k];if(n!==d.n){d.n=n;ch=true;d.l.el.innerHTML=`${MATS[d.k].ad} <b>${n}</b>`}});if(!ch)return;let j=0;const ord=G.dOrd?DEP.slice().sort((a,b)=>{const ia=G.dOrd.indexOf(a.k),ib=G.dOrd.indexOf(b.k);return (ia<0?999:ia)-(ib<0?999:ib)}):DEP;ord.forEach(d=>{const on=d.n>0&&j<30;d.o.visible=on;d.l.off=!on;if(on){const x=OD-1.55+(j%6)*0.62,y=DROW[Math.floor(j/6)];d.o.position.set(x,y,-2.9);d.l.pos.set(x,y+0.02,-2.62);j++}})}
+addEventListener('pointerdown',e=>{if(view!=='depo'||switching||e.target!==canvas||G.phase==='craft')return;setRay(e);const vis=DEP.filter(d=>d.o.visible).map(d=>d.o),h=ray.intersectObjects(vis,true)[0];if(!h)return;let o=h.object;while(o&&!vis.includes(o))o=o.parent;const d=DEP.find(x=>x.o===o);if(!d)return;
+ e.stopImmediatePropagation();DRG={d,id:e.pointerId,x0:e.clientX,y0:e.clientY,mv:false};DRGJ=true;d.l.el.classList.add('rdy');sfx.tap()},true);
+addEventListener('pointermove',e=>{if(!DRG||e.pointerId!==DRG.id)return;e.stopImmediatePropagation();if(Math.hypot(e.clientX-DRG.x0,e.clientY-DRG.y0)>6)DRG.mv=true;setRay(e);if(ray.ray.intersectPlane(DPL,DPT)){const o=DRG.d.o;o.position.set(clamp(DPT.x,OD-1.9,OD+1.9),clamp(DPT.y-0.1,0.3,3.5),-2.72);DRG.d.l.pos.set(o.position.x,o.position.y+0.02,-2.5)}},true);
+function dragEnd(e){if(!DRG||(e&&e.pointerId!==DRG.id))return;e&&e.stopImmediatePropagation();const d=DRG.d;d.l.el.classList.remove('rdy');const mv=DRG.mv;DRG=null;setTimeout(()=>DRGJ=false,50);
+ if(!mv){toast('Malzemeyi tutup istediğin rafa sürükle',1400);depoSync(true);return}
+ const px=d.o.position.x,py=d.o.position.y;let bi=0,bd=1e9;for(let i=0;i<30;i++){const [x,y]=slotXY(i),dd=Math.hypot(x-px,(y-py)*1.2);if(dd<bd){bd=dd;bi=i}}
+ const SL=G.dSlot||(G.dSlot={}),old=SL[d.k],other=Object.keys(SL).find(k=>SL[k]===bi&&k!==d.k);if(other!=null)SL[other]=old;SL[d.k]=bi;sfx.drop();depoSync(true);save()}
+addEventListener('pointerup',dragEnd,true);addEventListener('pointercancel',dragEnd,true);
+function depoSync(force){let ch=!!force;DEP.forEach(d=>{const n=G.inv[d.k];if(n!==d.n){d.n=n;ch=true;d.l.el.innerHTML=`${MATS[d.k].ad} <b>${n}</b>`}});if(!ch)return;if(!G.dSlot)G.dSlot={};const SL=G.dSlot,used={};DEP.forEach(d=>{if(d.n>0&&SL[d.k]!=null&&!used[SL[d.k]]&&SL[d.k]<30)used[SL[d.k]]=d.k;else if(!(d.n>0))delete SL[d.k];else delete SL[d.k]});DEP.forEach(d=>{if(d.n>0&&SL[d.k]==null){for(let i=0;i<30;i++)if(!used[i]){used[i]=d.k;SL[d.k]=i;break}}});let j=0;DEP.forEach(d=>{const on=d.n>0&&SL[d.k]!=null;j=on?SL[d.k]:0;d.o.visible=on;d.l.off=!on;if(on){const x=OD-1.55+(j%6)*0.62,y=DROW[Math.floor(j/6)];d.o.position.set(x,y,-2.9);d.l.pos.set(x,y+0.02,-2.62);j++}})}
 
 /* ---------- oyun durumu ---------- */
 const G={gold:180,rep:0,n:1,inv:{},order:null,phase:'idle',step:null,tier:1,first:true,deliv:[],market:[],mktT:0,disc:1,haggled:false};
@@ -841,7 +843,7 @@ const EQ=[{id:'makas',ad:'Makas',e:'✂️',d:'Deri, kumaş ve iplik keser',m:'s
  {id:'igne',ad:'İğne ve biz',e:'🪡',d:'Dikiş ve delik açma'},{id:'tutkalf',ad:'Tutkal fırçası',e:'🖌️',d:'Tutkal ve çamur sürme'},{id:'zimpara',ad:'Zımpara takozu',e:'🧱',d:'Yüzey zımparası'},{id:'cila',ad:'Cila bezi',e:'🧽',d:'Cila, parlatma, şekillendirme'},
  {id:'firca',ad:'Boya fırçası',e:'🎨',d:'Tasarım boyaması'},{id:'pres',ad:'El presi',e:'🗜️',d:'Pres, katlama, ütü, doldurma'},
  {id:'kompresor',ad:'Hava kompresörü',e:'💨',d:'Top ve şişme ürünleri şişirir',buy:[250,20]},{id:'havya',ad:'Havya ve pürmüz',e:'🔥',d:'Cam ve plastiği ısıtıp şekillendirir, lehimler',buy:[300,30],m:'solder'}];
-const EQLV=['','Basit','Usta','Ustalık'],EQDUR=[0,25,40,60],EQREN=[0,15,30,50],EQUP=[0,0,[120,15],[280,40]],EQICON={};
+const EQLV=['','Basit','Usta','Ustalık'],EQDUR=[0,20,35,50],EQREN=[0,15,30,50],EQUP=[0,0,[120,15],[280,40]],EQICON={};
 function eqS(id){if(!G.eq)G.eq={};const e=EQ.find(x=>x.id===id);if(!G.eq[id])G.eq[id]=e.buy?{own:0,lv:1,dur:EQDUR[1]}:{own:1,lv:1,dur:EQDUR[1]};return G.eq[id]}
 const eqOwn=id=>!!eqS(id).own,eqMul=id=>{const s=id&&G.eq&&G.eq[id];return s&&s.own?1+0.25*(s.lv-1):1};
 function stepTool(s,p){if(s.tool)return s.tool;const k=s.k;if(s.t==='trace')return p.cut==='kn'?'bicak':p.hard?'testere':'makas';if(s.t==='rhythm')return k==='yapistir'?'tutkalf':'igne';if(s.t==='rub')return k==='zimpara'?'zimpara':(k==='incelt'||k==='oy')?'bicak':(k==='cila'||k==='parlat'||k==='sekil')?'cila':null;if(s.t==='hold')return 'pres';if(s.t==='design')return K&&K.p.need.boya?'firca':null;return null}
@@ -1175,7 +1177,7 @@ ui.sheet.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const m=G.market
 ui.sheet.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const s=SUPPLY[+b.dataset.s];if(G.gold<s.f)return;G.gold-=s.f;G.deliv.push({items:s.items,end:tt+DELAY});hud();toast('Sipariş verildi',1000);renderMarket()});
 ui.sheet.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const k=b.dataset.t,f=CROPS[k].f;if(G.gold<f||depoFull(1))return;G.gold-=f;G.inv[k]++;sfx.coin();hud();renderMarket()});
 const hb=$('hag');if(hb)hb.onclick=()=>{G.haggled=true;if(Math.random()<0.55){G.disc=0.8;toast('Tüccar: Peki, senin için %20 indirim!',1800)}else toast('Tüccar: Bu fiyatlar son fiyat!',1600);renderMarket()}}
-function openDepo(){if(G.phase==='craft'||G.phase==='result')return;let h='<h3>Depo</h3><p style="font-size:12px;opacity:.8;margin:0 0 6px">Raftaki bir malzemeye dokun, sonra başka birine dokun: yerleri değişir.</p><div class="grp">Kapasite</div>'+['d','s','v'].map(k=>{const L=capLv(k),c=CAPS[k].c[L],n=k==='d'?invTotal():k==='s'?(G.store||[]).length:G.stock.length;return `<div class="row"><div class="n">${CAPS[k].ad}<small>${n}/${G.owner?'∞':capOf(k)}${k==='d'?' malzeme':' ürün'}</small><div class="bar"><i style="width:${Math.min(100,n/capOf(k)*100)}%"></i></div></div>${c!=null&&!G.owner?`<button class="btn ${G.gold>=c?'g':'l'}" data-cu="${k}" ${G.gold<c?'disabled':''}>Genişlet · ${c}</button>`:'<b>En büyük</b>'}</div>`}).join('');if(G.stock.length)h+='<div class="grp">Vitrindeki ürünler</div>'+G.stock.map((it,i)=>`<div class="row"><img class="ic" src="${ICON[it.pid]}" alt=""><div class="n">${pr(it).ad}<small>${desc(it)} · ${'★'.repeat(it.stars)} · ${it.price} altın</small></div><button class="btn l" data-ts="${i}">Depoya al</button></div>`).join('');if((G.store||[]).length)h+='<div class="grp">Depo rafındaki ürünler</div>'+G.store.map((it,i)=>`<div class="row"><img class="ic" src="${ICON[it.pid]}" alt=""><div class="n">${pr(it).ad}<small>${desc(it)} · ${'★'.repeat(it.stars)}</small></div><button class="btn g" data-tv="${i}">Vitrine koy</button></div>`).join('');
+function openDepo(){if(G.phase==='craft'||G.phase==='result')return;let h='<h3>Depo</h3><p style="font-size:12px;opacity:.8;margin:0 0 6px">Raftaki malzemeyi tutup istediğin rafa sürükle.</p><div class="grp">Kapasite</div>'+['d','s','v'].map(k=>{const L=capLv(k),c=CAPS[k].c[L],n=k==='d'?invTotal():k==='s'?(G.store||[]).length:G.stock.length;return `<div class="row"><div class="n">${CAPS[k].ad}<small>${n}/${G.owner?'∞':capOf(k)}${k==='d'?' malzeme':' ürün'}</small><div class="bar"><i style="width:${Math.min(100,n/capOf(k)*100)}%"></i></div></div>${c!=null&&!G.owner?`<button class="btn ${G.gold>=c?'g':'l'}" data-cu="${k}" ${G.gold<c?'disabled':''}>Genişlet · ${c}</button>`:'<b>En büyük</b>'}</div>`}).join('');if(G.stock.length)h+='<div class="grp">Vitrindeki ürünler</div>'+G.stock.map((it,i)=>`<div class="row"><img class="ic" src="${ICON[it.pid]}" alt=""><div class="n">${pr(it).ad}<small>${desc(it)} · ${'★'.repeat(it.stars)} · ${it.price} altın</small></div><button class="btn l" data-ts="${i}">Depoya al</button></div>`).join('');if((G.store||[]).length)h+='<div class="grp">Depo rafındaki ürünler</div>'+G.store.map((it,i)=>`<div class="row"><img class="ic" src="${ICON[it.pid]}" alt=""><div class="n">${pr(it).ad}<small>${desc(it)} · ${'★'.repeat(it.stars)}</small></div><button class="btn g" data-tv="${i}">Vitrine koy</button></div>`).join('');
 ['Ham madde','İşlenmiş','Yardımcı','Tohum'].forEach(gr=>{h+=`<div class="grp">${gr}</div><div class="grid">`+Object.keys(MATS).filter(k=>MATS[k].g===gr).map(k=>`<div class="cell ${G.inv[k]?'':'zero'}">${img(k)}<b>${G.inv[k]}</b>${MATS[k].ad}</div>`).join('')+'</div>'});
 openSheet('depo',h+closeBtn);wire();ui.sheet.querySelectorAll('[data-cu]').forEach(b=>b.onclick=()=>capUp(b.dataset.cu));ui.sheet.querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>{if(toStore(G.stock[+b.dataset.ts]))openDepo()});ui.sheet.querySelectorAll('[data-tv]').forEach(b=>b.onclick=()=>{if(toVit(G.store[+b.dataset.tv]))openDepo()})}
 const UPC={1:150,2:400};
