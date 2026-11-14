@@ -99,6 +99,8 @@ button.pill.off{opacity:.5;text-decoration:line-through}
 @keyframes pulse{to{box-shadow:0 0 0 6px #9bd08a66}}
 #toast{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);background:var(--tl);color:var(--cr);border:2px solid var(--tlD);box-shadow:0 3px 0 var(--tlD);border-radius:14px;padding:10px 18px;font-size:17px;text-align:center;max-width:84%;animation:tin .18s ease-out}
 #fade{position:absolute;inset:0;background:#1f3a33;opacity:0;transition:opacity .19s ease;pointer-events:none}
+.dt #card{transform:translateY(46px)}
+#dtabs{position:absolute;left:10px;top:calc(env(safe-area-inset-top) + 56px);display:flex;gap:4px;background:rgba(30,20,12,.62);padding:4px;border-radius:14px;pointer-events:auto;z-index:2}#dtabs button{border:0;border-radius:10px;padding:8px 12px;font:600 13px/1 inherit;font-family:inherit;color:#f3e6cf;background:transparent}#dtabs button.on{background:#e8c77a;color:#2b1d12}
 #zones{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 78px);display:flex;gap:4px;background:rgba(30,20,12,.62);padding:4px;border-radius:14px;pointer-events:auto}#zones button{border:0;border-radius:10px;padding:8px 12px;font:600 13px/1 inherit;font-family:inherit;color:#f3e6cf;background:transparent}#zones button.on{background:#e8c77a;color:#2b1d12}
 #zoom{position:absolute;right:10px;top:calc(env(safe-area-inset-top) + 54px);display:flex;gap:8px}
 #zoom button{width:44px;height:44px;border-radius:50%;border:2px solid var(--ln);box-shadow:0 3px 0 var(--ln);background:var(--cr);color:var(--ink);font:600 24px/1 Fredoka,system-ui,sans-serif;cursor:pointer}
@@ -121,7 +123,7 @@ input{font:inherit;font-size:16px;width:100%;padding:8px 10px;border:2px solid v
 .flags{position:absolute;left:0;top:76px;width:100%;height:60px;pointer-events:none}
 #splash p{margin:6px 0 22px;font-size:17px;color:var(--tr);font-weight:600}
 #splash .btn{font-size:20px;padding:12px 34px}
-.spo{display:flex;gap:8px;margin-top:16px}
+.spo{display:flex;gap:10px;margin-top:16px}.tg{display:flex;align-items:center;gap:7px;border:2px solid var(--ln);background:#fffaf0;color:var(--ink);border-radius:999px;padding:7px 8px 7px 12px;font:700 15px inherit;font-family:inherit;box-shadow:0 3px 0 var(--ln)}.tg svg{width:18px;height:18px;color:var(--tr)}.tg i{position:relative;width:38px;height:22px;border-radius:11px;background:#cbbba0;transition:background .2s}.tg i:after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .2s}.tg.on i{background:var(--tl)}.tg.on i:after{left:19px}.tg:not(.on){opacity:.8}.tg:not(.on) svg{color:#9a8a70}.tg:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ln)}
 .spo .btn{font-size:14px;padding:4px 14px;min-height:38px}
 @keyframes pin{from{opacity:0;transform:scale(.92)}}
 @keyframes up{from{transform:translateY(35%);opacity:.3}}
@@ -169,6 +171,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--tl);heig
       <button data-v="islik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12l-2 4H6z"/><path d="M16 9h4l-2 3"/><path d="M9 13v4h2v-4"/><path d="M6 21h10l-1-4H7z"/></svg>Atölye</button>
       <button data-v="depo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v10l-9 5-9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v10"/></svg>Depo</button>
     </div>
+    <div id="dtabs" class="hide"><button data-v="depo">Malzemeler</button><button data-v="vitrin">Vitrin</button></div>
     <div id="zones" class="hide"><button data-z="-1">Çiftlik</button><button data-z="0" class="on">Bostan</button><button data-z="1">Orman</button></div>
     <div id="zoom" class="hide"><button id="zi" aria-label="Yakınlaştır">+</button><button id="zo" aria-label="Uzaklaştır">−</button></div>
     <div id="splash"><div class="awn"></div>
@@ -176,7 +179,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--tl);heig
       <div class="spc"><div class="tile"><svg width="62" height="62" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#2f6b5a" stroke-width="3"/><path d="M32 10c6 8 6 14 0 22-6-8-6-14 0-22zM32 54c-6-8-6-14 0-22 6 8 6 14 0 22zM10 32c8-6 14-6 22 0-8 6-14 6-22 0zM54 32c-8 6-14 6-22 0 8-6 14-6 22 0z" fill="#2f6b5a"/><circle cx="32" cy="32" r="5" fill="#b5533c"/></svg></div>
       <h1>Arasta</h1><p>Zanaat çarşısında kendi dükkanın</p><div id="spInfo"></div>
       <button class="btn g" id="startB">Dükkanı aç</button><button class="btn l" id="spNew">Yeni dükkan aç</button><button id="spCode">Kayıt koduyla devam et</button><div id="spCodeBox" class="hide"><input id="spCodeIn" placeholder="XXXX-XXXX-XXXX" maxlength="14" autocomplete="off"><button class="btn g" id="spCodeGo">Yükle</button></div>
-      <div class="spo"><button class="btn l" id="spMus">Müzik açık</button><button class="btn l" id="spSnd">Ses açık</button></div>
+      <div class="spo"><button class="tg" id="spMus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Müzik<i></i></button><button class="tg" id="spSnd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>Ses<i></i></button></div>
       </div><div class="rug"></div></div>
     <div id="modal" class="hide"><div class="sheet" id="sheet"></div></div>
     <div id="toast" class="hide"></div>
@@ -781,7 +784,7 @@ if(view!=='home'){const miss=Object.entries(o.p.need).filter(([k,n])=>k==='boya'
 ui.card.innerHTML=`<h4>${o.p.ad}</h4>${miss.length?'<span class="no">Eksik: '+miss.join(', ')+'</span>':'<span class="ok">Malzemeler tamam</span>'}`;show(ui.card,true);return}
 ui.card.innerHTML=`<h4>Sipariş #${G.n} · ${o.p.ad}</h4>${o.color?o.color.ad:'Doğal'}${o.style?' · '+o.style:''} · ${o.budget} altın${o.hurry?' · <span class="mid">Acele</span>':''}<div style="margin-top:3px">${rows}</div>`;show(ui.card,true)}
 function refresh(){hud();renderCard();show($('zoom'),zoomable());depoSync();{const ob=$('openB');show(ob,view==='home'&&G.phase!=='craft'&&G.phase!=='result');ob.textContent=G.night?'Akşam':G.open?'Açık':'Kapalı';ob.classList.toggle('cl',G.night||!G.open)}const busy=G.phase==='craft'||G.phase==='result';
-document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList.toggle('on',b.dataset.v===view||(b.dataset.v==='home'&&(view==='bench'||view==='vitrin')))});
+document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList.toggle('on',b.dataset.v===view||(b.dataset.v==='home'&&view==='bench')||(b.dataset.v==='depo'&&view==='vitrin'))});
 {const vb=$('vitB');show(vb,view==='home'&&!busy);vb.textContent=`Vitrin ${G.stock.length}/9`}
 if(view==='vitrin'){if(G.phase==='ordering'&&G.order&&G.order.buy)buyActions();else actions([btn('Yeni ürün yap','l',openFree,G.phase!=='idle'),btn('Dükkana dön','g',()=>go('home'))])}
 else if(G.phase==='active'&&view==='home'){const m=matchStock(G.order),L=hasNeed(G.order.p)?[btn('Tezgaha geç','g',startCraft)]:[btn('Malzeme eksik','l',()=>toast('Eksikleri Pazar, Bahçe ve Atölye\'den tamamla',2000))];if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));actions(L)}
@@ -796,7 +799,7 @@ tip(null);if(v==='islik')toast('Bir araca ya da etiketine dokun',1400);else if(v
 switching=false;requestAnimationFrame(()=>ui.fade.style.opacity=0)},190)}
 let ZONE=0;function setZone(z){if(z===ZONE||switching)return;ZONE=z;sfx.tap();document.querySelectorAll('#zones button').forEach(b=>b.classList.toggle('on',+b.dataset.z===z));const T=VIEWS.bahce;T.p.x=T.l.x=OB+z*11;ZM.z=ZM.t=1;ZM.px=ZM.pz=0;moveCam(T,0.7);
 toast(['Çiftlik: süt, tüy, yün, at kılı','Bostan: tarlalar, bitkiler, kovan','Orman: taş, kil, kum, söğüt, boynuz'][z+1],1500)}
-document.querySelectorAll('#zones button').forEach(b=>b.onclick=()=>setZone(+b.dataset.z));
+document.querySelectorAll('#zones button').forEach(b=>b.onclick=()=>setZone(+b.dataset.z));document.querySelectorAll('#dtabs button').forEach(b=>b.onclick=()=>{sfx.tap();go(b.dataset.v)});
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{go(b.dataset.v)});
 
 /* ---------- ses ---------- */
@@ -1270,7 +1273,7 @@ if(G.step==='rhythm'&&K.dot&&K.dot.live){const s=scr(K.dot.m.position),sc=ringSc
 ctx.beginPath();ctx.arc(s[0],s[1],12*sc,0,Math.PI*2);ctx.stroke();ctx.lineWidth=1.5;ctx.strokeStyle='#fff6d8';ctx.beginPath();ctx.arc(s[0],s[1],12,0,Math.PI*2);ctx.stroke()}
 if(G.step==='design'&&K.pc){ctx.fillStyle='rgba(255,250,235,.6)';K.pc.forEach(c=>{if(c.on)return;const s=scr(c.p);ctx.beginPath();ctx.arc(s[0],s[1],2.6,0,7);ctx.fill()})}
 if(G.step==='rub'&&K.cells){const ci=K.st.k==='cila'||K.st.k==='parlat';ctx.fillStyle=ci?'rgba(255,250,235,.55)':'rgba(90,60,30,.55)';K.cells.forEach((c,i)=>{if(c.on)return;const s=scr(c.p);ctx.beginPath();ctx.arc(s[0]+(i%3-1)*2,s[1]+(i%2)*2,ci?3.5:2.5,0,Math.PI*2);ctx.fill()})}}
-var SPL=false;let zOn=false;function drawLabels(){const zv=view==='bahce'&&!switching&&G.phase!=='craft';if(zv!==zOn){zOn=zv;$('zones').classList.toggle('hide',!zv)}for(const o of LBL){if(o.v!==view||switching||o.off||SPL){if(!o.hid){o.el.classList.add('hide');o.hid=true}continue}
+var SPL=false;let zOn=false,dOn=false,dV='';function drawLabels(){const zv=view==='bahce'&&!switching&&G.phase!=='craft';if(zv!==zOn){zOn=zv;$('zones').classList.toggle('hide',!zv)}const dv=(view==='depo'||view==='vitrin')&&!switching&&G.phase!=='craft'&&!SPL;if(dv!==dOn||(dv&&dV!==view)){dOn=dv;dV=view;$('dtabs').classList.toggle('hide',!dv);document.body.classList.toggle('dt',dv);document.querySelectorAll('#dtabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view))}for(const o of LBL){if(o.v!==view||switching||o.off||SPL){if(!o.hid){o.el.classList.add('hide');o.hid=true}continue}
 const s=scr(o.pos);if(s[0]<-70||s[0]>R.domElement.clientWidth+70){if(!o.hid){o.el.classList.add('hide');o.hid=true}continue}if(o.hid){o.el.classList.remove('hide');o.hid=false}o.el.style.transform=`translate(${s[0].toFixed(1)}px,${s[1].toFixed(1)}px) translate(-50%,${o.below?'0':'-100%'})`}}
 function stationLabels(){ST.forEach(s=>{const lk=G.tier<s.tier,st=lk?0:s.ready?3:s.jobs.length?2:1,cap=s.lvl>1?` · ${s.jobs.length}/${s.lvl}`:'';
 const t=lk?`${s.ad}<small>Kademe ${s.tier}</small>`:s.ready?`${s.ad}<small>Hazır! Topla${cap}</small>`:s.jobs.length?`${s.ad}<small>${Math.max(0,Math.ceil(Math.min(...s.jobs.map(j=>j.end))-tt))} sn${cap}</small>`:`${s.ad}<small>Boşta${cap}</small>`;
@@ -1295,7 +1298,7 @@ R.render(S,cam);drawFx();drawLabels();requestAnimationFrame(loop)}
 glb('backpack',()=>{ICON.sirt=snap(PRODS.find(p=>p.id==='sirt').build('#8a4a26').g);vitrinSync()});
 load();ST.forEach(s=>s.lvl=G.stLv[s.id]||1);if(G.cloud){let lts=0;try{lts=JSON.parse(localStorage.getItem(SK)).ts||0}catch(e){}rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(d&&d.ts&&d.ts>lts+3000){d.cloud=G.cloud;if(!G.started){localStorage.setItem(SK,JSON.stringify(d));save=()=>{};location.reload()}else toast('Bulutta daha yeni kayıt var<br>Oyunu yeniden açınca yüklenir',2200)}}).catch(()=>{})}if(!G.ds)G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
 setLights('home');hud();refresh();loop();
-const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.textContent=G.mus?'Müzik açık':'Müzik kapalı';spS.textContent=G.snd?'Ses açık':'Ses kapalı';$('musB').classList.toggle('off',!G.mus)};spSync();
+const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.classList.toggle('on',!!G.mus);spS.classList.toggle('on',!!G.snd);$('musB').classList.toggle('off',!G.mus)};spSync();
 spM.onclick=()=>{G.mus=!G.mus;spSync()};spS.onclick=()=>{G.snd=!G.snd;spSync()};
 $('musB').onclick=()=>{musSet(!G.mus);save()};
 {const fl=document.querySelector('.flags');if(fl){let h='';[[8,0],[30,1]].forEach(([y0,r])=>{h+=`<path d="M-5 ${y0} Q180 ${y0+26} 365 ${y0}" stroke="#5a3519" stroke-width="1.5" fill="none"/>`;const C=['#b5533c','#e8c77a','#2f6b5a','#f3e6cf','#3f6fa8'];for(let i=0;i<15;i++){const x=6+i*24+r*12,t=x/360,y=y0+4*t*(1-t)*26;h+=`<path d="M${x-8} ${y} L${x+8} ${y} L${x} ${y+15} Z" fill="${C[(i+r*2)%5]}"/>`}});fl.innerHTML=h}
