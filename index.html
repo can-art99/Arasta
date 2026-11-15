@@ -435,7 +435,9 @@ const IC=new THREE.PerspectiveCamera(28,1,0.01,10);
 function snap(obj){IS.add(obj);const bb=new THREE.Box3().setFromObject(obj),sz=bb.getSize(V(0,0,0)),c=bb.getCenter(V(0,0,0)),r=Math.max(sz.x,sz.y,sz.z);
 IC.position.set(c.x+r*1.2,c.y+r*1.3,c.z+r*1.9);IC.lookAt(c);IR.render(IS,IC);const u=IR.domElement.toDataURL();IS.remove(obj);return u}
 const ICON={};Object.keys(MATS).forEach(k=>ICON[k]=snap(MATS[k].mk()));
-PRODS.forEach(p=>ICON[p.id]=snap(p.build(p.wood?'#c9955a':'#8a4a26',p.styles&&p.styles[0]).g));
+const icP=p=>{try{ICON[p.id]=snap(p.build(p.sheet,p.styles&&p.styles[0]).g)}catch(e){}};PRODS.forEach(icP);
+let icT=0;function iconsRefresh(){PRODS.forEach(icP);try{refresh()}catch(e){}try{vitrinSync()}catch(e){}}
+setTimeout(()=>{['backpack','basket','boxing','briefcase','button','cap','pair_of_shoes','sneaker','soap','spoon','stool','sunglasses','basketball','solder'].forEach(n=>glb(n,()=>{clearTimeout(icT);icT=setTimeout(iconsRefresh,500)}))},1500);
 const img=k=>`<img src="${ICON[k]}" alt="">`;
 
 /* ---------- ışıklar ---------- */
