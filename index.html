@@ -496,6 +496,7 @@ const IC=new THREE.PerspectiveCamera(28,1,0.01,10);
 function snap(obj){IS.add(obj);const bb=new THREE.Box3().setFromObject(obj),sz=bb.getSize(V(0,0,0)),c=bb.getCenter(V(0,0,0)),r=Math.max(sz.x,sz.y,sz.z);
 IC.position.set(c.x+r*1.2,c.y+r*1.3,c.z+r*1.9);IC.lookAt(c);IR.render(IS,IC);const u=IR.domElement.toDataURL();IS.remove(obj);return u}
 const ICON={};Object.keys(MATS).forEach(k=>ICON[k]=snap(MATS[k].mk()));
+{const BAL={"cuzdan":100,"kemer":100,"ayakkabi":150,"canta":190,"atki":90,"kasik":75,"tabure":130,"sirt":200,"sepet":75,"sabun":60,"comlek":75,"vazo":115,"mum":80,"dugme":85,"yastik":110,"tahta":65,"firca":95,"spor":160,"sapka":90,"boks":180,"basket":185,"gozluk":195,"kalemlik":75,"anahtarlik":55,"saksi":60,"tespih":105,"tepsi":115,"mumset":110,"sise":80,"nazar":65,"cezve":135,"btepsi":125,"bicak":150,"nal":95,"esarp":180,"hali":240,"balkav":70,"terlik":110};PRODS.forEach(p=>{if(BAL[p.id])p.base=BAL[p.id]})}
 const icP=p=>{try{ICON[p.id]=snap(p.build(p.sheet,p.styles&&p.styles[0]).g)}catch(e){}};PRODS.forEach(icP);
 let icT=0;function iconsRefresh(){PRODS.forEach(icP);try{refresh()}catch(e){}try{vitrinSync()}catch(e){}}
 setTimeout(()=>{['backpack','basket','boxing','briefcase','button','cap','pair_of_shoes','sneaker','soap','spoon','stool','sunglasses','basketball','solder'].forEach(n=>glb(n,()=>{clearTimeout(icT);icT=setTimeout(iconsRefresh,500)}))},1500);
@@ -867,7 +868,7 @@ const G={gold:180,rep:0,n:1,inv:{},order:null,phase:'idle',step:null,tier:1,firs
 Object.assign(G,{st:{deliv:0,five:0,earned:0,coll:0,proc:0,harv:0,lost:0,plots:0,sold:0},cat:{},stock:[],sid:0,ach:{},unl:['cuzdan','kemer','ayakkabi'],shop:{ad:'Benim Dükkanım',logo:'star',col:'#a3302a'},snd:true,mus:true,open:true,stLv:{},started:false,day:1,tm:0,night:false,ds:null});
 Object.keys(MATS).forEach(k=>G.inv[k]=0);
 Object.assign(G.inv,{deri:1,iplik:1,boya_kahve:1,hamderi:1,pamuk:2,tutkal:1});
-const TIERS={1:0,2:12,3:30};
+const TIERS={1:0,2:35,3:100};
 const unlocked=p=>G.tier>=p.tier&&(!p.after||((G.cat[p.after[0]]||{n:0}).n>=p.after[1]))&&(!p.tools||p.tools.every(t=>G.eq&&G.eq[t]&&G.eq[t].own));
 const ACH=[{id:'ilk',ad:'İlk satış',desc:'Bir sipariş teslim et',get:()=>G.st.deliv,goal:1,gold:20},{id:'bes',ad:'Usta işi',desc:'5 yıldızlı bir ürün yap',get:()=>G.st.five,goal:1,gold:30},
 {id:'on',ad:'Mahallenin ustası',desc:'10 sipariş teslim et',get:()=>G.st.deliv,goal:10,gold:80},{id:'muk',ad:'Kusursuz el',desc:'5 kez 5 yıldız al',get:()=>G.st.five,goal:5,gold:100},
