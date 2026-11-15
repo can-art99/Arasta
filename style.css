@@ -51,7 +51,7 @@ button.pill.off{opacity:.5;text-decoration:line-through}
 .sheet:before{content:"";display:block;height:10px;margin:-14px -14px 10px;border-radius:20px 20px 0 0;background:repeating-linear-gradient(90deg,var(--tr) 0 18px,var(--cr2) 18px 36px)}
 .sheet h3{margin:0 0 2px;font:400 26px 'DM Serif Display',Georgia,serif;color:var(--tl)}
 .sheet p{margin:0 0 6px;font-size:14px;opacity:.85}
-.tabs{display:flex;gap:6px;margin:6px 0}
+.tabs{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}.upg{display:flex;gap:8px;margin:8px 0 10px}.upc{flex:1;border:2px solid var(--ln);border-radius:14px;padding:8px 6px;background:#2f6b5a;color:#fff;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;box-shadow:0 3px 0 var(--ln);cursor:pointer}.upc.spd{background:#d9a23a;color:#2a1c10}.upc span{font-size:12px;font-weight:700;opacity:.92}.upc b{font-size:17px}.upc i{font-style:normal;font-size:12px;font-weight:700;background:rgba(0,0,0,.16);border-radius:8px;padding:1px 8px}.upc:disabled{opacity:.55;cursor:default}
 .tabs .btn{flex:1;min-height:40px;font-size:14px;padding:4px}
 .row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1.5px dashed #4a342333}
 .ic{width:44px;height:44px;border-radius:10px;background:#fffaf0;border:1.5px solid #4a342340;flex:none}
