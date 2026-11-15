@@ -5,6 +5,7 @@
    COLOUR and TYPE: krem, koyu ceviz çizgi, çini yeşili, kiremit; DM Serif Display + Fredoka
    LAYOUT: üstte durum, ortada sahne, altta kalın düğmeler */
 :root{--ink:#3b2a1e;--cr:#f4ead5;--cr2:#e9dcc0;--ln:#4a3423;--tl:#2f6b5a;--tlD:#1f4a3e;--tr:#b5533c;--gd:#d9a23a}
+input,textarea,[contenteditable]{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important;pointer-events:auto!important;touch-action:manipulation}
 html,body{margin:0;height:100%;background:#1f3a33;overflow:hidden;font-family:Fredoka,system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 *{box-sizing:border-box}
 .serif{font-family:'DM Serif Display',Georgia,serif;font-weight:400}
