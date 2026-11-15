@@ -13,7 +13,7 @@
 <meta name="theme-color" content="#1f3a33">
 <title>Arasta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Baloo+2:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -39,7 +39,7 @@
     <div id="bubble" class="hide"></div>
     <div id="actions"></div>
     <div id="nav">
-      <button data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v7h14v-7"/></svg>Dükkan</button>
+      <button data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v7h14v-7"/></svg>Dükkân</button>
       <button data-v="pazar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.5 11h11L21 7H7"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>Pazar</button>
       <button data-v="bahce"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21c0-9 5-15 15-16-1 10-7 15-15 16z"/><path d="M5 21l8-8"/></svg>Bahçe</button>
       <button data-v="islik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12l-2 4H6z"/><path d="M16 9h4l-2 3"/><path d="M9 13v4h2v-4"/><path d="M6 21h10l-1-4H7z"/></svg>Atölye</button>
@@ -51,8 +51,8 @@
     <div id="splash"><div class="awn"></div>
       <svg class="flags" viewBox="0 0 360 60" preserveAspectRatio="none"></svg>
       <div class="spc"><div class="tile"><svg width="62" height="62" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#2f6b5a" stroke-width="3"/><path d="M32 10c6 8 6 14 0 22-6-8-6-14 0-22zM32 54c-6-8-6-14 0-22 6 8 6 14 0 22zM10 32c8-6 14-6 22 0-8 6-14 6-22 0zM54 32c-8 6-14 6-22 0 8-6 14-6 22 0z" fill="#2f6b5a"/><circle cx="32" cy="32" r="5" fill="#b5533c"/></svg></div>
-      <div class="sptl"><h1>Arasta</h1><p>Zanaat çarşısında kendi dükkanın</p></div><div id="spInfo"></div>
-      <button class="btn g" id="startB">Dükkanı aç</button><button class="btn l" id="spNew">Yeni dükkan aç</button><button id="spLog" class="spl2">Giriş yap (kullanıcı adı)</button><div id="spLogBox" class="hide"><input id="spU" placeholder="Kullanıcı adı" autocomplete="username" autocapitalize="none"><input id="spP" placeholder="Şifre" type="password" inputmode="numeric" autocomplete="current-password"><button class="btn g" id="spLogGo">Giriş</button></div><div id="spShops"></div><button id="spCode">Kayıt koduyla devam et</button><div id="spCodeWrap"><div id="spCodeBox" class="hide"><input id="spCodeIn" placeholder="XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text"><button class="btn g" id="spCodeGo">Yükle</button></div><div id="spMsg"></div></div>
+      <div class="sptl"><h1>Arasta</h1><p>Zanaat çarşısında kendi dükkânın</p></div><div id="spInfo"></div>
+      <button class="btn g" id="startB">Dükkânı aç</button><button class="btn l" id="spNew">Yeni dükkân aç</button><button id="spLog" class="spl2">Giriş yap (kullanıcı adı)</button><div id="spLogBox" class="hide"><input id="spU" placeholder="Kullanıcı adı" autocomplete="username" autocapitalize="none"><input id="spP" placeholder="Şifre" type="password" inputmode="numeric" autocomplete="current-password"><button class="btn g" id="spLogGo">Giriş</button></div><div id="spShops"></div><button id="spCode">Kayıt koduyla devam et</button><div id="spCodeWrap"><div id="spCodeBox" class="hide"><input id="spCodeIn" placeholder="XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text"><button class="btn g" id="spCodeGo">Yükle</button></div><div id="spMsg"></div></div>
       <div class="spo"><button class="tg" id="spMus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Müzik<i></i></button><button class="tg" id="spSnd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>Ses<i></i></button></div>
       </div><div class="rug"></div></div>
     <div id="modal" class="hide"><div class="sheet" id="sheet"></div></div>
