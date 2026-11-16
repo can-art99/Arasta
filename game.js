@@ -1244,7 +1244,7 @@ function trakDrive(acts){const tg=TRACT.tg,B=TRB={q:acts.slice(),tg,home:tg.user
   tweenLin(dur,u=>{if(TRB!==B)return;const e=u*u*(3-2*u);tg.position.lerpVectors(fr,to,e);tg.position.y=Math.abs(Math.sin(tt*16))*0.012;tg.rotation.y=r0+da*Math.min(1,u*dur/0.35);if(Math.random()<0.18)puff(V(tg.position.x,0.08,tg.position.z),1,'#cbb894')},()=>{if(TRB===B)cb()})};
  const step=()=>{if(TRB!==B)return;const a=B.q[0];if(!a){drive(B.home,()=>{const r0=tg.rotation.y;let da=Math.PI-r0;da=Math.atan2(Math.sin(da),Math.cos(da));tweenLin(0.4,u=>{tg.rotation.y=r0+da*u},()=>{tg.position.y=0;if(TRB===B)TRB=null;save()})});return}
   const p=a.o.g.position;drive(V(p.x-1.05,0,p.z),()=>drive(V(p.x,0,p.z),()=>{B.q.shift();a.fn();burst(p,'#e8d8a0',5,'up');sfx.pick&&sfx.pick();drive(V(p.x+1.05,0,p.z),step)}))};step()}
-function trakTick(){if(!G.trak)return;const m=otoMode('trak');if(TRACT){const t=`🚜 Traktör<small>${m==='oto'?'Oto · sonraki tur '+fmtT(otoLeft('trak')):m==='kosul'?'Koşullu · sipariş bekliyor':'Pasif'}</small>`;if(t!==TRACT.last){TRACT.last=t;TRACT.el.classList.remove('lock');TRACT.el.innerHTML=t}}
+function trakTick(){if(!G.trak)return;const m=otoMode('trak');if(TRACT){const t=`🚜 Traktör<small>${TRB?'Çalışıyor…':m==='oto'?'Oto · '+fmtT(otoLeft('trak'))+' · dokun: şimdi':m==='kosul'?'Koşullu · dokun: şimdi':'Pasif · dokun: şimdi'}</small>`;if(t!==TRACT.last){TRACT.last=t;TRACT.el.classList.remove('lock');TRACT.el.innerHTML=t;TRACT.el.onclick=()=>otoNow('trak')}}
  if(TRB){if(view!=='bahce'||document.hidden||!G.started)trakFlush();return}let A=[];
  if(m==='oto')A=otoRounds('trak',t=>trakPlan(t));else if(m==='kosul'){if(++trN%4)return;A=trakPlan(NOW(),true)}if(!A.length)return;
  if(G.started&&view==='bahce'&&!document.hidden&&TRACT&&TRACT.tg)trakDrive(A);else{A.forEach(a=>a.fn());if(G.started)save()}}
@@ -1265,13 +1265,19 @@ function cirDrive(acts){const c=CIR,B=CIB={q:acts.slice()},go=(to,cb)=>{c.walkin
  const step=()=>{if(CIB!==B)return;const a=B.q[0];if(!a){go(CIR_REST(),()=>{CIB=null;save()});return}const p=a.s.g.position,sd=p.x<OI?1:-1;
   go(V(p.x+sd*0.95,0,p.z),()=>{c.g.rotation.y=sd>0?-Math.PI/2:Math.PI/2;const d=STSND[a.s.id];if(d&&ANS[d[0]])ANS[d[0]]();
    tweenLin(1.2,u=>{if(CIB!==B)return;c.g.position.y=Math.abs(Math.sin(u*Math.PI*4))*0.035;if(Math.random()<0.12)puff(V(p.x,0.9,p.z),1,'#e8d8b8')},()=>{c.g.position.y=0;if(CIB!==B)return;B.q.shift();a.fn();sfx.pick&&sfx.pick();step()})})};step()}
-function cirakTick(){if(!G.cirak)return;G.stLast=G.stLast||{};const m=otoMode('cirak');if(view==='islik'&&G.started)cirChar();
+function cirakTick(){if(!G.cirak)return;G.stLast=G.stLast||{};const m=otoMode('cirak');cirLabel();{const t=`🧑‍🔧 Çırak<small>${CIB?'Çalışıyor…':m==='oto'?'Oto · '+fmtT(otoLeft('cirak'))+' · dokun: şimdi':m==='kosul'?'Koşullu · dokun: şimdi':'Pasif · dokun: şimdi'}</small>`;if(t!==CIRL.last){CIRL.last=t;CIRL.el.innerHTML=t}}if(view==='islik'&&G.started)cirChar();
  if(CIB){if(view!=='islik'||document.hidden||!G.started)cirFlush();return}let A=[];
  if(m==='oto')A=otoRounds('cirak',t=>cirPlan(t));else if(m==='kosul'){if(++ciN%4)return;A=cirPlan(NOW(),true)}if(!A.length)return;
  if(G.started&&view==='islik'&&!document.hidden&&cirChar())cirDrive(A);else{A.forEach(a=>a.fn());if(G.started)save()}}
 /* Ticaret menüsündeki satır */
 function otoRow(k,ad,off,on){const own=G[k],c=OTO_COST[k],m=otoMode(k);if(!own)return `<div class="row"><div class="n">${ad}<small>${off} · Kademe 2 · Elmasın: ${G.elmas||0}</small></div><button class="btn g" data-buy="${k}" ${G.tier<2||(G.elmas||0)<c?'disabled':''}>${c} 💎</button></div>`;
  return `<div class="row"><div class="n">${ad}<small>${on[m]}${m==='oto'?' · sonraki tur '+fmtT(otoLeft(k)):''}</small></div><div class="omode">${['oto','kosul','pasif'].map(x=>`<button data-om="${k}:${x}" class="${x===m?'on':''}">${OTO_AD[x]}</button>`).join('')}</div></div>`}
+/* Dokununca turu hemen başlat (bekleme süresi sıfırlanır) */
+function otoNow(k){if(!G[k]){toast(k==='trak'?'Traktör Ticaret menüsünden alınır':'Çırak Ticaret menüsünden alınır',1500);return}
+ if(k==='trak'?TRB:CIB){toast(k==='trak'?'Traktör zaten çalışıyor':'Çırak zaten çalışıyor',1000);return}
+ const A=k==='trak'?trakPlan(NOW()):cirPlan(NOW());if(!A.length){toast(k==='trak'?'Şu an hasat ya da ekim yapılacak tarla yok':'Şu an başlatılacak ya da toplanacak iş yok',1600);return}
+ G[k+'Last']=NOW();sfx.tap&&sfx.tap();if(k==='trak')trakDrive(A);else if(cirChar())cirDrive(A);else{A.forEach(a=>a.fn());save()}}
+let CIRL=null;function cirLabel(){if(!G.cirak||CIRL)return;CIRL=label('islik',V(OI,0.02,2.45),'',true);CIRL.el.classList.add('sm');CIRL.el.onclick=()=>otoNow('cirak')}
 
 /* ---------- bahçe tehlikeleri: hastalık, kuraklık, zararlı, doğal afet ---------- */
 const HZ_ANI=['İnek','Koyun','Tavuk','Domuz','Keçi','Tavşan','İpek böceği','At'],HZ_BOS=['Ceviz ağacı','Böğürtlen','Kök boya','Lavanta','Arı kovanı'],
@@ -1906,11 +1912,11 @@ function floatTxt(cx,cy,html){const r=frame.getBoundingClientRect(),d=document.c
 function stationTap(s){if(G.phase==='craft'||G.phase==='result'||switching)return;if(!stOwned(s)){buyStation(s);return}
 if(s.ready&&G.tier>=s.tier){if(depoFull(Object.values(s.ready).reduce((a,b)=>a+b,0)))return;giveAll(s.ready);G.st.proc++;sfx.pick();toast('+ '+Object.entries(s.ready).map(([k,n])=>n+' '+MATS[k].ad).join(', '),1400);s.ready=null;refresh()}else openStation(s)}
 function worldTap(e){if(SPL)return;setRay(e);
-if(view==='islik'){const h=ray.intersectObjects(ST.map(s=>s.g),true)[0];if(h){let o=h.object;while(o&&!o.userData.st)o=o.parent;if(o)stationTap(o.userData.st)}}
+if(view==='islik'){if(CIR&&G.cirak&&ray.intersectObject(CIR.g,true)[0]){otoNow('cirak');return}const h=ray.intersectObjects(ST.map(s=>s.g),true)[0];if(h){let o=h.object;while(o&&!o.userData.st)o=o.parent;if(o)stationTap(o.userData.st)}}
 else if(view==='pazar'){const h=ray.intersectObjects(STALLS,true)[0];if(h){let o=h.object;while(o&&!o.userData.tab)o=o.parent;if(o)marketTab(o.userData.tab)}}
 else if(view==='depo'){depoTap()}
 else if(view==='vitrin'){const h=ray.intersectObjects(VIT.children,true)[0];if(h){let o=h.object;while(o&&o.userData.sid==null)o=o.parent;if(o){const it=G.stock.find(x=>x.id===o.userData.sid);if(it)openItem(it)}}}
-else if(view==='bahce'){const pt=PETS[0]&&PETS[0].visible&&ray.intersectObjects(PETS,true)[0];if(pt){petTap(e);return}const h=ray.intersectObjects(COLL.filter(o=>o.userData.coll.alive),true)[0];if(!h){const q=ray.intersectObjects(PL.map(o=>o.g),true)[0];if(q){let o=q.object;while(o&&!o.userData.plot)o=o.parent;if(o)plotTap(o.userData.plot)}return}let o=h.object;while(o&&!o.userData.coll)o=o.parent;
+else if(view==='bahce'){if(G.trak&&TRACT&&TRACT.tg&&ray.intersectObject(TRACT.tg,true)[0]){otoNow('trak');return}const pt=PETS[0]&&PETS[0].visible&&ray.intersectObjects(PETS,true)[0];if(pt){petTap(e);return}const h=ray.intersectObjects(COLL.filter(o=>o.userData.coll.alive),true)[0];if(!h){const q=ray.intersectObjects(PL.map(o=>o.g),true)[0];if(q){let o=q.object;while(o&&!o.userData.plot)o=o.parent;if(o)plotTap(o.userData.plot)}return}let o=h.object;while(o&&!o.userData.coll)o=o.parent;
 const c=o.userData.coll;if(hzSheet(c.src))return;if(depoFull(1))return;c.alive=false;c.t=NOW()+(RTM[c.mat]||c.rt||60);const yq=({yun:2,kum:3,kil:2,tas:2,sogut:2,koza:2,kutuk:2})[c.mat]||1;G.inv[c.mat]+=yq;if(c.mat==='yun')sfx.cut();G.st.coll++;sfx.pick();gemRoll(GEM_P.topla,'Toplarken elmas buldun!');floatTxt(e.clientX,e.clientY,img(c.mat)+'+'+yq);const y0=o.position.y;
 tween(0.3,k=>{o.scale.copy(c.base).multiplyScalar(Math.max(0.01,1-k));o.position.y=y0+k*0.35},()=>{o.visible=false;o.position.y=y0});refresh()}}
 canvas.addEventListener('pointerdown',e=>{
