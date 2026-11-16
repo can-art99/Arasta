@@ -149,4 +149,5 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--tl);heig
 #splash.go .spfx,#splash.go:before{display:none}#splash.go *{animation:none!important}
 @media (prefers-reduced-motion:reduce){#splash *,#splash:before{animation:none!important}}
 #splash p{font-size:15px;white-space:nowrap}#splash p:before,#splash p:after{margin:0 5px}.sptl{padding:16px 20px 10px}
+.spc .tile{width:104px;height:104px;border:0;background:none;border-radius:26px;box-shadow:0 5px 0 var(--ln),0 0 0 6px rgba(255,248,234,.5),0 0 34px rgba(255,214,140,.7)}.spc .tile svg{width:104px;height:104px;display:block}
 
