@@ -907,11 +907,11 @@ function wxTick(dt){wxK=Math.min(1,wxK+dt*0.25);if(G.started&&tt>wxNext){wxNext=
  if(on&&out&&wx==='acik'&&!G.night&&tt>birdT){birdT=tt+3+Math.random()*7;const f=2200+Math.random()*1400;tone(f,0.07,'sine',0.018,f*1.3);tone(f*1.1,0.06,'sine',0.014,f*1.45,0.11);if(Math.random()<0.5)tone(f*0.95,0.08,'sine',0.014,f*1.25,0.24)}}
 function dayLightWx(){const m=WXL[wx]*1;[sun,gSun,pSun].forEach(l=>{if(l.visible)l.intensity*=m+(1-m)*(1-Math.min(1,wxK))})}
 
-function musSched(){if(!AC||!MU.g||!G.mus||AC.state!=='running')return;const be=60/68,e=be/2;if(MU.next<AC.currentTime)MU.next=AC.currentTime+0.1;
+function musSched(){if(!AC||!MU.g||!G.mus||AC.state!=='running')return;if(SB.muzik){if(!MU.src){MU.src=AC.createBufferSource();MU.src.buffer=SB.muzik;MU.src.loop=true;const g=AC.createGain();g.gain.value=0.45;MU.src.connect(g);g.connect(MU.g);MU.src.start()}return}const be=60/68,e=be/2;if(MU.next<AC.currentTime)MU.next=AC.currentTime+0.1;
 while(MU.next<AC.currentTime+0.6){const t=MU.next,st=MU.step,ch=CH[Math.floor(st/8)%4];
 if(st%8===0){ch.forEach(m=>mv(hz(m),t,be*4+0.6,'triangle',0.016,1.1,1.3,false));mv(hz(ch[0]-12),t,be*1.8,'sine',0.07,0.03,1.2,false)}
 if(st%8===4)mv(hz(ch[0]-12),t,be*1.6,'sine',0.05,0.03,1.1,false);
-if(st%8!==0&&Math.random()<(st%2?0.18:0.34)){const m=Math.random()<0.5?pick(PEN):ch[1+Math.floor(Math.random()*4)]+12;mv(hz(m),t,1.3,'sine',0.035,0.008,1.25,true)}
+
 MU.next+=e;MU.step++}}
 setInterval(musSched,140);
 function musSet(on){G.mus=on;ac();if(AC){musInit();const t=AC.currentTime;MU.g.gain.cancelScheduledValues(t);MU.g.gain.setTargetAtTime(on?0.6:0,t,on?1.2:0.4)}const b=$('musB');if(b)b.classList.toggle('off',!on)}
