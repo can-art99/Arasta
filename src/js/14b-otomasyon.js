@@ -48,12 +48,12 @@ function cirPlan(t,kos){const A=[],done=s=>!!s.ready||s.jobs.some(j=>t>=j.end);
  if(!kos){ST.forEach(s=>{if(!stOwned(s)||G.tier<s.tier)return;const pickR=dry=>{G.cirI=G.cirI||{};const n=s.rec.length;for(let i=0;i<n;i++){const j=((G.cirI[s.id]||0)+i)%n,r=s.rec[j];if((!r.tier||G.tier>=r.tier)&&hasAll(r.in)){if(!dry)G.cirI[s.id]=j+1;return r}}return null};
    if(done(s)||(pickR(1)&&s.jobs.length<(s.lvl||1)))A.push({s,fn:()=>{stFinish(s,t);stCollect(s);for(let i=0;i<(s.lvl||1);i++){const r=pickR();if(!r||!stStart(s,r,t))break}}})});return A}
  otoNeeds().make.forEach(({s,r,k,times})=>{if(A.some(a=>a.s===s))return;const lack=()=>otoPending(s,k)<times*r.out[k];if(done(s)||(lack()&&!s.ready&&s.jobs.length<(s.lvl||1)&&hasAll(r.in)))A.push({s,fn:()=>{stFinish(s,NOW());stCollect(s);while(lack()&&stStart(s,r,NOW())){}}})});return A}
-function cirChar(){if(CIR||!CHR.length)return CIR;CIR=makeCustomer();CIR.cirak=true;CIR.g.scale.setScalar(0.86);CIR.g.position.copy(CIR_REST());CIR.g.rotation.y=0;return CIR}
+function cirChar(){if(CIR||!(CHX.x_cirak||CHR.length))return CIR;CIR=makeCustomer(CHX.x_cirak);CIR.cirak=true;if(!CHX.x_cirak)CIR.g.scale.setScalar(0.86);CIR.g.position.copy(CIR_REST());CIR.g.rotation.y=0;return CIR}
 function cirFlush(){const B=CIB;if(!B)return;CIB=null;B.q.forEach(a=>a.fn());if(CIR){CIR.tok++;CIR.walking=false;anim(CIR,'idle');CIR.g.position.copy(CIR_REST())}save()}
 function cirDrive(acts){const c=CIR,B=CIB={q:acts.slice()},go=(to,cb)=>{c.walking=true;anim(c,'walk');walk(c,to,Math.max(0.3,c.g.position.distanceTo(to)/1.3),()=>{c.walking=false;anim(c,'idle');if(CIB===B)cb()})};
  const step=()=>{if(CIB!==B)return;const a=B.q[0];if(!a){go(CIR_REST(),()=>{CIB=null;save()});return}const p=a.s.g.position,sd=p.x<OI?1:-1;
   go(V(p.x+sd*0.95,0,p.z),()=>{c.g.rotation.y=sd>0?-Math.PI/2:Math.PI/2;const d=STSND[a.s.id];if(d&&ANS[d[0]])ANS[d[0]]();
-   tweenLin(1.2,u=>{if(CIB!==B)return;c.g.position.y=Math.abs(Math.sin(u*Math.PI*4))*0.035;if(Math.random()<0.12)puff(V(p.x,0.9,p.z),1,'#e8d8b8')},()=>{c.g.position.y=0;if(CIB!==B)return;B.q.shift();a.fn();sfx.pick&&sfx.pick();step()})})};step()}
+   if(c.A.work)anim(c,'work',true);tweenLin(1.2,u=>{if(CIB!==B)return;if(!c.A.work)c.g.position.y=Math.abs(Math.sin(u*Math.PI*4))*0.035;if(Math.random()<0.12)puff(V(p.x,0.9,p.z),1,'#e8d8b8')},()=>{c.g.position.y=0;if(CIB!==B)return;B.q.shift();a.fn();sfx.pick&&sfx.pick();step()})})};step()}
 function cirakTick(){if(!G.cirak)return;G.stLast=G.stLast||{};const m=otoMode('cirak');cirLabel();{const t=`🧑‍🔧 Çırak<small>${CIB?'Çalışıyor…':m==='oto'?'Oto · '+fmtT(otoLeft('cirak'))+' · dokun: şimdi':m==='kosul'?'Koşullu · dokun: şimdi':'Pasif · dokun: şimdi'}</small>`;if(t!==CIRL.last){CIRL.last=t;CIRL.el.innerHTML=t}}if(view==='islik'&&G.started)cirChar();
  if(CIB){if(view!=='islik'||document.hidden||!G.started)cirFlush();return}let A=[];
  if(m==='oto')A=otoRounds('cirak',t=>cirPlan(t));else if(m==='kosul'){if(++ciN%4)return;A=cirPlan(NOW(),true)}if(!A.length)return;
@@ -67,3 +67,9 @@ function otoNow(k){if(!G[k]){toast(k==='trak'?'Traktör Ticaret menüsünden al�
  const A=k==='trak'?trakPlan(NOW()):cirPlan(NOW());if(!A.length){toast(k==='trak'?'Şu an hasat ya da ekim yapılacak tarla yok':'Şu an başlatılacak ya da toplanacak iş yok',1600);return}
  G[k+'Last']=NOW();sfx.tap&&sfx.tap();if(k==='trak')trakDrive(A);else if(cirChar())cirDrive(A);else{A.forEach(a=>a.fn());save()}}
 let CIRL=null;function cirLabel(){if(!G.cirak||CIRL)return;CIRL=label('islik',V(OI,0.02,2.45),'',true);CIRL.el.classList.add('sm');CIRL.el.onclick=()=>otoNow('cirak')}
+
+/* Çiftçi: bostanda traktörün yanında çalışan karakter */
+let FRM=null;function frmTick(dt){if(!G.trak||!TRACT||!TRACT.tg||!CHX.x_ciftci||view!=='bahce')return;const tg=TRACT.tg;if(!FRM){FRM=makeCustomer(CHX.x_ciftci);FRM.frm=true;const h=tg.userData.home||tg.position;FRM.g.position.set(h.x-0.75,0,h.z+0.25);anim(FRM,'idle')}
+ const g=FRM.g;let to;if(TRB){const r=tg.rotation.y;to=V(tg.position.x-Math.sin(r)*0.95+Math.cos(r)*0.45,0,tg.position.z-Math.cos(r)*0.95-Math.sin(r)*0.45)}else{const h=tg.userData.home||tg.position;to=V(h.x-0.75,0,h.z+0.25)}
+ const dx=to.x-g.position.x,dz=to.z-g.position.z,d=Math.hypot(dx,dz);if(d>0.06){const sp=Math.min(d,(d>1.2?2.4:1.5)*dt);g.position.x+=dx/d*sp;g.position.z+=dz/d*sp;let a=Math.atan2(dx,dz)-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*8);if(FRM.cur!=='walk')anim(FRM,'walk')}
+ else{if(TRB){let a=tg.rotation.y-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*4)}else{let a=0.6-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*3)}if(FRM.cur==='walk')anim(FRM,'idle')}}

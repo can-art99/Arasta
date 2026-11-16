@@ -46,7 +46,7 @@ const PRODS=[
 {id:'tabure',hard:true,ad:'Tabure',tier:3,base:130,need:{kereste:2,tutkal:1,balmumu:1},sheet:'#c9955a',wood:true,shape:()=>circleShape(0.27),build:(h,st,k)=>TABB(h,st,k),
  steps:[{t:'trace'},{t:'rhythm',k:'yapistir',n:3,sc:0.5},{t:'screw',ad:'Ayakları vidala',pts:[[-0.09,-0.09],[0.09,-0.09],[-0.09,0.09],[0.09,0.09]]},{t:'rub',k:'zimpara'},{t:'rub',k:'cila'},{t:'design'}]}];
 const GLC={},GLW={};
-function glbProd(n,size,fb,re,rx){return (hex,style,k)=>{const src=GLC[n];if(!src)return fb(hex,style,k);const g=new THREE.Group(),um=M(hex,0.6),m=src.scene.clone();if(rx)m.rotation.x=rx;
+function glbProd(n,size,fb,re,rx){return (hex,style,k)=>{const src=GLC[n];if(!src)return fb(hex,style,k);const g=new THREE.Group(),um=M(hex,0.6),m=src.scene.clone();if(rx){if(Array.isArray(rx))m.rotation.set(rx[0],rx[1],rx[2]);else m.rotation.x=rx}
 m.traverse(o=>{if(o.isMesh){const a=(Array.isArray(o.material)?o.material:[o.material]).map(mt=>(re?re.test(mt.name):/brown/i.test(mt.name)&&!/dark/i.test(mt.name))?um:mt);o.material=a.length>1?a:a[0]}});
 m.updateMatrixWorld(true);let bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(V(0,0,0));m.scale.multiplyScalar(size/Math.max(sz.x,sz.z));m.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(m);
 m.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);g.add(m);return {g,um}}}
@@ -173,6 +173,10 @@ const haliM=(hex)=>{const g=new THREE.Group(),um=M(hex||'#a83a2a',0.95);put(g,B(
   steps:[T('Bakır levhayı kes'),{t:'hammer',kind:'dent',hits:1,ad:'Çekiçle döv',pts:G4(14,0.24)},Y('delik','Kalem işi',{n:12,sc:0.8}),Hd('Kalayla'),Rb('parlat','Parlatma'),D]},
  {id:'bicak',hard:true,ad:'Demir bıçak',tier:3,base:170,need:{celik:1,kereste:1},sheet:'#9aa0a8',wood:true,shape:rr(0.08,0.5),build:bicakM,
   steps:[T('Çeliği kes'),{t:'forge',ad:'Ocakta körükle kızdır'},{t:'hammer',kind:'dent',hits:2,ad:'Örste döv',pts:[[0,-0.2],[0,-0.12],[0,-0.04],[0,0.04],[-0.02,-0.16],[0.02,-0.08]]},{t:'dip',ad:'Suya daldır'},T('Ahşap sapı kes',{part:'sap',n:1,shape:rr(0.07,0.2),at:[-0.45,0],col:'#6b4a2e',wood:true}),A('sap','Sapı takıma geçir',[[0,0.16]]),{t:'hammer',kind:'rivet',hits:2,ad:'Sap perçinlerini çak',pts:[[0,0.11],[0,0.21]]},Hd('Sapı preste sıkıştır'),Rb('zimpara','Bile'),D]},
+ {id:'katana',hard:true,ad:'Katana',tier:3,base:280,need:{celik:2,kereste:1,deri:1},sheet:'#b8bec6',wood:true,shape:rr(0.07,0.72),build:bicakM,after:['bicak',1],
+  steps:[T('Çelik çubuğu kes'),{t:'forge',ad:'Ocakta körükle kızdır'},{t:'hammer',kind:'dent',hits:2,ad:'Namluyu örste döv',pts:[[0,-0.3],[0,-0.2],[0,-0.1],[0,0],[0,0.1],[-0.015,-0.25],[0.015,-0.05]]},{t:'dip',ad:'Suya daldırıp sertleştir'},Rb('zimpara','Ağzı bile'),T('Ahşap sapı kes',{part:'sap',n:1,shape:rr(0.06,0.24),at:[-0.45,0],col:'#3a2418',wood:true}),A('sap','Sapı namluya geçir',[[0,0.3]]),{t:'hammer',kind:'rivet',hits:2,ad:'Sap pimini çak',pts:[[0,0.27]]},Rb('cila','Namluyu parlat'),D]},
+ {id:'isin',hard:true,ad:'Işın kılıcı',tier:3,base:320,need:{pirinc:2,bakir:1,cam:2},sheet:'#c8ccd0',wood:true,shape:rr(0.08,0.4),build:bicakM,after:['tac',1],
+  steps:[T('Pirinç gövdeyi kes'),{t:'roll',ad:'Plakayı kabza borusuna kıvır'},{t:'weld',ad:'Dikiş yerini kaynakla'},{t:'gems',ad:'Enerji kristallerini yerleştir'},{t:'screw',ad:'Kabza kapağını vidala',pts:[[-0.03,-0.12],[0.03,-0.12]]},Rb('parlat','Parlatma'),D]},
  {id:'nal',hard:true,ad:'At nalı',tier:3,base:80,need:{celik:1},sheet:'#6a6e74',wood:true,shape:rr(0.06,0.5),build:nalM,
   steps:[T('Çelik çubuğu kes'),{t:'forge',ad:'Ocakta körükle kızdır'},{t:'bend',ad:'Örste U şeklinde bük'},{t:'hammer',kind:'dent',hits:1,ad:'Örste döv',pts:[[-0.115,0.066],[-0.103,-0.016],[-0.039,-0.07],[0.039,-0.07],[0.103,-0.016],[0.115,0.066]]},{t:'drill',ad:'Mıh deliklerini del',pts:[[-0.118,0.046],[-0.088,-0.037],[0.088,-0.037],[0.118,0.046]]},D]},
  {id:'tac',hard:true,ad:'Pirinç taç',tier:3,base:240,need:{pirinc:2,cam:1},sheet:'#d9a23a',wood:true,shape:rr(0.56,0.07),after:['btepsi',1],

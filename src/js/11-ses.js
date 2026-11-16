@@ -29,4 +29,6 @@ o.connect(g);g.connect(MU.f);if(dl)g.connect(MU.d);o.start(t);o.stop(t+d+0.05)}
 const SB={};let sbTried=false;
 function loadSounds(){if(sbTried||!AC)return;sbTried=true;fetch('sounds/list.json').then(r=>r.ok?r.json():[]).then(l=>l.forEach(n=>fetch('sounds/'+n).then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b,buf=>{SB[n.replace(/\.[^.]+$/,'')]=buf},()=>{})).catch(()=>{}))).catch(()=>{})}
 function playB(n,vol,loop){const s=AC.createBufferSource(),g=AC.createGain();s.buffer=SB[n];s.loop=!!loop;if(!loop)s.playbackRate.value=0.95+Math.random()*0.1;g.gain.value=vol;s.connect(g);g.connect(OUT());s.start();return {s,g}}
+/* Kayıt dosyası varsa çal, yoksa false döner (sentez yedeğe düşer) */
+function sf(n,v){if(SB[n]&&AC&&G.snd){playB(n,v||0.6);return true}return false}
 Object.keys(sfx).forEach(k=>{const f=sfx[k];sfx[k]=function(){if(SB[k]&&AC&&G.snd){playB(k,0.7);return}return f.apply(this,arguments)}});
