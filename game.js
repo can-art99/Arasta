@@ -1213,9 +1213,15 @@ const ANS={
  saw:()=>{noise(0.22,0.018,2400,1.5);noise(0.22,0.016,2000,1.5,0.28)},
  wheel:()=>noise(0.9,0.008,240,3),
  loom:()=>{noise(0.05,0.03,1300,2);noise(0.05,0.025,1100,2,0.3)}};
+function voice(d,f0,vol,delay){const a=AC;if(!a||!G.snd||document.hidden)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),f1=a.createBiquadFilter(),f2=a.createBiquadFilter(),g1=a.createGain(),g2=a.createGain(),g=a.createGain();o.type='sawtooth';f1.type=f2.type='bandpass';f1.Q.value=6;f2.Q.value=8;g2.gain.value=0.5;
+ const VW=[[730,1090],[270,2290],[530,1840],[570,840],[440,1020],[300,870],[660,1700]];let q=0;o.frequency.setValueAtTime(f0,t);g.gain.setValueAtTime(0.0001,t);while(q<d){const sy=0.12+Math.random()*0.16,v=pick(VW),pf=f0*(0.9+Math.random()*0.25);o.frequency.linearRampToValueAtTime(pf,t+q+sy*0.5);f1.frequency.setValueAtTime(v[0],t+q);f2.frequency.setValueAtTime(v[1],t+q);g.gain.linearRampToValueAtTime(vol,t+q+sy*0.35);g.gain.linearRampToValueAtTime(vol*0.15,t+q+sy*0.95);q+=sy+(Math.random()<0.15?0.18:0)}
+ g.gain.linearRampToValueAtTime(0.0001,t+q+0.1);o.connect(f1);o.connect(f2);f1.connect(g1);f2.connect(g2);g1.connect(g);g2.connect(g);g.connect(OUT());o.start(t);o.stop(t+q+0.2)}
+ANS.crowd=()=>{const n=2+Math.floor(Math.random()*2);for(let i=0;i<n;i++){const m=Math.random()<0.55;voice(0.9+Math.random()*1.6,m?95+Math.random()*45:175+Math.random()*60,0.05,i*0.5+Math.random()*0.6)}};
+ANS.call=()=>voice(1.2+Math.random()*0.6,130+Math.random()*30,0.07,0);
 const STSND={ors:['hammer',1.4],cikrik:['spin',0.9],kazan:['boil',0.7],fici:['slosh',2.6],pres:['press',2.8],testere:['saw',1.8],cark:['wheel',1.1],dokuma:['loom',1.5]};
 const AMT={};function ambTick(dt){if(!AC||!G.snd||document.hidden||G.phase==='craft'||G.phase==='result'||switching)return;
  if(view==='islik'){ST.forEach(s=>{const d=STSND[s.id];if(!d||!s.jobs||!s.jobs.length||s.ready)return;AMT[s.id]=(AMT[s.id]||Math.random()*d[1])-dt;if(AMT[s.id]<=0){AMT[s.id]=d[1]*(0.75+Math.random()*0.5);ANS[d[0]]()}})}
+ else if(view==='pazar'){AMT.p=(AMT.p==null?1:AMT.p)-dt;if(AMT.p>0)return;AMT.p=1.6+Math.random()*2.2;ANS[Math.random()<0.85?'crowd':'call']()}
  else if(view==='bahce'){const z=Math.round((camCur.l.x+ZM.px-OB)/11);AMT.b=(AMT.b==null?2:AMT.b)-dt;if(AMT.b>0)return;
   if(z<0){AMT.b=3.5+Math.random()*5;ANS[pick(['moo','moo','hen','hen','rooster','horse','sheep'])]()}else if(z>0){AMT.b=1.5+Math.random()*3.5;ANS.bird()}else{AMT.b=5+Math.random()*6;ANS[Math.random()<0.7?'bird':'hen']()}}}
 function vib(p){if(G.vib===false||!navigator.vibrate)return;try{navigator.vibrate(p)}catch(e){}}
