@@ -29,11 +29,11 @@ function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t&&!hzOf('
   let sd=G.inv[sk]||0;PL.forEach(o=>{if(lack>0&&sd>0&&o.own&&!o.seed&&!A.some(a=>a.o===o)){lack-=CROPS[sk].n;sd--;A.push({o,fn:()=>plotSow(o,sk,NOW())})}})});return A}
 function trakFlush(){const B=TRB;if(!B)return;TRB=null;B.q.forEach(a=>a.fn());B.tg.position.copy(B.home);B.tg.rotation.y=Math.PI;save()}
 function trakDrive(acts){const tg=TRACT.tg,B=TRB={q:acts.slice(),tg,home:tg.userData.home||(tg.userData.home=tg.position.clone())};
- const drive=(to,cb)=>{const fr=tg.position.clone(),d=fr.distanceTo(to),dur=Math.max(0.25,d/1.5),r0=tg.rotation.y;let da=Math.atan2(to.x-fr.x,to.z-fr.z)-r0;da=Math.atan2(Math.sin(da),Math.cos(da));
+ const drive=(to,cb)=>{const fr=tg.position.clone(),d=fr.distanceTo(to),dur=Math.max(0.25,d/1.1),r0=tg.rotation.y;let da=Math.atan2(to.x-fr.x,to.z-fr.z)-r0;da=Math.atan2(Math.sin(da),Math.cos(da));
   tweenLin(dur,u=>{if(TRB!==B)return;const e=u*u*(3-2*u);tg.position.lerpVectors(fr,to,e);tg.position.y=Math.abs(Math.sin(tt*16))*0.012;tg.rotation.y=r0+da*Math.min(1,u*dur/0.35);if(Math.random()<0.18)puff(V(tg.position.x,0.08,tg.position.z),1,'#cbb894')},()=>{if(TRB===B)cb()})};
  const step=()=>{if(TRB!==B)return;const a=B.q[0];if(!a){drive(B.home,()=>{const r0=tg.rotation.y;let da=Math.PI-r0;da=Math.atan2(Math.sin(da),Math.cos(da));tweenLin(0.4,u=>{tg.rotation.y=r0+da*u},()=>{tg.position.y=0;if(TRB===B)TRB=null;save()})});return}
   const p=a.o.g.position;drive(V(p.x-1.05,0,p.z),()=>drive(V(p.x,0,p.z),()=>{B.q.shift();a.fn();burst(p,'#e8d8a0',5,'up');sfx.pick&&sfx.pick();drive(V(p.x+1.05,0,p.z),step)}))};step()}
-function trakTick(){if(!G.trak)return;const m=otoMode('trak');if(TRACT){const t=`🚜 Traktör<small>${TRB?'Çalışıyor…':m==='oto'?'Oto · '+fmtT(otoLeft('trak'))+' · dokun: şimdi':m==='kosul'?'Koşullu · dokun: şimdi':'Pasif · dokun: şimdi'}</small>`;if(t!==TRACT.last){TRACT.last=t;TRACT.el.classList.remove('lock');TRACT.el.innerHTML=t;TRACT.el.onclick=()=>otoNow('trak')}}
+function trakTick(){if(!G.trak)return;const m=otoMode('trak');if(TRACT){const t=`🧑‍🌾 Çiftçi<small>${TRB?'Çalışıyor…':m==='oto'?'Oto · '+fmtT(otoLeft('trak'))+' · dokun: şimdi':m==='kosul'?'Koşullu · dokun: şimdi':'Pasif · dokun: şimdi'}</small>`;if(t!==TRACT.last){TRACT.last=t;TRACT.el.classList.remove('lock');TRACT.el.innerHTML=t;TRACT.el.onclick=()=>otoNow('trak')}}
  if(TRB){if(view!=='bahce'||document.hidden||!G.started)trakFlush();return}let A=[];
  if(m==='oto')A=otoRounds('trak',t=>trakPlan(t));else if(m==='kosul'){if(++trN%4)return;A=trakPlan(NOW(),true)}if(!A.length)return;
  if(G.started&&view==='bahce'&&!document.hidden&&TRACT&&TRACT.tg)trakDrive(A);else{A.forEach(a=>a.fn());if(G.started)save()}}
@@ -62,14 +62,14 @@ function cirakTick(){if(!G.cirak)return;G.stLast=G.stLast||{};const m=otoMode('c
 function otoRow(k,ad,off,on){const own=G[k],c=OTO_COST[k],m=otoMode(k);if(!own)return `<div class="row"><div class="n">${ad}<small>${off} · Kademe 2 · Elmasın: ${G.elmas||0}</small></div><button class="btn g" data-buy="${k}" ${G.tier<2||(G.elmas||0)<c?'disabled':''}>${c} 💎</button></div>`;
  return `<div class="row"><div class="n">${ad}<small>${on[m]}${m==='oto'?' · sonraki tur '+fmtT(otoLeft(k)):''}</small></div><div class="omode">${['oto','kosul','pasif'].map(x=>`<button data-om="${k}:${x}" class="${x===m?'on':''}">${OTO_AD[x]}</button>`).join('')}</div></div>`}
 /* Dokununca turu hemen başlat (bekleme süresi sıfırlanır) */
-function otoNow(k){if(!G[k]){toast(k==='trak'?'Traktör Ticaret menüsünden alınır':'Çırak Ticaret menüsünden alınır',1500);return}
- if(k==='trak'?TRB:CIB){toast(k==='trak'?'Traktör zaten çalışıyor':'Çırak zaten çalışıyor',1000);return}
+function otoNow(k){if(!G[k]){toast(k==='trak'?'Çiftçi Ticaret menüsünden alınır':'Çırak Ticaret menüsünden alınır',1500);return}
+ if(k==='trak'?TRB:CIB){toast(k==='trak'?'Çiftçi zaten çalışıyor':'Çırak zaten çalışıyor',1000);return}
  const A=k==='trak'?trakPlan(NOW()):cirPlan(NOW());if(!A.length){toast(k==='trak'?'Şu an hasat ya da ekim yapılacak tarla yok':'Şu an başlatılacak ya da toplanacak iş yok',1600);return}
  G[k+'Last']=NOW();sfx.tap&&sfx.tap();if(k==='trak')trakDrive(A);else if(cirChar())cirDrive(A);else{A.forEach(a=>a.fn());save()}}
 let CIRL=null;function cirLabel(){if(!G.cirak||CIRL)return;CIRL=label('islik',V(OI,0.02,2.45),'',true);CIRL.el.classList.add('sm');CIRL.el.onclick=()=>otoNow('cirak')}
 
 /* Çiftçi: bostanda traktörün yanında çalışan karakter */
-let FRM=null;function frmTick(dt){if(!G.trak||!TRACT||!TRACT.tg||!CHX.x_ciftci||view!=='bahce')return;const tg=TRACT.tg;if(!FRM){FRM=makeCustomer(CHX.x_ciftci);FRM.frm=true;const h=tg.userData.home||tg.position;FRM.g.position.set(h.x-0.75,0,h.z+0.25);anim(FRM,'idle')}
- const g=FRM.g;let to;if(TRB){const r=tg.rotation.y;to=V(tg.position.x-Math.sin(r)*0.95+Math.cos(r)*0.45,0,tg.position.z-Math.cos(r)*0.95-Math.sin(r)*0.45)}else{const h=tg.userData.home||tg.position;to=V(h.x-0.75,0,h.z+0.25)}
- const dx=to.x-g.position.x,dz=to.z-g.position.z,d=Math.hypot(dx,dz);if(d>0.06){const sp=Math.min(d,(d>1.2?2.4:1.5)*dt);g.position.x+=dx/d*sp;g.position.z+=dz/d*sp;let a=Math.atan2(dx,dz)-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*8);if(FRM.cur!=='walk')anim(FRM,'walk')}
- else{if(TRB){let a=tg.rotation.y-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*4)}else{let a=0.6-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*3)}if(FRM.cur==='walk')anim(FRM,'idle')}}
+let FRM=null;function frmTick(dt){if(!G.trak||!TRACT||!TRACT.tg||!CHX.x_ciftci||view!=='bahce')return;const tg=TRACT.tg;if(!FRM){FRM=makeCustomer(CHX.x_ciftci);FRM.frm=true;FRM.g.position.set(tg.position.x-Math.sin(tg.rotation.y)*0.62,0,tg.position.z-Math.cos(tg.rotation.y)*0.62);FRM.g.rotation.y=tg.rotation.y;anim(FRM,'idle')}
+ const g=FRM.g,r=tg.rotation.y,to=V(tg.position.x-Math.sin(r)*0.62,0,tg.position.z-Math.cos(r)*0.62);
+ const dx=to.x-g.position.x,dz=to.z-g.position.z,d=Math.hypot(dx,dz);if(d>0.04){const sp=Math.min(d,(d>1.2?2.4:1.3)*dt);g.position.x+=dx/d*sp;g.position.z+=dz/d*sp;let a=Math.atan2(dx,dz)-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*8);if(FRM.cur!=='walk')anim(FRM,'walk')}
+ else{let a=tg.rotation.y-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*5);if(FRM.cur==='walk')anim(FRM,'idle')}}
