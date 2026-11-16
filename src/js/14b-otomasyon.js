@@ -1,0 +1,57 @@
+/* ---------- otomasyon: traktör (bostan) ve çırak (atölye) · mod: oto / kosul / pasif ---------- */
+const OTO_P=1800,OTO_COST={cirak:5000,trak:10000},OTO_AD={oto:'Oto',kosul:'Koşullu',pasif:'Pasif'};
+function otoMode(k){return G[k]?(G[k+'M']||'oto'):'pasif'}
+function otoLeft(k){return Math.max(0,OTO_P-(NOW()-(G[k+'Last']||0)))}
+/* Bekleyen siparişlerin eksik malzemeleri; atölyede üretilebilenler tarifleriyle (make), kalanı ham olarak (raw) döner */
+function otoNeeds(){const want={},make=[],raw={},used={};Q.forEach(c=>{const o=c.order;if(!o||o.buy||!o.p||!o.p.need)return;Object.entries(o.p.need).forEach(([k,n])=>{if(k==='boya'){if(!o.color)return;k='boya_'+o.color.id}want[k]=(want[k]||0)+n})});
+ const go=(k,n,d)=>{const have=Math.max(0,(G.inv[k]||0)-(used[k]||0));used[k]=(used[k]||0)+Math.min(have,n);const lack=n-have;if(lack<=0)return;let rec=null;
+  if(d<3)for(const s of ST){if(!stOwned(s)||G.tier<s.tier)continue;const ok=r=>r.out[k]&&(!r.tier||G.tier>=r.tier),r=s.rec.find(r=>ok(r)&&hasAll(r.in))||s.rec.find(ok);if(r){rec={s,r};break}}
+  if(rec){const times=Math.ceil(lack/rec.r.out[k]);make.push({s:rec.s,r:rec.r,k,times});Object.entries(rec.r.in).forEach(([i,m])=>go(i,m*times,d+1))}else raw[k]=(raw[k]||0)+lack};
+ Object.entries(want).forEach(([k,n])=>go(k,n,0));return {raw,make}}
+/* Bir otomasyonun tur zamanlaması: kaçırılan turları anında işler, son turun eylemlerini döndürür */
+function otoRounds(k,plan){if(G[k+'Last']==null)G[k+'Last']=NOW()-OTO_P;let n=Math.floor((NOW()-G[k+'Last'])/OTO_P);if(n<=0)return [];if(n>48){G[k+'Last']=NOW()-48*OTO_P;n=48}
+ for(let i=1;i<n;i++)plan(G[k+'Last']+i*OTO_P).forEach(a=>a.fn());G[k+'Last']=NOW();return plan(NOW())}
+
+/* ---- traktör ---- */
+let TRB=null,trN=0;
+function plotSow(o,k,t){if(!o.own||o.seed||!(G.inv[k]>0))return false;G.inv[k]--;o.seed=k;o.w=true;o.dur=CROPS[k].s;o.end=t+o.dur;plotSync(o);return true}
+function plotHarv(o){const k=o.seed,c=CROPS[k];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;o.last=k;o.seed=null;o.w=false;plotSync(o);return k}
+function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t;
+ if(!kos){PL.forEach(o=>{if(!o.own)return;if(o.seed&&!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=t+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o)){const k=plotHarv(o);plotSow(o,k,t)}}});else if(!o.seed&&o.last&&G.inv[o.last]>0)A.push({o,fn:()=>plotSow(o,o.last,t)})});return A}
+ const raw=otoNeeds().raw;Object.keys(raw).forEach(m=>{const sk=Object.keys(CROPS).find(k=>CROPS[k].out===m);if(!sk)return;let lack=raw[m];
+  PL.forEach(o=>{if(!o.own||o.seed!==sk)return;lack-=CROPS[sk].n;if(!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=NOW()+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o))plotHarv(o)}})});
+  let sd=G.inv[sk]||0;PL.forEach(o=>{if(lack>0&&sd>0&&o.own&&!o.seed&&!A.some(a=>a.o===o)){lack-=CROPS[sk].n;sd--;A.push({o,fn:()=>plotSow(o,sk,NOW())})}})});return A}
+function trakFlush(){const B=TRB;if(!B)return;TRB=null;B.q.forEach(a=>a.fn());B.tg.position.copy(B.home);B.tg.rotation.y=Math.PI;save()}
+function trakDrive(acts){const tg=TRACT.tg,B=TRB={q:acts.slice(),tg,home:tg.userData.home||(tg.userData.home=tg.position.clone())};
+ const drive=(to,cb)=>{const fr=tg.position.clone(),d=fr.distanceTo(to),dur=Math.max(0.25,d/1.5),r0=tg.rotation.y;let da=Math.atan2(to.x-fr.x,to.z-fr.z)-r0;da=Math.atan2(Math.sin(da),Math.cos(da));
+  tweenLin(dur,u=>{if(TRB!==B)return;const e=u*u*(3-2*u);tg.position.lerpVectors(fr,to,e);tg.position.y=Math.abs(Math.sin(tt*16))*0.012;tg.rotation.y=r0+da*Math.min(1,u*dur/0.35);if(Math.random()<0.18)puff(V(tg.position.x,0.08,tg.position.z),1,'#cbb894')},()=>{if(TRB===B)cb()})};
+ const step=()=>{if(TRB!==B)return;const a=B.q[0];if(!a){drive(B.home,()=>{const r0=tg.rotation.y;let da=Math.PI-r0;da=Math.atan2(Math.sin(da),Math.cos(da));tweenLin(0.4,u=>{tg.rotation.y=r0+da*u},()=>{tg.position.y=0;if(TRB===B)TRB=null;save()})});return}
+  const p=a.o.g.position;drive(V(p.x-1.05,0,p.z),()=>drive(V(p.x,0,p.z),()=>{B.q.shift();a.fn();burst(p,'#e8d8a0',5,'up');sfx.pick&&sfx.pick();drive(V(p.x+1.05,0,p.z),step)}))};step()}
+function trakTick(){if(!G.trak)return;const m=otoMode('trak');if(TRACT){const t=`🚜 Traktör<small>${m==='oto'?'Oto · sonraki tur '+fmtT(otoLeft('trak')):m==='kosul'?'Koşullu · sipariş bekliyor':'Pasif'}</small>`;if(t!==TRACT.last){TRACT.last=t;TRACT.el.classList.remove('lock');TRACT.el.innerHTML=t}}
+ if(TRB){if(view!=='bahce'||document.hidden||!G.started)trakFlush();return}let A=[];
+ if(m==='oto')A=otoRounds('trak',t=>trakPlan(t));else if(m==='kosul'){if(++trN%4)return;A=trakPlan(NOW(),true)}if(!A.length)return;
+ if(G.started&&view==='bahce'&&!document.hidden&&TRACT&&TRACT.tg)trakDrive(A);else{A.forEach(a=>a.fn());if(G.started)save()}}
+
+/* ---- çırak ---- */
+let CIR=null,CIB=null,ciN=0;const CIR_REST=()=>V(OI,0,1.9);
+function stFinish(s,t){const dn=s.jobs.filter(j=>t>=j.end);if(!dn.length)return;s.jobs=s.jobs.filter(j=>t<j.end);s.ready=s.ready||{};dn.forEach(j=>Object.entries(j.r.out).forEach(([k,n])=>s.ready[k]=(s.ready[k]||0)+n))}
+function stCollect(s){if(!s.ready)return;const tot=Object.values(s.ready).reduce((a,b)=>a+b,0);if(invTotal()+tot>capOf('d'))return;giveAll(s.ready);G.st.proc++;s.ready=null}
+function stStart(s,r,t){if(s.ready||s.jobs.length>=(s.lvl||1)||!hasAll(r.in))return false;giveAll(r.in,-1);s.jobs.push({r,end:t+r.s*spdOf(s)});return true}
+function otoPending(s,k){let n=s.ready?s.ready[k]||0:0;s.jobs.forEach(j=>n+=j.r.out[k]||0);return n}
+function cirPlan(t,kos){const A=[],done=s=>!!s.ready||s.jobs.some(j=>t>=j.end);
+ if(!kos){ST.forEach(s=>{if(!stOwned(s)||G.tier<s.tier)return;const pickR=()=>{const ri=(G.stLast||{})[s.id];let r=ri!=null?s.rec[ri]:null;if(!r||!hasAll(r.in))r=s.rec.find(r=>(!r.tier||G.tier>=r.tier)&&hasAll(r.in));return r};
+   if(done(s)||(pickR()&&s.jobs.length<(s.lvl||1)))A.push({s,fn:()=>{stFinish(s,t);stCollect(s);const r=pickR();if(r)while(stStart(s,r,t)){}}})});return A}
+ otoNeeds().make.forEach(({s,r,k,times})=>{if(A.some(a=>a.s===s))return;const lack=()=>otoPending(s,k)<times*r.out[k];if(done(s)||(lack()&&!s.ready&&s.jobs.length<(s.lvl||1)&&hasAll(r.in)))A.push({s,fn:()=>{stFinish(s,NOW());stCollect(s);while(lack()&&stStart(s,r,NOW())){}}})});return A}
+function cirChar(){if(CIR||!CHR.length)return CIR;CIR=makeCustomer();CIR.cirak=true;CIR.g.scale.setScalar(0.86);CIR.g.position.copy(CIR_REST());CIR.g.rotation.y=0;return CIR}
+function cirFlush(){const B=CIB;if(!B)return;CIB=null;B.q.forEach(a=>a.fn());if(CIR){CIR.tok++;CIR.walking=false;anim(CIR,'idle');CIR.g.position.copy(CIR_REST())}save()}
+function cirDrive(acts){const c=CIR,B=CIB={q:acts.slice()},go=(to,cb)=>{c.walking=true;anim(c,'walk');walk(c,to,Math.max(0.3,c.g.position.distanceTo(to)/1.3),()=>{c.walking=false;anim(c,'idle');if(CIB===B)cb()})};
+ const step=()=>{if(CIB!==B)return;const a=B.q[0];if(!a){go(CIR_REST(),()=>{CIB=null;save()});return}const p=a.s.g.position,sd=p.x<OI?1:-1;
+  go(V(p.x+sd*0.95,0,p.z),()=>{c.g.rotation.y=sd>0?-Math.PI/2:Math.PI/2;const d=STSND[a.s.id];if(d&&ANS[d[0]])ANS[d[0]]();
+   tweenLin(1.2,u=>{if(CIB!==B)return;c.g.position.y=Math.abs(Math.sin(u*Math.PI*4))*0.035;if(Math.random()<0.12)puff(V(p.x,0.9,p.z),1,'#e8d8b8')},()=>{c.g.position.y=0;if(CIB!==B)return;B.q.shift();a.fn();sfx.pick&&sfx.pick();step()})})};step()}
+function cirakTick(){if(!G.cirak)return;G.stLast=G.stLast||{};const m=otoMode('cirak');if(view==='islik'&&G.started)cirChar();
+ if(CIB){if(view!=='islik'||document.hidden||!G.started)cirFlush();return}let A=[];
+ if(m==='oto')A=otoRounds('cirak',t=>cirPlan(t));else if(m==='kosul'){if(++ciN%4)return;A=cirPlan(NOW(),true)}if(!A.length)return;
+ if(G.started&&view==='islik'&&!document.hidden&&cirChar())cirDrive(A);else{A.forEach(a=>a.fn());if(G.started)save()}}
+/* Ticaret menüsündeki satır */
+function otoRow(k,ad,off,on){const own=G[k],c=OTO_COST[k],m=otoMode(k);if(!own)return `<div class="row"><div class="n">${ad}<small>${off} · Kademe 2</small></div><button class="btn g" data-buy="${k}" ${G.tier<2||G.gold<c?'disabled':''}>${c} altın</button></div>`;
+ return `<div class="row"><div class="n">${ad}<small>${on[m]}${m==='oto'?' · sonraki tur '+fmtT(otoLeft(k)):''}</small></div><div class="omode">${['oto','kosul','pasif'].map(x=>`<button data-om="${k}:${x}" class="${x===m?'on':''}">${OTO_AD[x]}</button>`).join('')}</div></div>`}
