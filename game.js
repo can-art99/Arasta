@@ -337,7 +337,7 @@ const gSun=new THREE.DirectionalLight('#fff0d0',1.35);gSun.position.set(OB-6,10,
 gSun.shadow.mapSize.set(LOW?1024:2048,LOW?1024:2048);Object.assign(gSun.shadow.camera,{left:-8,right:8,top:8,bottom:-8,near:1,far:30});gSun.shadow.bias=-0.0006;
 const pSun=new THREE.DirectionalLight('#fff0d0',1.3);pSun.position.set(OP-5,10,6);pSun.target.position.set(OP,0,-0.5);S.add(pSun.target);S.add(pSun);pSun.shadow.mapSize.set(LOW?1024:2048,LOW?1024:2048);Object.assign(pSun.shadow.camera,{left:-8,right:8,top:8,bottom:-8,near:1,far:30});pSun.shadow.bias=-0.0006;
 const dL=new THREE.PointLight('#ffc888',2.1,16,2);dL.position.set(OD,3.2,1.2);dL.shadow.mapSize.set(LOW?512:1024,LOW?512:1024);dL.shadow.bias=-0.002;S.add(dL);
-const LIGHTS={home:[[sun,1.5],[lamp,1.4],[benchL,0.7],[hemi,0.45]],islik:[[iL1,2.3],[iL2,0.9],[hemi,0.85]],bahce:[[gSun,1.35],[hemi,0.85]],pazar:[[pSun,1.05],[hemi,0.55]],depo:[[dL,2.1],[hemi,0.75]]};
+const LIGHTS={home:[[sun,1.5],[lamp,1.4],[benchL,0.7],[hemi,0.45]],islik:[[iL1,2.3],[iL2,0.9],[hemi,0.85]],bahce:[[gSun,1.2],[hemi,0.5]],pazar:[[pSun,1.05],[hemi,0.4]],depo:[[dL,2.1],[hemi,0.75]]};
 const SHAD={home:[sun],islik:[iL1],bahce:[gSun],pazar:[pSun],depo:[dL]};
 const BGS={home:'#2b1d12',islik:'#1e140c',bahce:'#a9d3e8',pazar:'#a9d3e8',depo:'#1e140c'};
 function setLights(v){const k=(v==='bench'||v==='vitrin')?'home':v;[sun,lamp,benchL,iL1,iL2,gSun,pSun,dL].forEach(l=>{l.visible=false;l.castShadow=false});LIGHTS[k].forEach(([l,i])=>{l.intensity=i;l.visible=true});SHAD[k].forEach(l=>l.castShadow=true);R.shadowMap.needsUpdate=true;S.background.set(BGS[k])}
@@ -927,9 +927,11 @@ let camTok=0;
 function moveCam(to,dur,done){const id=++camTok,fp=camCur.p.clone(),fl=camCur.l.clone();tween(dur,k=>{if(id!==camTok)return;camCur.p.lerpVectors(fp,to.p,k);camCur.l.lerpVectors(fl,to.l,k)},()=>{if(id===camTok&&done)done()})}
 /* ---------- 3D modeller ---------- */
 const CHR=[],ALLC=[];let DOORH=null;
+/* Stil rehberi: hazır modellerin renklerini oyunun sıcak, toprak tonlu paletine çeker (aşırı doygunluk ve parlaklık kırpılır, hafif sıcak ton) */
+function harmon(c){const h={};c.getHSL(h);if(h.s>0.58)h.s=0.58+(h.s-0.58)*0.3;h.l=Math.min(0.84,Math.max(0.1,h.l));c.setHSL(h.h,h.s,h.l);c.r=Math.min(1,c.r*1.03);c.b*=0.94;return c}
 function prepModel(sc,nc){sc.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.frustumCulled=!o.isSkinnedMesh;const ga=o.geometry.attributes;if(!ga.normal)o.geometry.computeVertexNormals();(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(m.userData.prep)return;m.userData.prep=1;
 
-if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}else{if(!nc)m.color.convertLinearToSRGB().multiplyScalar(1.12);m.flatShading=true}m.roughness=0.85;m.metalness=0;m.needsUpdate=true})}})}
+if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}else{if(!nc)m.color.convertLinearToSRGB().multiplyScalar(1.12);harmon(m.color);m.flatShading=true}m.roughness=0.85;m.metalness=0;m.needsUpdate=true})}})}
 const NOCONV=new Set(['wb_big','bookcase_open','scissors','scissors2','wallshelf']),OVR={wb_grind:{wood:'#a8743e',woodDark:'#6b4528',metal:'#9aa0a8'},wb_kenney:{wood:'#a8743e',woodDark:'#6b4528',metal:'#9aa0a8',rock:'#e8dcc0'},handsaw:{lambert3SG:'#c4c8cc',lambert4SG:'#3a3a3a',lambert2SG:'#8a3a20'},scissors2:{Handle1Scissors1:'#b8402e',Steel1Scissors1:'#cfd3d8'},pine:{Bark_NormalTree:'#6b4a2b',Leaves_Pine:'#46733a'},m_rasp:{F44336:'#4a2350',FFFFFF:'#3f6a34'},m_coco:{_crayfishdiffuse:'#6b4a2b'},m_pondJ:{'8BC34A':'#7a9a50','4CAF50':'#6a8a44','039BE5':'#3a86c0','00BCD4':'#4aa0c8'},m_rocks:{'Material.040':'#8d8a84'},m_orn:{_crayfishdiffuse:'#c9a23a'},m_mulberry:{mat9:'#4a7a34',mat20:'#5a3a22'}},FLP=['#4f7a3a','#f2c230','#d9534f','#f4f0e6','#8a5bd0','#5f8a44','#f29ac0'],MIX=[];
 /* Hareketsiz GLB modellerinde aynı malzemeyi kullanan parçaları tek ağda birleştirir (çizim çağrısını azaltır) */
 function mergeStatic(g){if(g.animations&&g.animations.length)return;const sc=g.scene,ms=[];let bad=false;sc.updateMatrixWorld(true);
