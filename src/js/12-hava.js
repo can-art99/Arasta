@@ -41,6 +41,7 @@ function musSched(){if(!AC||!MU.g||!G.mus||AC.state!=='running')return;if(SB.muz
 while(MU.next<AC.currentTime+0.6){const t=MU.next,st=MU.step,ch=CH[Math.floor(st/8)%4];
 if(st%8===0){ch.forEach(m=>mv(hz(m),t,be*4+0.6,'triangle',0.016,1.1,1.3,false));mv(hz(ch[0]-12),t,be*1.8,'sine',0.07,0.03,1.2,false)}
 if(st%8===4)mv(hz(ch[0]-12),t,be*1.6,'sine',0.05,0.03,1.1,false);
+if(st%2===0&&st%8!==0&&Math.random()<0.5)mv(hz(ch[1+Math.floor(Math.random()*(ch.length-1))]),t,be*1.4,'sine',0.026,0.12,0.9,false);
 
 MU.next+=e;MU.step++}}
 setInterval(musSched,140);

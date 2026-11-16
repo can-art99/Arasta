@@ -16,8 +16,12 @@ function otoRounds(k,plan){if(G[k+'Last']==null)G[k+'Last']=NOW()-OTO_P;let n=Ma
 let TRB=null,trN=0;
 function plotSow(o,k,t){if(!o.own||o.seed||!(G.inv[k]>0))return false;G.inv[k]--;o.seed=k;o.w=true;o.dur=CROPS[k].s;o.end=t+o.dur;plotSync(o);return true}
 function plotHarv(o){const k=o.seed,c=CROPS[k];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;o.last=k;o.seed=null;o.w=false;plotSync(o);return k}
+/* Tedarikçi ve tohumcu stoğu: 12 saatte bir yenilenir */
+const STK_P=12*3600,STK_SEED={tohum_pamuk:12,tohum_civit:10,tohum_kokboya:10,tohum_papatya:10,tohum_keten:8},STK_SUP=3;
+function stk(){if(!G.stk||NOW()-(G.stk.t||0)>=STK_P){const t0=G.stk&&G.stk.t?G.stk.t+Math.floor((NOW()-G.stk.t)/STK_P)*STK_P:NOW();G.stk={t:t0,s:{...STK_SEED},p:SUPPLY.map(()=>STK_SUP)}}return G.stk}
+function stkLeft(){return fmtT(Math.max(0,stk().t+STK_P-NOW()))}
 /* Oto modda sıradaki tohum: eldeki tohumlar arasında döner; hiç yoksa Tohumcu fiyatından satın alır */
-function trakSeed(dry){const L=Object.keys(CROPS).filter(k=>!CROPS[k].t||G.tier>=CROPS[k].t),n=L.length;for(let i=0;i<n;i++){const j=((G.trakI||0)+i)%n,k=L[j];if(G.inv[k]>0||G.gold>=CROPS[k].f){if(dry)return k;if(!(G.inv[k]>0)){G.gold-=CROPS[k].f;G.inv[k]=(G.inv[k]||0)+1;hud()}G.trakI=j+1;return k}}return null}
+function trakSeed(dry){const L=Object.keys(CROPS).filter(k=>!CROPS[k].t||G.tier>=CROPS[k].t),n=L.length;for(let i=0;i<n;i++){const j=((G.trakI||0)+i)%n,k=L[j];if(G.inv[k]>0||(G.gold>=CROPS[k].f&&(stk().s[k]||0)>0)){if(dry)return k;if(!(G.inv[k]>0)){G.gold-=CROPS[k].f;stk().s[k]--;G.inv[k]=(G.inv[k]||0)+1;hud()}G.trakI=j+1;return k}}return null}
 function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t&&!hzOf('P'+PL.indexOf(o));
  if(!kos){PL.forEach(o=>{if(!o.own)return;if(o.seed&&!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=t+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o)){plotHarv(o);const k=trakSeed();if(k)plotSow(o,k,t)}}});else if(!o.seed&&trakSeed(1))A.push({o,fn:()=>{if(!o.seed){const k=trakSeed();if(k)plotSow(o,k,t)}}})});return A}
  const raw=otoNeeds().raw;Object.keys(raw).forEach(m=>{const sk=Object.keys(CROPS).find(k=>CROPS[k].out===m);if(!sk)return;let lack=raw[m];
