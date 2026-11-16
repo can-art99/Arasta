@@ -43,4 +43,20 @@ function bRoll(){moveCam({p:V(0,1.95,2.5),l:V(0,Y+0.05,BC.z-0.06)},0.7);const C=
  K.pm=p=>{toolAt(V(p.x,0,p.z),'cl',K.top+0.05);if(la==null)return;const a=Math.atan2(p.z-(BC.z-0.05),p.x-BC.x);let d=a-la;d=Math.atan2(Math.sin(d),Math.cos(d));la=a;all++;if(Math.hypot(p.x-BC.x,p.z-BC.z)<0.4)ok++;acc+=Math.abs(d);
   const k=Math.min(1,acc/(Math.PI*2*1.3)),th=th0+(Math.PI*2-th0)*k;if(tt-lastDraw>0.05||k>=1){lastDraw=tt;draw(th)}tipStep(`Kıvırma %${Math.round(k*100)}`);if(tt-(K.rsn||0)>0.25){K.rsn=tt;noise(0.12,0.03,500,0.4,0,200)}
   if(k>=1){hookClear();toolUp();sfx.good();moveCam(VIEWS.bench,0.6);fin(clamp(1.25-(tt-t0)/8-(all?(1-ok/all)*0.3:0),0.4,1),'Taç halkası tamam!')}};
- K.pu=()=>{la=null;toolUp()};K.skipFn=()=>{draw(Math.PI*2);moveCam(VIEWS.bench,0.5)};tipStep('Parmağınla plakanın etrafında daire çizerek kıvır')}
+ K.pu=()=>{la=null;toolUp()};K.skipFn=()=>{draw(Math.PI*2);moveCam(VIEWS.bench,0.5)};tipStep('Parmağınla plakanın etrafında daire çizerek kıvır')}/* Ahşap kalemlik: şeridi buharla ısıt, sonra daire çizerek silindire bük */
+function bWoodBend(){toolUp();const col=K.p.sheet,L=0.5,h=0.13,base=V(BC.x,K.top,BC.z);if(K.piece)K.piece.visible=false;
+ const wm=M(col,0.85);wm.side=THREE.DoubleSide;const R=new THREE.Group();K.work.add(R);let heat=0,acc=0,la=null,ph='heat',t0=tt,ok=0,all=0,hold=false;
+ const draw=th=>{R.clear();if(th<0.02){put(R,B(L,h,0.012),wm,0,h/2,0);return}const r=L/th;R.position.set(base.x,base.y,base.z-r+0.02);const c=put(R,new THREE.CylinderGeometry(r,r,h,48,1,true,-th/2,th),wm,0,h/2,0);c.castShadow=true;
+  if(th>Math.PI*1.95){const b=put(R,Cy(r,r,0.01,32),M(col,0.85),0,0.005,0);b.castShadow=true}};
+ R.position.copy(base);R.rotation.x=0;draw(0);
+ const kt=new THREE.Group();kt.position.set(BC.x+0.42,Y,BC.z+0.18);K.work.add(kt);put(kt,Cy(0.07,0.09,0.12,14),M('#5a5f66',0.4),0,0.06,0);put(kt,Cy(0.015,0.02,0.09,8),M('#5a5f66',0.4),-0.07,0.1,0).rotation.z=1.1;put(kt,Cy(0.03,0.07,0.02,14),M('#3a3e44',0.4),0,0.125,0);
+ ui.act.innerHTML='<div class="gauge"><div class="gf" id="gf" style="width:0%;background:linear-gradient(90deg,#bfe3f2,#e9a65a)"></div></div>';const b=btn('♨️ Buharla (basılı tut)','g',()=>{});b.style.minWidth='60%';b.onpointerdown=e=>{e.preventDefault();hold=true};b.onpointerup=b.onpointerleave=b.onpointercancel=()=>{hold=false};b.oncontextmenu=e=>e.preventDefault();ui.act.appendChild(b);
+ K.tick=dt=>{dt=dt||0.016;if(ph!=='heat')return;if(Math.random()<0.35)puff(V(kt.position.x-0.13,Y+0.2,kt.position.z-0.02),1,'#f4f7f8');
+  if(hold){heat=Math.min(1,heat+dt/2.2);for(let i=0;i<2;i++)if(Math.random()<0.6)puff(V(base.x+(Math.random()-0.5)*L,K.top+0.06+Math.random()*0.05,base.z+(Math.random()-0.5)*0.02),1,'#eef3f6');if(Math.random()<0.1)noise(0.3,0.015,3000,0.8)}
+  wm.color.set(col).lerp(new THREE.Color('#5a3a20'),heat*0.35);const g=$('gf');if(g)g.style.width=(heat*100)+'%';tipStep(hold?`Isınıyor · %${Math.round(heat*100)}`:'Butona basılı tut, buhar tahtayı yumuşatsın');
+  if(heat>=1){ph='bend';ui.act.innerHTML='';sfx.good();tween(0.4,k=>kt.scale.setScalar(Math.max(0.01,1-k)),()=>K.work.remove(kt));tipStep('Tahta yumuşadı · parmağınla daire çizerek bük')}};
+ K.pd=p=>{if(ph==='bend')la=Math.atan2(p.z-base.z,p.x-base.x)};
+ K.pm=p=>{if(ph!=='bend'||la==null)return;toolAt(V(p.x,0,p.z),'cl',K.top+0.08);const a=Math.atan2(p.z-base.z,p.x-base.x);let d=a-la;d=Math.atan2(Math.sin(d),Math.cos(d));la=a;all++;if(Math.hypot(p.x-base.x,p.z-base.z)<0.45)ok++;acc+=Math.abs(d);
+  const k=Math.min(1,acc/(Math.PI*2*1.2));draw(0.02+(Math.PI*2-0.02)*k);tipStep(`Bükme %${Math.round(k*100)}`);if(tt-(K.rsn||0)>0.3){K.rsn=tt;noise(0.12,0.025,420,0.5,0,180)}
+  if(k>=1){ph='done';K.tick=null;toolUp();sfx.punch();puff(V(base.x,K.top+0.08,base.z),4,'#d8b88a');fin(clamp(1.25-(tt-t0)/14-(all?(1-ok/all)*0.4:0),0.45,1),'Tahta büküldü, kalemlik şekillendi!')}};
+ K.pu=()=>{la=null};K.skipFn=()=>{K.tick=null;K.work.remove(R);K.work.remove(kt)};tipStep('Butona basılı tut, buhar tahtayı yumuşatsın')}
