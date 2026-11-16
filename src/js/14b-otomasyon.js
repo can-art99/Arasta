@@ -16,8 +16,10 @@ function otoRounds(k,plan){if(G[k+'Last']==null)G[k+'Last']=NOW()-OTO_P;let n=Ma
 let TRB=null,trN=0;
 function plotSow(o,k,t){if(!o.own||o.seed||!(G.inv[k]>0))return false;G.inv[k]--;o.seed=k;o.w=true;o.dur=CROPS[k].s;o.end=t+o.dur;plotSync(o);return true}
 function plotHarv(o){const k=o.seed,c=CROPS[k];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;o.last=k;o.seed=null;o.w=false;plotSync(o);return k}
+/* Oto modda sıradaki tohum: eldeki tohumlar arasında döner; hiç yoksa Tohumcu fiyatından satın alır */
+function trakSeed(dry){const L=Object.keys(CROPS).filter(k=>!CROPS[k].t||G.tier>=CROPS[k].t),n=L.length;for(let i=0;i<n;i++){const j=((G.trakI||0)+i)%n,k=L[j];if(G.inv[k]>0||G.gold>=CROPS[k].f){if(dry)return k;if(!(G.inv[k]>0)){G.gold-=CROPS[k].f;G.inv[k]=(G.inv[k]||0)+1;hud()}G.trakI=j+1;return k}}return null}
 function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t;
- if(!kos){PL.forEach(o=>{if(!o.own)return;if(o.seed&&!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=t+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o)){const k=plotHarv(o);plotSow(o,k,t)}}});else if(!o.seed&&o.last&&G.inv[o.last]>0)A.push({o,fn:()=>plotSow(o,o.last,t)})});return A}
+ if(!kos){PL.forEach(o=>{if(!o.own)return;if(o.seed&&!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=t+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o)){plotHarv(o);const k=trakSeed();if(k)plotSow(o,k,t)}}});else if(!o.seed&&trakSeed(1))A.push({o,fn:()=>{if(!o.seed){const k=trakSeed();if(k)plotSow(o,k,t)}}})});return A}
  const raw=otoNeeds().raw;Object.keys(raw).forEach(m=>{const sk=Object.keys(CROPS).find(k=>CROPS[k].out===m);if(!sk)return;let lack=raw[m];
   PL.forEach(o=>{if(!o.own||o.seed!==sk)return;lack-=CROPS[sk].n;if(!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=NOW()+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o))plotHarv(o)}})});
   let sd=G.inv[sk]||0;PL.forEach(o=>{if(lack>0&&sd>0&&o.own&&!o.seed&&!A.some(a=>a.o===o)){lack-=CROPS[sk].n;sd--;A.push({o,fn:()=>plotSow(o,sk,NOW())})}})});return A}
@@ -39,8 +41,8 @@ function stCollect(s){if(!s.ready)return;const tot=Object.values(s.ready).reduce
 function stStart(s,r,t){if(s.ready||s.jobs.length>=(s.lvl||1)||!hasAll(r.in))return false;giveAll(r.in,-1);s.jobs.push({r,end:t+r.s*spdOf(s)});return true}
 function otoPending(s,k){let n=s.ready?s.ready[k]||0:0;s.jobs.forEach(j=>n+=j.r.out[k]||0);return n}
 function cirPlan(t,kos){const A=[],done=s=>!!s.ready||s.jobs.some(j=>t>=j.end);
- if(!kos){ST.forEach(s=>{if(!stOwned(s)||G.tier<s.tier)return;const pickR=()=>{const ri=(G.stLast||{})[s.id];let r=ri!=null?s.rec[ri]:null;if(!r||!hasAll(r.in))r=s.rec.find(r=>(!r.tier||G.tier>=r.tier)&&hasAll(r.in));return r};
-   if(done(s)||(pickR()&&s.jobs.length<(s.lvl||1)))A.push({s,fn:()=>{stFinish(s,t);stCollect(s);const r=pickR();if(r)while(stStart(s,r,t)){}}})});return A}
+ if(!kos){ST.forEach(s=>{if(!stOwned(s)||G.tier<s.tier)return;const pickR=dry=>{G.cirI=G.cirI||{};const n=s.rec.length;for(let i=0;i<n;i++){const j=((G.cirI[s.id]||0)+i)%n,r=s.rec[j];if((!r.tier||G.tier>=r.tier)&&hasAll(r.in)){if(!dry)G.cirI[s.id]=j+1;return r}}return null};
+   if(done(s)||(pickR(1)&&s.jobs.length<(s.lvl||1)))A.push({s,fn:()=>{stFinish(s,t);stCollect(s);for(let i=0;i<(s.lvl||1);i++){const r=pickR();if(!r||!stStart(s,r,t))break}}})});return A}
  otoNeeds().make.forEach(({s,r,k,times})=>{if(A.some(a=>a.s===s))return;const lack=()=>otoPending(s,k)<times*r.out[k];if(done(s)||(lack()&&!s.ready&&s.jobs.length<(s.lvl||1)&&hasAll(r.in)))A.push({s,fn:()=>{stFinish(s,NOW());stCollect(s);while(lack()&&stStart(s,r,NOW())){}}})});return A}
 function cirChar(){if(CIR||!CHR.length)return CIR;CIR=makeCustomer();CIR.cirak=true;CIR.g.scale.setScalar(0.86);CIR.g.position.copy(CIR_REST());CIR.g.rotation.y=0;return CIR}
 function cirFlush(){const B=CIB;if(!B)return;CIB=null;B.q.forEach(a=>a.fn());if(CIR){CIR.tok++;CIR.walking=false;anim(CIR,'idle');CIR.g.position.copy(CIR_REST())}save()}
