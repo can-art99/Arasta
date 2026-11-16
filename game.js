@@ -1195,6 +1195,29 @@ function tutShow(i){i=i||0;const t=TUT[i];openSheet('tut',`<h3>${t[0]}</h3><p st
 const DEC3=[];function decoTier(){if(!DEC3.length){[[2,'flowerpot',{x:-2.6,z:1.2,h:0.9}],[2,'flowerpot',{x:2.6,z:1.2,h:0.9,ry:2}],[3,'barrel',{x:-2.55,z:2.9,h:0.6}],[3,'chest',{x:2.5,z:2.9,w:0.6,ry:-Math.PI/2}]].forEach(q=>{const it={t:q[0],g:null};DEC3.push(it);place(q[1],Object.assign({},q[2],{cb:w=>{it.g=w;w.visible=G.tier>=it.t}}))})}DEC3.forEach(it=>{if(it.g)it.g.visible=G.tier>=it.t})}
 /* ---------- ses seviyesi / titreşim ---------- */
 let MG=null;function OUT(){if(!MG){MG=AC.createGain();MG.gain.value=G.vol!=null?G.vol:1;MG.connect(AC.destination)}return MG}
+/* ---------- ortam sesleri ---------- */
+function vox(pts,type,vol,delay,lp){const a=AC;if(!a||!G.snd||document.hidden)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain(),d=pts[pts.length-1][0];o.type=type||'sine';o.frequency.setValueAtTime(pts[0][1],t);pts.slice(1).forEach(([q,f])=>o.frequency.linearRampToValueAtTime(f,t+q));g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(0.06,d*0.25));g.gain.setValueAtTime(vol,t+d*0.7);g.gain.exponentialRampToValueAtTime(0.0001,t+d);let n=o;if(lp){const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;o.connect(f);n=f}n.connect(g);g.connect(OUT());o.start(t);o.stop(t+d+0.05)}
+const vib8=(f0,f1,d,r,dep)=>{const P=[];for(let i=0;i<=24;i++){const q=i/24*d;P.push([q,f0+(f1-f0)*i/24+Math.sin(q*r*Math.PI*2)*dep])}return P};
+const ANS={
+ moo:()=>{vox([[0,135],[0.18,150],[0.9,118],[1.25,100]],'sawtooth',0.03,0,520);vox([[0,270],[0.18,300],[0.9,236],[1.25,200]],'triangle',0.008,0,900)},
+ rooster:()=>vox([[0,480],[0.12,820],[0.3,860],[0.45,980],[0.8,900],[1.05,560]],'sawtooth',0.014,0,2000),
+ hen:()=>{const n=3+Math.floor(Math.random()*3);for(let i=0;i<n;i++)vox([[0,640],[0.04,900],[0.09,600]],'square',0.006,i*0.14+Math.random()*0.04,1600)},
+ horse:()=>vox(vib8(1150,560,1.1,11,90),'sawtooth',0.012,0,2400),
+ sheep:()=>vox(vib8(390,340,0.75,7,28),'sawtooth',0.014,0,1300),
+ bird:()=>{const b=2400+Math.random()*1600,n=2+Math.floor(Math.random()*4),k=Math.random();for(let i=0;i<n;i++){const d=i*(0.11+k*0.08);if(k<0.4)vox([[0,b],[0.05,b*1.35],[0.09,b*1.1]],'sine',0.011,d);else if(k<0.75)vox([[0,b*1.3],[0.07,b*0.85]],'sine',0.01,d);else vox([[0,b],[0.03,b*1.2],[0.06,b],[0.09,b*1.25]],'sine',0.009,d)}},
+ hammer:()=>{tone(1900+Math.random()*200,0.14,'triangle',0.02);tone(3100,0.08,'sine',0.009);noise(0.05,0.025,900,1)},
+ spin:()=>{noise(0.5,0.008,380,2.5);for(let i=0;i<4;i++)tone(260,0.025,'square',0.004,null,i*0.12)},
+ boil:()=>{const n=2+Math.floor(Math.random()*4);for(let i=0;i<n;i++){const f=180+Math.random()*320;tone(f,0.07,'sine',0.018,f*1.8,i*0.09+Math.random()*0.05)}},
+ slosh:()=>noise(0.45,0.012,520,1,0,280),
+ press:()=>vox([[0,150],[0.35,118]],'sawtooth',0.008,0,500),
+ saw:()=>{noise(0.22,0.018,2400,1.5);noise(0.22,0.016,2000,1.5,0.28)},
+ wheel:()=>noise(0.9,0.008,240,3),
+ loom:()=>{noise(0.05,0.03,1300,2);noise(0.05,0.025,1100,2,0.3)}};
+const STSND={ors:['hammer',1.4],cikrik:['spin',0.9],kazan:['boil',0.7],fici:['slosh',2.6],pres:['press',2.8],testere:['saw',1.8],cark:['wheel',1.1],dokuma:['loom',1.5]};
+const AMT={};function ambTick(dt){if(!AC||!G.snd||document.hidden||G.phase==='craft'||G.phase==='result'||switching)return;
+ if(view==='islik'){ST.forEach(s=>{const d=STSND[s.id];if(!d||!s.jobs||!s.jobs.length||s.ready)return;AMT[s.id]=(AMT[s.id]||Math.random()*d[1])-dt;if(AMT[s.id]<=0){AMT[s.id]=d[1]*(0.75+Math.random()*0.5);ANS[d[0]]()}})}
+ else if(view==='bahce'){const z=Math.round((camCur.l.x+ZM.px-OB)/11);AMT.b=(AMT.b==null?2:AMT.b)-dt;if(AMT.b>0)return;
+  if(z<0){AMT.b=3.5+Math.random()*5;ANS[pick(['moo','moo','hen','hen','rooster','horse','sheep'])]()}else if(z>0){AMT.b=1.5+Math.random()*3.5;ANS.bird()}else{AMT.b=5+Math.random()*6;ANS[Math.random()<0.7?'bird':'hen']()}}}
 function vib(p){if(G.vib===false||!navigator.vibrate)return;try{navigator.vibrate(p)}catch(e){}}
 
 /* ---------- bildirim, servis çalışanı, sen yokken ---------- */
@@ -1780,6 +1803,15 @@ function stationLabels(){ST.forEach(s=>{const own=stOwned(s);if(s.m.visible!==ow
 const t=lk?`${s.ad}<small>Kademe ${s.tier}</small>`:s.ready?`${s.ad}<small>Hazır! Topla${cap}</small>`:s.jobs.length?`${s.ad}<small>${fmtT(Math.min(...s.jobs.map(j=>j.end))-NOW())}${cap}</small>`:`${s.ad}<small>Boşta${cap}</small>`;
 if(t!==s.lbl.last){s.lbl.el.innerHTML=t;s.lbl.last=t;s.lbl.el.classList.toggle('lock',lk);s.lbl.el.classList.toggle('rdy',st===3);s.base.material.color.set(['#3d2c20','#6e4a2c','#b8742a','#6fae4a'][st])}})}
 
+const ISX={ors:[1.1,0.5,()=>{const v=0.9+Math.random()*0.2;tone(1700*v,0.09,'triangle',0.02,1350*v);tone(2650*v,0.06,'sine',0.009);noise(0.04,0.012,3200,1);if(Math.random()<0.35){tone(1700*v,0.07,'triangle',0.014,1350*v,0.22);noise(0.03,0.009,3200,1,0.22)}}],
+cikrik:[0.55,0.15,()=>{noise(0.45,0.007,420,1.6,0,520);tone(230,0.03,'triangle',0.006)}],
+kazan:[0.22,0.35,()=>{const f=170+Math.random()*160;tone(f,0.07,'sine',0.012,f*1.7)}],
+fici:[2.2,1.2,()=>{noise(0.4,0.01,650,0.8,0,330)}],
+kalip:[2.4,0.8,()=>{tone(95,0.16,'sine',0.022,62);noise(0.25,0.006,380,2,0.05,260)}],
+testere:[0.36,0.05,()=>{noise(0.24,0.011,2400,0.9,0,1700)}],
+cark:[0.45,0.1,()=>{noise(0.42,0.006,260,2.2,0,300)}],
+dokuma:[1.1,0.3,()=>{tone(330,0.05,'square',0.006,210);noise(0.03,0.012,1600,1)}]};
+function islikSfx(dt){if(view!=='islik'||G.phase==='craft'||document.hidden)return;ST.forEach(s=>{const d=ISX[s.id];if(!d||!s.jobs.length||s.ready)return;s.sT=(s.sT==null?Math.random()*d[0]:s.sT)-dt;if(s.sT<=0){s.sT=d[0]+Math.random()*d[1];d[2]()}})}
 /* ---------- döngü ---------- */
 const clock=new THREE.Clock(),look=V(0,0,0);
 let lastF=0,busy=true,shT=0,lastIn=0,hotNow=true;['pointerdown','pointermove','touchstart','wheel','keydown'].forEach(t=>addEventListener(t,()=>{lastIn=performance.now()/1000},{passive:true,capture:true}));
@@ -1788,11 +1820,11 @@ for(let i=tweens.length-1;i>=0;i--){const w=tweens[i];w.t+=dt;const k=Math.min(1
 if(K&&G.step==='rhythm'&&K.dot&&K.dot.live){K.dot.t+=dt;if(ringScale(K.dot.t)<0.45){K.dot.live=false;K.rs.push(0);dotDone(K.dot,0)}}
 if(K&&G.step==='hold'&&K.holding){K.hv+=dt*60;const f=$('gf');if(f)f.style.width=Math.min(100,K.hv)+'%';pressPos(K.hv);if(K.hv>=100)eHold()}
 if(G.started&&!G.night&&!document.hidden)G.tm+=dt*1.5;
-secT+=dt;if(secT>0.25){secT=0;tick();stationLabels()}
+secT+=dt;if(secT>0.25){secT=0;tick();stationLabels();ambTick(0.25)}
 const a=pg.attributes.position;for(let i=0;i<DN;i++){a.setY(i,a.getY(i)+Math.sin(tt*0.6+i)*0.0015);a.setX(i,a.getX(i)+Math.cos(tt*0.4+i*1.7)*0.0012)}a.needsUpdate=true;
 custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';if(c.mix)return;c.head.rotation.y=Math.sin(tt*0.9+i)*0.25;c.g.position.y=c.walking?Math.abs(Math.sin(tt*9))*0.05:Math.abs(Math.sin(tt*1.6+i))*0.012});
 ALLC.forEach(c=>{if(c.mix)c.mix.update(dt)});MIX.forEach(m=>m.update(dt));wxTick(dt);if(SPL){const a=tt*0.05+0.6;camCur.l.set(OP,0.9,-0.8);camCur.p.set(OP+Math.sin(a)*6.8,3.6,-0.8+Math.cos(a)*6.8)}catTick(dt);wandTick(dt);collFx(dt);BOB.forEach(b=>{const k=tt*b.sp+b.ph;if(b.br){b.o.scale.y=b.s0*(1+Math.sin(k)*0.025)}else{b.o.rotation.order='YXZ';b.o.rotation.y=b.r0+Math.sin(k*0.11)*0.25;if(b.sp>=3){b.o.position.y=Math.max(0,Math.sin(k))*0.03;b.o.rotation.x=0}else{b.o.position.y=0;b.o.rotation.x=Math.pow(Math.max(0,Math.sin(k*0.7)),2)*(b.sp<1?0.22:0.45)}}});if(DOORH){const tg=(G.open&&!G.night)||ALLC.some(c=>c.walking&&!c.wand)?-1.55:0;DOORH.rotation.y+=(tg-DOORH.rotation.y)*Math.min(1,dt*4)}
-if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.jobs.length)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
+islikSfx(dt);if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.jobs.length)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
 AWN.visible=camCur.p.y<2.05;toolTick();if(lamp.visible)lamp.intensity=1.35+Math.sin(tt*2.3)*0.05;
 ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1;cam.position.copy(camCur.p).sub(camCur.l).divideScalar(zz).add(camCur.l);
 cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.9)*0.01*sway;cam.position.z+=ZM.pz;look.copy(camCur.l);look.x+=ZM.px;look.z+=ZM.pz;const dsg=G.phase==='craft'&&G.step==='design';if((G.phase==='result'||dsg)&&K&&K.model){RZ.z+=(RZ.t-RZ.z)*Math.min(1,dt*10);if(Math.abs(RZ.z-1)>0.002){const P=K.model.g.position.clone();P.y+=0.08;const f=1-1/RZ.z;cam.position.lerp(P,f*0.9);look.lerp(P,Math.min(1,Math.max(0,f*1.3)));const sz=R.getSize(V2T);if(!dsg)cam.setViewOffset(sz.x,sz.y,0,sz.y*0.25*clamp(f*2.2,0,1),sz.x,sz.y);else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else{RZ.z=RZ.t=1;if(cam.view&&cam.view.enabled)cam.clearViewOffset();const h=document.getElementById('zhint');if(h&&!h.classList.contains('hide'))h.classList.add('hide')}cam.lookAt(look);
