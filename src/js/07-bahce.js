@@ -11,7 +11,7 @@ function mkLav(){const g=new THREE.Group();for(let i=0;i<3;i++){const x=(i-1)*0.
 function quad(par,body,dark,s,horn){const g=new THREE.Group();par.add(g);[[-0.16,-0.28],[0.16,-0.28],[-0.16,0.28],[0.16,0.28]].forEach(p=>put(g,Cy(0.045,0.04,0.42,5),M(dark),p[0]*s,0.21*s,p[1]*s).scale.set(s,s,s));
  put(g,B(0.42*s,0.36*s,0.8*s),M(body),0,0.58*s,0);put(g,B(0.24*s,0.26*s,0.32*s),M(body),0,0.78*s,0.5*s);put(g,B(0.2*s,0.12*s,0.06*s),M(dark),0,0.72*s,0.67*s);if(horn)[-1,1].forEach(k=>put(g,new THREE.ConeGeometry(0.025*s,0.12*s,4),M('#e8dcc0'),k*0.1*s,0.95*s,0.48*s));return g}
 function animal(n,o,fb){const g=new THREE.Group();g.position.set(o.x,0,o.z);g.rotation.y=o.ry||0;S.add(g);ANIMS.push(g);fb(g);place(n,{par:g,swap:1,h:o.h,anim:o.anim,cb:o.cb});return g}
-function petTap(e){const d=PETS[0];sfx.tap();tone(430,0.09,'sawtooth',0.05,250);tone(450,0.1,'sawtooth',0.05,260,0.17);const y0=d.position.y;tween(0.45,k=>d.position.y=y0+Math.sin(k*Math.PI)*0.25,()=>d.position.y=y0);
+function petTap(e){const d=PETS[0];sfx.tap();if(!sf('kopek',0.45)){tone(430,0.09,'sawtooth',0.05,250);tone(450,0.1,'sawtooth',0.05,260,0.17)}const y0=d.position.y;tween(0.45,k=>d.position.y=y0+Math.sin(k*Math.PI)*0.25,()=>d.position.y=y0);
  if(tt>(G.dogT||0)){G.dogT=tt+90;const k=pick(['tas','kil','sogut','tuy','kum','boynuz']);G.inv[k]++;floatTxt(e.clientX,e.clientY,img(k)+'+1');toast('Paşa bir şey getirdi: '+MATS[k].ad,1600);refresh()}else toast('Hav hav! Paşa oynamak istiyor',1200)}
 function ZONES(){
  /* ---- Çiftlik ---- */
@@ -153,7 +153,7 @@ if(!o.own){openSheet('plot',`<h3>Arazi satın al</h3><p>Bu tarlaya tohum ekip ke
 $('buyP').onclick=()=>{if(G.gold<o.cost)return;G.gold-=o.cost;o.own=true;G.st.plots++;plotSync(o);sfx.coin();save();closeSheet()};return}
 if(!o.seed){const ks=Object.keys(CROPS).filter(k=>G.inv[k]>0);openSheet('plot','<h3>Tohum ek</h3>'+(ks.length?ks.map(k=>{const c=CROPS[k];return `<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${MATS[k].ad}<small>${c.s} sn · ${c.n} ${MATS[c.out].ad.toLowerCase()} verir · Elinde: ${G.inv[k]}</small></div><button class="btn" data-sd="${k}">Ek</button></div>`}).join(''):'<p>Tohumun yok. Pazardaki Tohumcu sekmesinden alabilirsin.</p>')+closeBtn);wire();
 ui.sheet.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>{const k=b.dataset.sd;if(G.inv[k]<1)return;G.inv[k]--;o.seed=k;o.w=false;o.dur=CROPS[k].s;o.end=0;plotSync(o);sfx.plant();sfx.seed();burst(o.g.position,CROPS[k].hex,9,'s');burst(o.g.position,'#6b4a30',7,'up');closeSheet();toast('Şimdi tarlayı sula',1300)});return}
-if(!o.w){o.w=true;o.end=NOW()+o.dur;sfx.water();burst(o.g.position,'#7fc4e8',16,'w');plotTick();save();return}
+if(!o.w){o.w=true;o.end=NOW()+o.dur;sf('sula',0.4)||sfx.water();burst(o.g.position,'#7fc4e8',16,'w');plotTick();save();return}
 if(o.end>NOW()){toast(`${fmtT(o.end-NOW())} sonra hasat`,1000);return}
 const c=CROPS[o.seed];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;burst(o.g.position,c.hex,8,'up');setTimeout(()=>gemRoll(GEM_P.topla*2,'Hasatta elmas çıktı!'),900);o.seed=null;o.w=false;plotSync(o);sfx.pick();toast(`+${c.n} ${MATS[c.out].ad}`,1200);refresh()}
 PL.forEach(plotSync);

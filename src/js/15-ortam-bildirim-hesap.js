@@ -21,14 +21,15 @@ function voice(d,f0,vol,delay){const a=AC;if(!a||!G.snd||document.hidden)return;
  g.gain.linearRampToValueAtTime(0.0001,t+q+0.1);o.connect(f1);o.connect(f2);f1.connect(g1);f2.connect(g2);g1.connect(g);g2.connect(g);g.connect(OUT());o.start(t);o.stop(t+q+0.2)}
 ANS.crowd=()=>{const n=2+Math.floor(Math.random()*2);for(let i=0;i<n;i++){const m=Math.random()<0.55;voice(0.9+Math.random()*1.6,m?95+Math.random()*45:175+Math.random()*60,0.05,i*0.5+Math.random()*0.6)}};
 ANS.call=()=>voice(1.2+Math.random()*0.6,130+Math.random()*30,0.07,0);
-{const FN={moo:'inek',rooster:'horoz',hen:'tavuk',horse:'at',sheep:'koyun',hammer:'ors_cekic',spin:'cikrik',boil:'kaynama',slosh:'fici',press:'pres',saw:'testere_tezgah',wheel:'comlek_carki',loom:'dokuma',call:'satici'},VL={crowd:0.25,call:0.2,moo:0.3,horse:0.3,rooster:0.25};Object.keys(FN).forEach(k=>{const f=ANS[k];ANS[k]=()=>{const n=FN[k],c=Object.keys(SB).filter(x=>x===n||x.startsWith(n+'_'));if(c.length&&AC){playB(pick(c),VL[k]||0.35);return}f()}})}
+{const FN={moo:'inek',rooster:'horoz',hen:'tavuk',horse:'at',sheep:'koyun',hammer:'ors_cekic',spin:'cikrik',boil:'kaynama',slosh:'fici',press:'pres',saw:'testere_tezgah',wheel:'comlek_carki',loom:'dokuma',call:'satici'},VL={crowd:0.25,call:0.2,moo:0.3,horse:0.3,rooster:0.25};Object.keys(FN).forEach(k=>{const f=ANS[k];ANS[k]=()=>{const n=FN[k],c=Object.keys(SB).filter(x=>x===n||x.startsWith(n+'_'));if(c.length&&AC){ambPlay(pick(c),VL[k]||0.35);return}if(!SB.kus||k!=='bird')f()}})}
 const STF={ors:'ors_cekic',cikrik:'cikrik',kazan:'kaynama',fici:'fici',pres:'pres',testere:'testere_tezgah',cark:'comlek_carki',dokuma:'dokuma'};
 const STSND={ors:['hammer',1.4],cikrik:['spin',0.9],kazan:['boil',0.7],fici:['slosh',2.6],pres:['press',2.8],testere:['saw',1.8],cark:['wheel',1.1],dokuma:['loom',1.5]};
 const AMT={};function ambTick(dt){if(!AC||!G.snd||document.hidden||G.phase==='craft'||G.phase==='result'||switching)return;
  if(view==='islik'){ST.forEach(s=>{const d=STSND[s.id];if(!d||!s.jobs||!s.jobs.length||s.ready)return;AMT[s.id]=(AMT[s.id]||Math.random()*d[1])-dt;if(AMT[s.id]<=0){const fb=SB[STF[s.id]];AMT[s.id]=Math.max(d[1],fb?fb.duration+0.4:0)*(0.75+Math.random()*0.5);ANS[d[0]]()}})}
  else if(view==='pazar'){if(SB.kalabalik)return;AMT.p=(AMT.p==null?1:AMT.p)-dt;if(AMT.p>0)return;AMT.p=1.6+Math.random()*2.2;ANS[Math.random()<0.85?'crowd':'call']()}
  else if(view==='bahce'){const z=Math.round((camCur.l.x+ZM.px-OB)/11);AMT.b=(AMT.b==null?2:AMT.b)-dt;if(AMT.b>0)return;
-  if(z<0){AMT.b=3.5+Math.random()*5;ANS[pick(['moo','moo','hen','hen','rooster','horse','sheep'])]()}else if(z>0){AMT.b=1.5+Math.random()*3.5;if(!SB.kus)ANS.bird()}else{AMT.b=5+Math.random()*6;ANS[Math.random()<0.7?'bird':'hen']()}}}
+  if(z<0){AMT.b=4+Math.random()*6;const L=['moo','moo','hen','hen','rooster','horse','sheep'];if(gOpen('Paşa')&&SB.kopek)L.push('dog');const k=pick(L);if(k==='dog')ambPlay('kopek',0.3);else ANS[k]()}else{AMT.b=(z>0?1.5:4)+Math.random()*4;if(!SB.kus)ANS.bird()}}
+ else if(view==='home'&&SB.kedi){AMT.k=(AMT.k==null?20+Math.random()*30:AMT.k)-dt;if(AMT.k<=0){AMT.k=45+Math.random()*60;ambPlay('kedi',0.3)}}}
 function vib(p){if(G.vib===false||!navigator.vibrate)return;try{navigator.vibrate(p)}catch(e){}}
 
 /* ---------- bildirim, servis çalışanı, sen yokken ---------- */
@@ -67,7 +68,9 @@ ST.forEach(s=>{const dn=s.jobs.filter(j=>NOW()>=j.end);if(!dn.length)return;s.jo
 COLL.forEach(o=>{const c=o.userData.coll;if(!c.alive&&NOW()>=c.t){c.alive=true;o.visible=true;tween(0.4,k=>o.scale.copy(c.base).multiplyScalar(Math.max(0.01,k)))}})}
 
 /* Uzun ortam kayıtları döngüde: pazar kalabalığı, orman kuşları */
-const LOOPS={};function loopSet(n,v){if(!AC||!SB[n])return;let L=LOOPS[n];if(!L&&v>0){const o=playB(n,0,true);o.g.gain.value=0.0001;L=LOOPS[n]=o}if(!L)return;const t=AC.currentTime;L.g.gain.cancelScheduledValues(t);L.g.gain.setTargetAtTime(Math.max(0.0001,v),t,0.6)}
+const LOOPS={},AMSRC=[];let ambV=null,ambZ=0;function ambPlay(n,v){if(!AC||!SB[n])return;const o=playB(n,v);AMSRC.push(o);o.s.onended=()=>{const i=AMSRC.indexOf(o);if(i>=0)AMSRC.splice(i,1)}}
+function loopSet(n,v){if(!AC||!SB[n])return;let L=LOOPS[n];if(!L&&v>0){const o=playB(n,0,true);o.g.gain.value=0.0001;L=LOOPS[n]=o}if(!L)return;const t=AC.currentTime;L.g.gain.cancelScheduledValues(t);L.g.gain.setTargetAtTime(Math.max(0.0001,v),t,0.6)}
 function loopTick(){if(!AC)return;const on=G.snd&&!document.hidden&&G.started&&G.phase!=='craft'&&G.phase!=='result'&&!switching;let zc=0;if(view==='bahce')zc=Math.round((camCur.l.x+ZM.px-OB)/11);
- loopSet('kalabalik',on&&view==='pazar'?0.22:0);loopSet('kus',on&&view==='bahce'?(zc>0?0.3:zc===0?0.1:0.06):0)}
-setInterval(loopTick,500);
+ loopSet('kalabalik',on&&view==='pazar'?0.22:0);loopSet('kus',on&&view==='bahce'?(zc>0?0.3:zc===0?0.12:0):0);
+ if(view!==ambV||zc!==ambZ){ambV=view;ambZ=zc;AMSRC.forEach(o=>{try{const t=AC.currentTime;o.g.gain.setTargetAtTime(0,t,0.08);o.s.stop(t+0.4)}catch(e){}});AMSRC.length=0}}
+setInterval(loopTick,150);

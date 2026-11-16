@@ -460,7 +460,7 @@ function mkLav(){const g=new THREE.Group();for(let i=0;i<3;i++){const x=(i-1)*0.
 function quad(par,body,dark,s,horn){const g=new THREE.Group();par.add(g);[[-0.16,-0.28],[0.16,-0.28],[-0.16,0.28],[0.16,0.28]].forEach(p=>put(g,Cy(0.045,0.04,0.42,5),M(dark),p[0]*s,0.21*s,p[1]*s).scale.set(s,s,s));
  put(g,B(0.42*s,0.36*s,0.8*s),M(body),0,0.58*s,0);put(g,B(0.24*s,0.26*s,0.32*s),M(body),0,0.78*s,0.5*s);put(g,B(0.2*s,0.12*s,0.06*s),M(dark),0,0.72*s,0.67*s);if(horn)[-1,1].forEach(k=>put(g,new THREE.ConeGeometry(0.025*s,0.12*s,4),M('#e8dcc0'),k*0.1*s,0.95*s,0.48*s));return g}
 function animal(n,o,fb){const g=new THREE.Group();g.position.set(o.x,0,o.z);g.rotation.y=o.ry||0;S.add(g);ANIMS.push(g);fb(g);place(n,{par:g,swap:1,h:o.h,anim:o.anim,cb:o.cb});return g}
-function petTap(e){const d=PETS[0];sfx.tap();tone(430,0.09,'sawtooth',0.05,250);tone(450,0.1,'sawtooth',0.05,260,0.17);const y0=d.position.y;tween(0.45,k=>d.position.y=y0+Math.sin(k*Math.PI)*0.25,()=>d.position.y=y0);
+function petTap(e){const d=PETS[0];sfx.tap();if(!sf('kopek',0.45)){tone(430,0.09,'sawtooth',0.05,250);tone(450,0.1,'sawtooth',0.05,260,0.17)}const y0=d.position.y;tween(0.45,k=>d.position.y=y0+Math.sin(k*Math.PI)*0.25,()=>d.position.y=y0);
  if(tt>(G.dogT||0)){G.dogT=tt+90;const k=pick(['tas','kil','sogut','tuy','kum','boynuz']);G.inv[k]++;floatTxt(e.clientX,e.clientY,img(k)+'+1');toast('Paşa bir şey getirdi: '+MATS[k].ad,1600);refresh()}else toast('Hav hav! Paşa oynamak istiyor',1200)}
 function ZONES(){
  /* ---- Çiftlik ---- */
@@ -602,7 +602,7 @@ if(!o.own){openSheet('plot',`<h3>Arazi satın al</h3><p>Bu tarlaya tohum ekip ke
 $('buyP').onclick=()=>{if(G.gold<o.cost)return;G.gold-=o.cost;o.own=true;G.st.plots++;plotSync(o);sfx.coin();save();closeSheet()};return}
 if(!o.seed){const ks=Object.keys(CROPS).filter(k=>G.inv[k]>0);openSheet('plot','<h3>Tohum ek</h3>'+(ks.length?ks.map(k=>{const c=CROPS[k];return `<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${MATS[k].ad}<small>${c.s} sn · ${c.n} ${MATS[c.out].ad.toLowerCase()} verir · Elinde: ${G.inv[k]}</small></div><button class="btn" data-sd="${k}">Ek</button></div>`}).join(''):'<p>Tohumun yok. Pazardaki Tohumcu sekmesinden alabilirsin.</p>')+closeBtn);wire();
 ui.sheet.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>{const k=b.dataset.sd;if(G.inv[k]<1)return;G.inv[k]--;o.seed=k;o.w=false;o.dur=CROPS[k].s;o.end=0;plotSync(o);sfx.plant();sfx.seed();burst(o.g.position,CROPS[k].hex,9,'s');burst(o.g.position,'#6b4a30',7,'up');closeSheet();toast('Şimdi tarlayı sula',1300)});return}
-if(!o.w){o.w=true;o.end=NOW()+o.dur;sfx.water();burst(o.g.position,'#7fc4e8',16,'w');plotTick();save();return}
+if(!o.w){o.w=true;o.end=NOW()+o.dur;sf('sula',0.4)||sfx.water();burst(o.g.position,'#7fc4e8',16,'w');plotTick();save();return}
 if(o.end>NOW()){toast(`${fmtT(o.end-NOW())} sonra hasat`,1000);return}
 const c=CROPS[o.seed];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;burst(o.g.position,c.hex,8,'up');setTimeout(()=>gemRoll(GEM_P.topla*2,'Hasatta elmas çıktı!'),900);o.seed=null;o.w=false;plotSync(o);sfx.pick();toast(`+${c.n} ${MATS[c.out].ad}`,1200);refresh()}
 PL.forEach(plotSync);
@@ -1362,14 +1362,15 @@ function voice(d,f0,vol,delay){const a=AC;if(!a||!G.snd||document.hidden)return;
  g.gain.linearRampToValueAtTime(0.0001,t+q+0.1);o.connect(f1);o.connect(f2);f1.connect(g1);f2.connect(g2);g1.connect(g);g2.connect(g);g.connect(OUT());o.start(t);o.stop(t+q+0.2)}
 ANS.crowd=()=>{const n=2+Math.floor(Math.random()*2);for(let i=0;i<n;i++){const m=Math.random()<0.55;voice(0.9+Math.random()*1.6,m?95+Math.random()*45:175+Math.random()*60,0.05,i*0.5+Math.random()*0.6)}};
 ANS.call=()=>voice(1.2+Math.random()*0.6,130+Math.random()*30,0.07,0);
-{const FN={moo:'inek',rooster:'horoz',hen:'tavuk',horse:'at',sheep:'koyun',hammer:'ors_cekic',spin:'cikrik',boil:'kaynama',slosh:'fici',press:'pres',saw:'testere_tezgah',wheel:'comlek_carki',loom:'dokuma',call:'satici'},VL={crowd:0.25,call:0.2,moo:0.3,horse:0.3,rooster:0.25};Object.keys(FN).forEach(k=>{const f=ANS[k];ANS[k]=()=>{const n=FN[k],c=Object.keys(SB).filter(x=>x===n||x.startsWith(n+'_'));if(c.length&&AC){playB(pick(c),VL[k]||0.35);return}f()}})}
+{const FN={moo:'inek',rooster:'horoz',hen:'tavuk',horse:'at',sheep:'koyun',hammer:'ors_cekic',spin:'cikrik',boil:'kaynama',slosh:'fici',press:'pres',saw:'testere_tezgah',wheel:'comlek_carki',loom:'dokuma',call:'satici'},VL={crowd:0.25,call:0.2,moo:0.3,horse:0.3,rooster:0.25};Object.keys(FN).forEach(k=>{const f=ANS[k];ANS[k]=()=>{const n=FN[k],c=Object.keys(SB).filter(x=>x===n||x.startsWith(n+'_'));if(c.length&&AC){ambPlay(pick(c),VL[k]||0.35);return}if(!SB.kus||k!=='bird')f()}})}
 const STF={ors:'ors_cekic',cikrik:'cikrik',kazan:'kaynama',fici:'fici',pres:'pres',testere:'testere_tezgah',cark:'comlek_carki',dokuma:'dokuma'};
 const STSND={ors:['hammer',1.4],cikrik:['spin',0.9],kazan:['boil',0.7],fici:['slosh',2.6],pres:['press',2.8],testere:['saw',1.8],cark:['wheel',1.1],dokuma:['loom',1.5]};
 const AMT={};function ambTick(dt){if(!AC||!G.snd||document.hidden||G.phase==='craft'||G.phase==='result'||switching)return;
  if(view==='islik'){ST.forEach(s=>{const d=STSND[s.id];if(!d||!s.jobs||!s.jobs.length||s.ready)return;AMT[s.id]=(AMT[s.id]||Math.random()*d[1])-dt;if(AMT[s.id]<=0){const fb=SB[STF[s.id]];AMT[s.id]=Math.max(d[1],fb?fb.duration+0.4:0)*(0.75+Math.random()*0.5);ANS[d[0]]()}})}
  else if(view==='pazar'){if(SB.kalabalik)return;AMT.p=(AMT.p==null?1:AMT.p)-dt;if(AMT.p>0)return;AMT.p=1.6+Math.random()*2.2;ANS[Math.random()<0.85?'crowd':'call']()}
  else if(view==='bahce'){const z=Math.round((camCur.l.x+ZM.px-OB)/11);AMT.b=(AMT.b==null?2:AMT.b)-dt;if(AMT.b>0)return;
-  if(z<0){AMT.b=3.5+Math.random()*5;ANS[pick(['moo','moo','hen','hen','rooster','horse','sheep'])]()}else if(z>0){AMT.b=1.5+Math.random()*3.5;if(!SB.kus)ANS.bird()}else{AMT.b=5+Math.random()*6;ANS[Math.random()<0.7?'bird':'hen']()}}}
+  if(z<0){AMT.b=4+Math.random()*6;const L=['moo','moo','hen','hen','rooster','horse','sheep'];if(gOpen('Paşa')&&SB.kopek)L.push('dog');const k=pick(L);if(k==='dog')ambPlay('kopek',0.3);else ANS[k]()}else{AMT.b=(z>0?1.5:4)+Math.random()*4;if(!SB.kus)ANS.bird()}}
+ else if(view==='home'&&SB.kedi){AMT.k=(AMT.k==null?20+Math.random()*30:AMT.k)-dt;if(AMT.k<=0){AMT.k=45+Math.random()*60;ambPlay('kedi',0.3)}}}
 function vib(p){if(G.vib===false||!navigator.vibrate)return;try{navigator.vibrate(p)}catch(e){}}
 
 /* ---------- bildirim, servis çalışanı, sen yokken ---------- */
@@ -1408,10 +1409,12 @@ ST.forEach(s=>{const dn=s.jobs.filter(j=>NOW()>=j.end);if(!dn.length)return;s.jo
 COLL.forEach(o=>{const c=o.userData.coll;if(!c.alive&&NOW()>=c.t){c.alive=true;o.visible=true;tween(0.4,k=>o.scale.copy(c.base).multiplyScalar(Math.max(0.01,k)))}})}
 
 /* Uzun ortam kayıtları döngüde: pazar kalabalığı, orman kuşları */
-const LOOPS={};function loopSet(n,v){if(!AC||!SB[n])return;let L=LOOPS[n];if(!L&&v>0){const o=playB(n,0,true);o.g.gain.value=0.0001;L=LOOPS[n]=o}if(!L)return;const t=AC.currentTime;L.g.gain.cancelScheduledValues(t);L.g.gain.setTargetAtTime(Math.max(0.0001,v),t,0.6)}
+const LOOPS={},AMSRC=[];let ambV=null,ambZ=0;function ambPlay(n,v){if(!AC||!SB[n])return;const o=playB(n,v);AMSRC.push(o);o.s.onended=()=>{const i=AMSRC.indexOf(o);if(i>=0)AMSRC.splice(i,1)}}
+function loopSet(n,v){if(!AC||!SB[n])return;let L=LOOPS[n];if(!L&&v>0){const o=playB(n,0,true);o.g.gain.value=0.0001;L=LOOPS[n]=o}if(!L)return;const t=AC.currentTime;L.g.gain.cancelScheduledValues(t);L.g.gain.setTargetAtTime(Math.max(0.0001,v),t,0.6)}
 function loopTick(){if(!AC)return;const on=G.snd&&!document.hidden&&G.started&&G.phase!=='craft'&&G.phase!=='result'&&!switching;let zc=0;if(view==='bahce')zc=Math.round((camCur.l.x+ZM.px-OB)/11);
- loopSet('kalabalik',on&&view==='pazar'?0.22:0);loopSet('kus',on&&view==='bahce'?(zc>0?0.3:zc===0?0.1:0.06):0)}
-setInterval(loopTick,500);
+ loopSet('kalabalik',on&&view==='pazar'?0.22:0);loopSet('kus',on&&view==='bahce'?(zc>0?0.3:zc===0?0.12:0):0);
+ if(view!==ambV||zc!==ambZ){ambV=view;ambZ=zc;AMSRC.forEach(o=>{try{const t=AC.currentTime;o.g.gain.setTargetAtTime(0,t,0.08);o.s.stop(t+0.4)}catch(e){}});AMSRC.length=0}}
+setInterval(loopTick,150);
 
 /* ---------- tezgâh üretimi ---------- */
 const craft=new THREE.Group();S.add(craft);let K=null;
@@ -1944,7 +1947,7 @@ else if(view==='pazar'){const h=ray.intersectObjects(STALLS,true)[0];if(h){let o
 else if(view==='depo'){depoTap()}
 else if(view==='vitrin'){const h=ray.intersectObjects(VIT.children,true)[0];if(h){let o=h.object;while(o&&o.userData.sid==null)o=o.parent;if(o){const it=G.stock.find(x=>x.id===o.userData.sid);if(it)openItem(it)}}}
 else if(view==='bahce'){if(G.trak&&TRACT&&TRACT.tg&&ray.intersectObject(TRACT.tg,true)[0]){otoNow('trak');return}const pt=PETS[0]&&PETS[0].visible&&ray.intersectObjects(PETS,true)[0];if(pt){petTap(e);return}const h=ray.intersectObjects(COLL.filter(o=>o.userData.coll.alive),true)[0];if(!h){const q=ray.intersectObjects(PL.map(o=>o.g),true)[0];if(q){let o=q.object;while(o&&!o.userData.plot)o=o.parent;if(o)plotTap(o.userData.plot)}return}let o=h.object;while(o&&!o.userData.coll)o=o.parent;
-const c=o.userData.coll;if(hzSheet(c.src))return;if(depoFull(1))return;c.alive=false;c.t=NOW()+(RTM[c.mat]||c.rt||60);const yq=({yun:2,kum:3,kil:2,tas:2,sogut:2,koza:2,kutuk:2})[c.mat]||1;G.inv[c.mat]+=yq;if(c.mat==='yun')sfx.cut();G.st.coll++;sfx.pick();gemRoll(GEM_P.topla,'Toplarken elmas buldun!');floatTxt(e.clientX,e.clientY,img(c.mat)+'+'+yq);const y0=o.position.y;
+const c=o.userData.coll;if(hzSheet(c.src))return;if(depoFull(1))return;c.alive=false;c.t=NOW()+(RTM[c.mat]||c.rt||60);const yq=({yun:2,kum:3,kil:2,tas:2,sogut:2,koza:2,kutuk:2})[c.mat]||1;G.inv[c.mat]+=yq;if(c.mat==='yun')sfx.cut();G.st.coll++;sf('yaprak',0.45)||sfx.pick();gemRoll(GEM_P.topla,'Toplarken elmas buldun!');floatTxt(e.clientX,e.clientY,img(c.mat)+'+'+yq);const y0=o.position.y;
 tween(0.3,k=>{o.scale.copy(c.base).multiplyScalar(Math.max(0.01,1-k));o.position.y=y0+k*0.35},()=>{o.visible=false;o.position.y=y0});refresh()}}
 canvas.addEventListener('pointerdown',e=>{
 if(G.phase==='craft'&&K){const st=G.step;
