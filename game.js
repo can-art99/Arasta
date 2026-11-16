@@ -591,9 +591,9 @@ function plotSync(o){o.lockG.visible=!o.own;o.bedG.visible=o.own;o.crop.clear();
 function burst(c,hex,n,mode){for(let i=0;i<n;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(mode==='w'?0.028:0.035,5,4),new THREE.MeshStandardMaterial({color:hex,roughness:0.3,transparent:mode==='w',opacity:0.85}));
 const x=c.x+(Math.random()-0.5)*1.1,z=c.z+(Math.random()-0.5)*0.6,y0=mode==='up'?0.2:0.9+Math.random()*0.4,d=0.45+Math.random()*0.35,dl=Math.random()*0.25;m.position.set(x,y0,z);m.visible=false;S.add(m);
 setTimeout(()=>{m.visible=true;tween(d,k=>{m.position.y=mode==='up'?y0+k*0.9:y0-(y0-0.12)*k*k;if(mode==='up'){m.scale.setScalar(1-k*0.7)}},()=>{S.remove(m);m.geometry.dispose();m.material.dispose()})},dl*1000)}}
-function plotTick(){PL.forEach(o=>{let t,rd=false;if(!o.own)t=`Arazi<small>${o.cost} altın</small>`;else if(!o.seed)t='Boş tarla<small>Tohum ek</small>';else if(!o.w)t=`${MATS[CROPS[o.seed].out].ad}<small>Sula!</small>`;else{const r=o.end-NOW(),c=CROPS[o.seed];rd=r<=0;o.crop.scale.setScalar(rd?1:0.2+0.8*(1-r/o.dur));t=`${MATS[c.out].ad}<small>${rd?'Hasat et!':Math.ceil(r)+' sn'}</small>`}
+function plotTick(){PL.forEach((o,pi)=>{let t,rd=false;const hl=hzLabel('P'+pi);if(hl)t=hl;else if(!o.own)t=`Arazi<small>${o.cost} altın</small>`;else if(!o.seed)t='Boş tarla<small>Tohum ek</small>';else if(!o.w)t=`${MATS[CROPS[o.seed].out].ad}<small>Sula!</small>`;else{const r=o.end-NOW(),c=CROPS[o.seed];rd=r<=0;o.crop.scale.setScalar(rd?1:0.2+0.8*(1-r/o.dur));t=`${MATS[c.out].ad}<small>${rd?'Hasat et!':Math.ceil(r)+' sn'}</small>`}
 if(t!==o.lbl.last){o.lbl.el.innerHTML=t;o.lbl.last=t;o.lbl.el.classList.toggle('rdy',rd);o.lbl.el.classList.toggle('wat',!!(o.own&&o.seed&&!o.w))}})}
-function plotTap(o){if(switching||G.phase==='craft'||G.phase==='result')return;
+function plotTap(o){if(switching||G.phase==='craft'||G.phase==='result')return;if(hzSheet('P'+PL.indexOf(o)))return;
 if(!o.own){openSheet('plot',`<h3>Arazi satın al</h3><p>Bu tarlaya tohum ekip kendi malzemeni yetiştirebilirsin. Altın: <b>${G.gold}</b></p><div style="text-align:center;margin:10px"><button class="btn g" id="buyP" ${G.gold<o.cost?'disabled':''}>${o.cost} altına satın al</button></div>`+closeBtn);wire();
 $('buyP').onclick=()=>{if(G.gold<o.cost)return;G.gold-=o.cost;o.own=true;G.st.plots++;plotSync(o);sfx.coin();save();closeSheet()};return}
 if(!o.seed){const ks=Object.keys(CROPS).filter(k=>G.inv[k]>0);openSheet('plot','<h3>Tohum ek</h3>'+(ks.length?ks.map(k=>{const c=CROPS[k];return `<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${MATS[k].ad}<small>${c.s} sn · ${c.n} ${MATS[c.out].ad.toLowerCase()} verir · Elinde: ${G.inv[k]}</small></div><button class="btn" data-sd="${k}">Ek</button></div>`}).join(''):'<p>Tohumun yok. Pazardaki Tohumcu sekmesinden alabilirsin.</p>')+closeBtn);wire();
@@ -675,8 +675,8 @@ const today=()=>new Date().toDateString();
 function giftTick(){const av=G.daily!==today(),t=av?'Günlük hediye<small>Topla!</small>':'Günlük hediye<small>Yarın yine gel</small>';if(t!==GL.last){GL.el.innerHTML=t;GL.last=t;GL.el.classList.toggle('rdy',av)}}
 function claimDaily(){const td=today();if(G.daily===td){toast('Bugünkü hediyeni aldın<br>Yarın yine gel!',1600);return}
 const y=new Date(Date.now()-864e5).toDateString();G.streak=G.daily===y?Math.min(7,(G.streak||0)+1):1;G.daily=td;const gold=20+G.streak*10,ks=['hamderi','pamuk','kaucuk','kurum','ceviz','yun','recine','tohum_pamuk','tohum_papatya'],got={};
-for(let i=0;i<3;i++){const k=pick(ks);got[k]=(got[k]||0)+1;G.inv[k]++}G.gold+=gold;sfx.fan();save();refresh();
-openSheet('gift',`<h3>Günlük hediye</h3><p>${G.streak}. gün · Her gün gelirsen ödül büyür (en çok 7 gün)</p><div class="row"><div class="n"><b>+${gold} altın</b></div></div>`+Object.entries(got).map(([k,n])=>`<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${MATS[k].ad}</div><b>+${n}</b></div>`).join('')+closeBtn);wire()}
+for(let i=0;i<3;i++){const k=pick(ks);got[k]=(got[k]||0)+1;G.inv[k]++}G.gold+=gold;const gem=G.streak>=7?2:Math.random()<0.2?1:0;if(gem){G.elmas=(G.elmas||0)+gem;hud()}sfx.fan();save();refresh();
+openSheet('gift',`<h3>Günlük hediye</h3><p>${G.streak}. gün · Her gün gelirsen ödül büyür (en çok 7 gün)</p><div class="row"><div class="n"><b>+${gold} altın</b></div></div>${gem?`<div class="row"><div class="n"><b>+${gem} 💎 elmas</b><small>${G.streak>=7?'7 gün üst üste geldin!':'Şanslı günündesin'}</small></div></div>`:''}`+Object.entries(got).map(([k,n])=>`<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${MATS[k].ad}</div><b>+${n}</b></div>`).join('')+closeBtn);wire()}
 function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return;if(t==='gift'){claimDaily();return}if(t==='deko'){openDeco();return}mTab=t;renderMarket()}
 [[-1.2,-2.1,'Pazar tezgâhı','Günlük mallar','pazar',0.5],[1.2,-2.1,'Tohumcu','Tohumlar','tohum',0.5],[-1.15,1.3,'Tedarikçi','Toplu sipariş','ted',0.6]].forEach(q=>{const l=label('pazar',V(OP+q[0],0.05,q[1]+q[5]),null,true);l.el.innerHTML=`${q[2]}<small>${q[3]}</small>`;l.el.classList.add('stl');l.el.onclick=()=>marketTab(q[4])});
 
@@ -737,7 +737,7 @@ function goSlot(n){try{localStorage.setItem('arasta-slot',n)}catch(e){}save();sa
 function newSlot(){for(const n of ['1','2','3'])if(!slotInfo(n)&&n!==SSLOT){goSlot(n);return true}return false}
 function exportSave(){save();try{return 'ARS1.'+btoa(unescape(encodeURIComponent(localStorage.getItem(SK))))}catch(e){return ''}}
 function importSave(code){try{code=code.trim();if(!code.startsWith('ARS1.'))return false;const j=decodeURIComponent(escape(atob(code.slice(5))));JSON.parse(j);localStorage.setItem(SK,j);save=()=>{};location.reload();return true}catch(e){return false}}let saveN=0;
-let save=function(){try{localStorage.setItem(SK,JSON.stringify({ts:Date.now(),cloud:G.cloud||null,gold:G.gold,rep:G.rep,elmas:G.elmas||0,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,stLv:G.stLv,stock:G.stock,sid:G.sid,ach:G.ach,unl:G.unl,shop:G.shop,owner:G.owner||false,deco:G.deco,eq:G.eq,cap:G.cap,store:G.store,dOrd:G.dOrd,dSlot:G.dSlot,cirak:G.cirak||false,dq:G.dq||null,stSp:G.stSp||{},acct:G.acct||null,notif:G.notif||false,tut:G.tut||0,vol:G.vol!=null?G.vol:1,vib:G.vib!==false,trak:G.trak||false,trakI:G.trakI||0,cirI:G.cirI||{},trakM:G.trakM||null,cirakM:G.cirakM||null,trakLast:G.trakLast!=null?G.trakLast:null,cirakLast:G.cirakLast!=null?G.cirakLast:null,stLast:G.stLast||{},kervan:G.kervan||null,reg:G.reg||[],cup:G.cup||null,deliv:G.deliv,ext:G.ext,qs:qSer(),stJ:Object.fromEntries(ST.map(s=>[s.id,{jobs:s.jobs.map(j=>({ri:s.rec.indexOf(j.r),end:j.end})),ready:s.ready||null}])),collT:COLL.map(o=>{const c=o.userData.coll;return !c.alive&&isFinite(c.t)?c.t:0}),gu:G.gu,stB:G.stB,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,day:G.day,tm:G.tm,night:G.night,ds:G.ds,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-NOW()):0,end:o.seed&&o.w?o.end:0}))}))}catch(e){}};
+let save=function(){try{localStorage.setItem(SK,JSON.stringify({ts:Date.now(),cloud:G.cloud||null,gold:G.gold,rep:G.rep,elmas:G.elmas||0,haz:G.haz||{},hzLast:G.hzLast!=null?G.hzLast:null,sigorta:G.sigorta||0,n:G.n,inv:G.inv,tier:G.tier,first:G.first,st:G.st,cat:G.cat,stLv:G.stLv,stock:G.stock,sid:G.sid,ach:G.ach,unl:G.unl,shop:G.shop,owner:G.owner||false,deco:G.deco,eq:G.eq,cap:G.cap,store:G.store,dOrd:G.dOrd,dSlot:G.dSlot,cirak:G.cirak||false,dq:G.dq||null,stSp:G.stSp||{},acct:G.acct||null,notif:G.notif||false,tut:G.tut||0,vol:G.vol!=null?G.vol:1,vib:G.vib!==false,trak:G.trak||false,trakI:G.trakI||0,cirI:G.cirI||{},trakM:G.trakM||null,cirakM:G.cirakM||null,trakLast:G.trakLast!=null?G.trakLast:null,cirakLast:G.cirakLast!=null?G.cirakLast:null,stLast:G.stLast||{},kervan:G.kervan||null,reg:G.reg||[],cup:G.cup||null,deliv:G.deliv,ext:G.ext,qs:qSer(),stJ:Object.fromEntries(ST.map(s=>[s.id,{jobs:s.jobs.map(j=>({ri:s.rec.indexOf(j.r),end:j.end})),ready:s.ready||null}])),collT:COLL.map(o=>{const c=o.userData.coll;return !c.alive&&isFinite(c.t)?c.t:0}),gu:G.gu,stB:G.stB,snd:G.snd,mus:G.mus,open:G.open,daily:G.daily,streak:G.streak,day:G.day,tm:G.tm,night:G.night,ds:G.ds,plots:PL.map(o=>({own:o.own,seed:o.seed,w:!!o.w,rem:o.seed&&o.w?Math.max(0,o.end-NOW()):0,end:o.seed&&o.w?o.end:0}))}))}catch(e){}};
 {const s0=save;save=function(){s0();cloudPush()}}
 const CL={u:'https://rytrhkpmsfskiyoujyyb.supabase.co/rest/v1/rpc/',k:'sb_publishable_I_rw47M8KquQV6XTLm2LYg_KEckXVj7'};
 function rpc(fn,body,ka){return fetch(CL.u+fn,{method:'POST',keepalive:!!ka,headers:{apikey:CL.k,'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.ok?r.json():Promise.reject(r.status))}
@@ -758,9 +758,9 @@ function nearP(x,z){let b=null,bd=1e9;PATCHES.forEach(p=>{const d=Math.hypot(p.c
 function lockInit(){if(!G.gu){G.gu={};G.stB={};if(G.day>1||G.tier>1||G.st.deliv>0){Object.entries(GLK).forEach(([k,v])=>{if(v[0]<=G.tier)G.gu[k]=1});Object.keys(STC).forEach(id=>{const s=ST.find(x=>x.id===id);if(s&&s.tier<=G.tier)G.stB[id]=1})}}
  COLL.forEach(o=>{const c=o.userData.coll,x=o.position.x,z=o.position.z;c.src=c.mat==='atkili'?'At':c.mat==='boynuz'?'Geyik':c.mat==='kutuk'&&x>OB+5?'Oduncu kulübesi':nearP(x,z).ad});
  ANIMS.forEach(g=>{g.userData.src=nearP(g.position.x,g.position.z).ad});
- PATCHES.forEach(p=>{if(GLK[p.ad])p.el.onclick=()=>buyPatch(p)});gSync()}
+ PATCHES.forEach(p=>{if(GLK[p.ad])p.el.onclick=()=>{if(hzSheet(p.ad))return;buyPatch(p)}});gSync()}
 function gSync(){COLL.forEach(o=>{const c=o.userData.coll,op=gOpen(c.src);if(!op){c.alive=false;c.t=Infinity;o.visible=false}else if(c.t===Infinity){c.t=tt}});ANIMS.forEach(g=>{g.visible=gOpen(g.userData.src)});
- PATCHES.forEach(p=>{const L=GLK[p.ad];if(!L)return;const op=gOpen(p.ad);p.el.classList.toggle('stl',!op);p.el.classList.toggle('lock',!op&&G.tier<L[0]);const t=op?p.ad:`🔒 ${p.ad}<small>${G.tier<L[0]?'Kademe '+L[0]:L[1]+' altın'}</small>`;if(t!==p.last){p.last=t;p.el.innerHTML=t}})}
+ PATCHES.forEach(p=>{const L=GLK[p.ad];if(!L)return;const op=gOpen(p.ad),hl=hzLabel(p.ad);p.el.classList.toggle('stl',!op||!!hl);p.el.classList.toggle('hzl',!!hl);p.el.classList.toggle('lock',!op&&G.tier<L[0]);const t=hl?hl:op?p.ad:`🔒 ${p.ad}<small>${G.tier<L[0]?'Kademe '+L[0]:L[1]+' altın'}</small>`;if(t!==p.last){p.last=t;p.el.innerHTML=t}})}
 function buyPatch(p){if(gOpen(p.ad)||switching)return;const L=GLK[p.ad];if(G.tier<L[0]){toast(`${p.ad} ${L[0]}. kademede açılır`,1500);return}if(G.gold<L[1]){toast(`${p.ad} için ${L[1]} altın gerekli`,1500);return}if(!armBuy('g'+p.ad,`${p.ad} açılsın mı? ${L[1]} altın`))return;G.gold-=L[1];G.gu[p.ad]=1;buyArm=null;sfx.coin();sfx.plant();toast(`${p.ad} açıldı!`,1500);gSync();save();refresh()}
 /* ---------- ekipmanlar ---------- */
 const EQ=[{id:'makas',ad:'Makas',e:'✂️',d:'Deri, kumaş ve iplik keser',m:'scissors2'},{id:'testere',ad:'El testeresi',e:'🪚',d:'Ahşap ve boynuz gibi sert malzemeyi keser',m:'saw2'},{id:'bicak',ad:'Kesim bıçağı',e:'🔪',d:'Kil, sabun ve mum keser; deriyi inceltir, oyar',m:'knife'},
@@ -1045,7 +1045,7 @@ function haggleOrder(){const o=G.order,c=Q[0];if(!o||o.haggled||G.phase!=='order
 haggle({line:`Bütçem ${o.budget} altın, ne dersin?`,offer:o.budget,max:o.hmax,ask:r5(o.budget*1.25),lo:o.budget,hi:r5(o.budget*1.8),
  onDeal:p=>{o.budget=p;o.haggled=true;acceptOrder(`Anlaştık, ${p} altın!`)},onBreak:()=>{o.haggled=true;lose(c,'Pazarlık bozuldu, müşteri gitti',1)},onBack:()=>{o.haggled=true;orderActions()}})}
 function rmStock(it){G.stock=G.stock.filter(x=>x!==it);vitrinSync()}
-function levelUp(){const nt=tierOf(G.rep);if(nt>G.tier){G.tier=nt;restock();setTimeout(()=>{toast(`Kademe ${nt} açıldı!<br>Yeni araçlar ve malzemeler`,2600);sfx.fan()},1500)}checkUnl()}
+function levelUp(){const nt=tierOf(G.rep);if(nt>G.tier){G.tier=nt;restock();G.elmas=(G.elmas||0)+5;setTimeout(()=>{toast(`Kademe ${nt} açıldı!<br>Yeni araçlar ve malzemeler<br><b>+5 💎 elmas</b>`,2600);sfx.fan()},1500)}checkUnl()}
 function cancelOrder(){const c=Q[0];if(!c||G.phase!=='active')return;if(!armBuy('cancel','Sipariş iptal edilsin mi? İtibar −3'))return;buyArm=null;say('Peki, başka zaman...');G.bubOn=true;lose(c,'Sipariş iptal edildi',3)}
 function stockDeliver(it){const o=G.order,c=Q[0];if(!o||!c||!G.stock.includes(it))return;rmStock(it);const st=it.stars;let pay=Math.round(o.budget*(0.6+0.08*st));if(o.hurry)pay+=Math.round(o.budget*0.2);if(st===5)pay+=15;
 G.gold+=pay;G.st.earned+=pay;G.st.deliv++;if(st===5)G.st.five++;G.rep=Math.max(0,G.rep+(st>=3?st:-1));if(G.first){G.first=false;spawnT=5}G.phase='leaving';G.order=null;G.n++;levelUp();
@@ -1182,17 +1182,18 @@ function renderExt(){const X=G.ext||{offers:[],act:[]},row=(a,act)=>{const p=PRO
 
 const KDEST=[{ad:'Halep',h:1,m:1.5},{ad:'Bağdat',h:3,m:1.9},{ad:'Venedik',h:6,m:2.4}],RNAMES=['Ayşe Hanım','Mehmet Efendi','Zeynep Hanım','Hasan Ağa','Fatma Teyze','Ali Usta','Elif Hanım','Mustafa Bey','Leyla Hanım','Osman Efendi'];
 const curWeek=()=>Math.floor(((G.day||1)-1)/7);
-function cupTick(){const w=curWeek();if(G.cup&&G.cup.week===w)return;if(G.cup&&G.cup.best>=3){const b=G.cup.best,pr=b>=5?[400,25,'Altın madalya']:b>=4?[200,12,'Gümüş madalya']:[80,5,'Bronz madalya'];G.gold+=pr[0];G.rep+=pr[1];toast(`Usta yarışması: ${pr[2]}!<br>+${pr[0]} altın · +${pr[1]} itibar`,3000);sfx.fan()}const pool=PRODS.filter(unlocked);G.cup={week:w,pid:pool.length?pick(pool).id:'cuzdan',best:0}}
+function cupTick(){const w=curWeek();if(G.cup&&G.cup.week===w)return;if(G.cup&&G.cup.best>=3){const b=G.cup.best,pr=b>=5?[400,25,'Altın madalya',5]:b>=4?[200,12,'Gümüş madalya',3]:[80,5,'Bronz madalya',1];G.gold+=pr[0];G.rep+=pr[1];G.elmas=(G.elmas||0)+pr[3];toast(`Usta yarışması: ${pr[2]}!<br>+${pr[0]} altın · +${pr[1]} itibar · +${pr[3]} 💎`,3000);sfx.fan()}const pool=PRODS.filter(unlocked);G.cup={week:w,pid:pool.length?pick(pool).id:'cuzdan',best:0}}
 function cupRec(pid,st){if(G.cup&&G.cup.pid===pid&&st>G.cup.best){G.cup.best=st;toast(`Yarışma için yeni en iyi: ${'★'.repeat(st)}`,1400)}}
 function kervanTick(){const kv=G.kervan;if(kv&&kv.trip&&NOW()>=kv.trip.end){const t=kv.trip;kv.trip=null;G.gold+=t.gold;G.st.earned+=t.gold;toast(`Kervan ${t.dest}'ten döndü!<br>+${t.gold} altın`,2600);notify('Kervan döndü',`${t.dest}: +${t.gold} altın`);sfx.coin();sfx.fan();hud();save()}}
 function renderTrade(){const kv=G.kervan||{},cup=G.cup,cp=cup&&PRODS.find(p=>p.id===cup.pid),sto=(G.store||[]),val=sto.reduce((a,it)=>a+(it.price||(PRODS.find(p=>p.id===it.pid)||{}).base||0),0);
  let h=`<div class="grp">Usta yarışması (bu hafta)</div>`+(cp?`<div class="row"><img class="ic" src="${ICON[cp.id]}" alt=""><div class="n">${cp.ad}<small>Hafta sonuna kadar en iyi ürününü yap · Şu an: ${cup.best?'★'.repeat(cup.best):'henüz yok'} · 5★ altın (400), 4★ gümüş (200), 3★ bronz (80)</small></div></div>`:'');
  h+=`<div class="grp">Kervansaray</div>`+(G.tier<2?'<p style="font-size:12px;opacity:.7">Kademe 2\'de açılır</p>':kv.trip?`<div class="row"><div class="n">Kervan ${kv.trip.dest} yolunda<small>${kv.trip.n} ürün · dönüşte ${kv.trip.gold} altın · kalan ${fmtT(kv.trip.end-NOW())}</small></div></div>`:`<p style="font-size:12px;opacity:.8;margin:2px 0 6px">Depo rafındaki ${sto.length} ürün (değeri ${val} altın) kervanla uzak şehre satılır.</p>`+KDEST.map((d,i)=>`<div class="row"><div class="n">${d.ad}<small>${d.h} saat · ${d.m}× fiyat → ${Math.round(val*d.m)} altın</small></div><button class="btn g" data-kv="${i}" ${sto.length?'':'disabled'}>Gönder</button></div>`).join(''));
- h+=`<div class="grp">Yatırımlar</div>${otoRow('cirak','Çırak','Atölyede senin yerine üretim yapar',{oto:'30 dakikada bir tüm tezgâhları dolaşır: biteni toplar, tarifleri sırayla başlatır',kosul:'Müşteri gelince siparişin eksik malzemesini üretir',pasif:'Bekliyor, her şeyi sen yaparsın'})}${otoRow('trak','Traktör','Bostanda hasat ve ekimi üstlenir',{oto:'30 dakikada bir tüm tarlaları hasat eder, tohumları sırayla eker (tohum yoksa satın alır)',kosul:'Müşteri gelince siparişin eksik ürününü eker ve hasat eder',pasif:'Bekliyor, her şeyi sen yaparsın'})}`;
+ h+=`<div class="grp">Yatırımlar</div>${otoRow('cirak','Çırak','Atölyede senin yerine üretim yapar',{oto:'30 dakikada bir tüm tezgâhları dolaşır: biteni toplar, tarifleri sırayla başlatır',kosul:'Müşteri gelince siparişin eksik malzemesini üretir',pasif:'Bekliyor, her şeyi sen yaparsın'})}${sigortaRow()}${otoRow('trak','Traktör','Bostanda hasat ve ekimi üstlenir',{oto:'30 dakikada bir tüm tarlaları hasat eder, tohumları sırayla eker (tohum yoksa satın alır)',kosul:'Müşteri gelince siparişin eksik ürününü eker ve hasat eder',pasif:'Bekliyor, her şeyi sen yaparsın'})}`;
  h+=`<div class="grp">Müdavimler</div>`+((G.reg||[]).length?(G.reg||[]).map(r=>{const p=PRODS.find(x=>x.id===r.fav);return `<div class="row"><div class="n">${r.ad}<small>Sevdiği: ${p?p.ad:'-'} · ${r.vis} ziyaret · 4★ ve üstüne bahşiş verir</small></div></div>`}).join(''):'<p style="font-size:12px;opacity:.7">5★ teslim ettiğin müşteriler müdavimin olabilir</p>');
  return h}
 function tradeWire(){ui.sheet.querySelectorAll('[data-kv]').forEach(b=>b.onclick=()=>{const d=KDEST[+b.dataset.kv],sto=G.store||[];if(!sto.length||(G.kervan&&G.kervan.trip))return;const val=sto.reduce((a,it)=>a+(it.price||(PRODS.find(p=>p.id===it.pid)||{}).base||0),0);G.kervan={trip:{dest:d.ad,end:NOW()+d.h*3600,gold:Math.round(val*d.m),n:sto.length}};G.store=[];storeSync();sfx.coin();toast(`Kervan ${d.ad} yoluna çıktı`,1600);save();renderMenu()});
  ui.sheet.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const k=b.dataset.buy,c=OTO_COST[k];if((G.elmas||0)<c||G.tier<2)return;G.elmas-=c;G[k]=true;G[k+'M']='oto';G[k+'Last']=NOW()-OTO_P;sfx.coin();sfx.fan();toast(k==='cirak'?'Çırak işe başladı!':'Traktör alındı!',1600);hud();save();renderMenu()});
+ {const sg=ui.sheet.querySelector('[data-sig]');if(sg)sg.onclick=()=>{if((G.elmas||0)<5)return;G.elmas-=5;G.sigorta=NOW()+3*86400;sfx.fan&&sfx.fan();toast('Bahçe 3 gün sigortalı',1600);hud();save();renderMenu()}}
  ui.sheet.querySelectorAll('[data-om]').forEach(b=>b.onclick=()=>{const [k,m]=b.dataset.om.split(':');G[k+'M']=m;if(m==='oto'&&G[k+'Last']==null)G[k+'Last']=NOW()-OTO_P;sfx.tap&&sfx.tap();save();renderMenu()})}
 
 /* ---------- mevsim görünümü ---------- */
@@ -1232,7 +1233,7 @@ function plotSow(o,k,t){if(!o.own||o.seed||!(G.inv[k]>0))return false;G.inv[k]--
 function plotHarv(o){const k=o.seed,c=CROPS[k];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;o.last=k;o.seed=null;o.w=false;plotSync(o);return k}
 /* Oto modda sıradaki tohum: eldeki tohumlar arasında döner; hiç yoksa Tohumcu fiyatından satın alır */
 function trakSeed(dry){const L=Object.keys(CROPS).filter(k=>!CROPS[k].t||G.tier>=CROPS[k].t),n=L.length;for(let i=0;i<n;i++){const j=((G.trakI||0)+i)%n,k=L[j];if(G.inv[k]>0||G.gold>=CROPS[k].f){if(dry)return k;if(!(G.inv[k]>0)){G.gold-=CROPS[k].f;G.inv[k]=(G.inv[k]||0)+1;hud()}G.trakI=j+1;return k}}return null}
-function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t;
+function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t&&!hzOf('P'+PL.indexOf(o));
  if(!kos){PL.forEach(o=>{if(!o.own)return;if(o.seed&&!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=t+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o)){plotHarv(o);const k=trakSeed();if(k)plotSow(o,k,t)}}});else if(!o.seed&&trakSeed(1))A.push({o,fn:()=>{if(!o.seed){const k=trakSeed();if(k)plotSow(o,k,t)}}})});return A}
  const raw=otoNeeds().raw;Object.keys(raw).forEach(m=>{const sk=Object.keys(CROPS).find(k=>CROPS[k].out===m);if(!sk)return;let lack=raw[m];
   PL.forEach(o=>{if(!o.own||o.seed!==sk)return;lack-=CROPS[sk].n;if(!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=NOW()+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o))plotHarv(o)}})});
@@ -1271,6 +1272,47 @@ function cirakTick(){if(!G.cirak)return;G.stLast=G.stLast||{};const m=otoMode('c
 /* Ticaret menüsündeki satır */
 function otoRow(k,ad,off,on){const own=G[k],c=OTO_COST[k],m=otoMode(k);if(!own)return `<div class="row"><div class="n">${ad}<small>${off} · Kademe 2 · Elmasın: ${G.elmas||0}</small></div><button class="btn g" data-buy="${k}" ${G.tier<2||(G.elmas||0)<c?'disabled':''}>${c} 💎</button></div>`;
  return `<div class="row"><div class="n">${ad}<small>${on[m]}${m==='oto'?' · sonraki tur '+fmtT(otoLeft(k)):''}</small></div><div class="omode">${['oto','kosul','pasif'].map(x=>`<button data-om="${k}:${x}" class="${x===m?'on':''}">${OTO_AD[x]}</button>`).join('')}</div></div>`}
+
+/* ---------- bahçe tehlikeleri: hastalık, kuraklık, zararlı, doğal afet ---------- */
+const HZ_ANI=['İnek','Koyun','Tavuk','Domuz','Keçi','Tavşan','İpek böceği','At'],HZ_BOS=['Ceviz ağacı','Böğürtlen','Kök boya','Lavanta','Arı kovanı'],
+ HZ_ORM=['Taş ocağı','Kil çukuru','Söğüt','Kum','Geyik','Oduncu kulübesi','Kömür ocağı','Balık gölü','Hindistan cevizi'];
+const HZT={
+ hasta:{ic:'🤒',ad:'Hastalandı',fix:'Veteriner çağır',lim:3*3600,kayip:'öldü',f:p=>Math.max(25,Math.round(p*0.25))},
+ kurak:{ic:'🥀',ad:'Kuraklık',fix:'Sula ve gübrele',lim:2*3600,kayip:'kurudu',f:()=>15},
+ zarar:{ic:'🐛',ad:'Zararlı',fix:'İlaçla',lim:2*3600,kayip:'çürüdü',f:()=>20},
+ mantar:{ic:'🍂',ad:'Mantar hastalığı',fix:'Budama ve ilaç',f:p=>Math.max(20,Math.round(p*0.25))},
+ firtina:{ic:'🌪️',ad:'Fırtına hasarı',fix:'Onar',f:p=>Math.max(30,Math.round(p*0.4))},
+ yangin:{ic:'🔥',ad:'Orman yangını',fix:'Söndür ve onar',f:p=>Math.max(40,Math.round(p*0.5))},
+ sel:{ic:'🌊',ad:'Sel baskını',fix:'Suyu tahliye et',f:p=>Math.max(30,Math.round(p*0.4))},
+ heyelan:{ic:'🪨',ad:'Heyelan',fix:'Toprağı temizle',f:p=>Math.max(30,Math.round(p*0.4))}};
+const HZ_ROLL=20*60,HZ_P=0.25,HZ_MAX=2;
+function hzOf(k){return G.haz&&G.haz[k]}
+function hzCost(k){const h=hzOf(k);if(!h)return 0;const L=GLK[k];return HZT[h.t].f(L?L[1]:60)}
+function hzLabel(k){const h=hzOf(k);if(!h)return null;const T=HZT[h.t],r=T.lim?h.t0+T.lim-NOW():0;return `${T.ic} ${k[0]==='P'&&k.length<3?'Tarla':k}<small>${T.ad}${T.lim?' · '+fmtT(Math.max(0,r)):''}</small>`}
+function hzWarn(){const n=Object.keys(G.haz||{}).length,b=document.querySelector('#nav button[data-v="bahce"]');if(b)b.classList.toggle('warn',n>0)}
+/* Rastgele olay: sahip olunan yerlerden birini seç */
+function hzPick(){const ins=G.sigorta&&G.sigorta>NOW();if(ins)return null;const P=[];const own=k=>gOpen(k)&&G.gu&&G.gu[k]&&!hzOf(k);
+ HZ_ANI.forEach(k=>{if(own(k))P.push([k,'hasta',3])});HZ_BOS.forEach(k=>{if(own(k))P.push([k,'mantar',1])});
+ const wt=(typeof wx!=='undefined'?wx:'acik'),dis=wt==='yagmur'?['sel','heyelan','firtina']:wt==='ruzgar'?['firtina','firtina','yangin']:wt==='kar'?['firtina']:['yangin','firtina','sel','heyelan'];
+ HZ_ORM.forEach(k=>{if(own(k))P.push([k,pick(dis),1.2])});
+ PL.forEach((o,i)=>{const k='P'+i;if(o.own&&o.seed&&o.w&&o.end>NOW()&&!hzOf(k))P.push([k,Math.random()<0.5?'kurak':'zarar',1.5])});
+ if(!P.length)return null;let tot=P.reduce((a,p)=>a+p[2],0),r=Math.random()*tot;for(const p of P){r-=p[2];if(r<=0)return p}return P[P.length-1]}
+function hzStart(k,t,at){G.haz=G.haz||{};G.haz[k]={t,t0:at||NOW()};const T=HZT[t];if(G.started)toast(`⚠️ ${T.ic} ${k[0]==='P'&&k.length<3?'Bostanda bir tarla':k}: ${T.ad.toLowerCase()}!<br><small>Bahçeye git, ${T.fix.toLowerCase()}${T.lim?' · '+fmtT(T.lim)+' içinde':''}</small>`,3400);sfx.bad&&sfx.bad();hzWarn();save()}
+function hzEnd(k,lost){const h=hzOf(k);if(!h)return;delete G.haz[k];if(k[0]==='P'&&k.length<3){const o=PL[+k.slice(1)];if(o){if(lost){o.seed=null;o.w=false}else if(o.w)o.end+=NOW()-h.t0;plotSync(o)}}
+ else if(lost){delete G.gu[k];gSync()}hzWarn();save()}
+function hzTick(){if(!G.started||G.first||(G.st.deliv||0)<5||G.phase==='craft')return;G.haz=G.haz||{};
+ Object.entries(G.haz).forEach(([k,h])=>{const T=HZT[h.t];if(T.lim&&NOW()>h.t0+T.lim){const nm=k[0]==='P'&&k.length<3?'Tarladaki ürün':k;hzEnd(k,true);G.st.hzLost=(G.st.hzLost||0)+1;toast(`${T.ic} ${nm} ${T.kayip}.${k[0]!=='P'?'<br><small>Yeniden açmak için bahçede satın al</small>':''}`,3200);sfx.bad&&sfx.bad()}});
+ if(G.hzLast==null)G.hzLast=NOW();let n=Math.min(6,Math.floor((NOW()-G.hzLast)/HZ_ROLL));if(n<=0)return;
+ for(let i=0;i<n;i++){const at=G.hzLast+(i+1)*HZ_ROLL;if(Object.keys(G.haz).length>=HZ_MAX||Math.random()>=HZ_P)continue;const p=hzPick();if(p)hzStart(p[0],p[1],at)}G.hzLast+=n*HZ_ROLL}
+/* Tedavi penceresi */
+function hzSheet(k){const h=hzOf(k);if(!h)return false;const T=HZT[h.t],c=hzCost(k),r=T.lim?h.t0+T.lim-NOW():0,nm=k[0]==='P'&&k.length<3?'Tarla':k;
+ openSheet('hz',`<h3>${T.ic} ${nm}: ${T.ad}</h3><p>${T.lim?`Müdahale etmezsen <b>${fmtT(Math.max(0,r))}</b> sonra ${T.kayip==='öldü'?'hayvan ölür ve yeniden satın alman gerekir':'ürün kaybolur'}.`:'Onarılana kadar buradan malzeme toplanamaz.'}${k[0]==='P'?' Bu sırada büyüme durur.':''}</p>
+ <div class="row"><div class="n">${T.fix}<small>Altınla hemen çöz</small></div><button class="btn g" id="hzG" ${G.gold<c?'disabled':''}>${c} altın</button></div>
+ <div class="row"><div class="n">Usta dokunuşu<small>Altının yetmezse elmasla çöz</small></div><button class="btn" id="hzE" ${(G.elmas||0)<1?'disabled':''}>1 💎</button></div>`+closeBtn);wire();
+ const ok=()=>{hzEnd(k,false);sfx.coin&&sfx.coin();sfx.fan&&sfx.fan();toast(`${T.ic} ${nm} kurtarıldı!`,1600);hud();closeSheet();refresh()};
+ $('hzG').onclick=()=>{if(G.gold<c)return;G.gold-=c;ok()};$('hzE').onclick=()=>{if((G.elmas||0)<1)return;G.elmas--;ok()};return true}
+/* Sigorta: 5 elmasa 3 gün tehlike yok */
+function sigortaRow(){const on=G.sigorta&&G.sigorta>NOW();return `<div class="row"><div class="n">Bahçe sigortası<small>${on?'Koruma açık · '+fmtT(G.sigorta-NOW())+' kaldı':'3 gün boyunca hastalık, kuraklık ve afet olmaz'}</small></div>${on?'<b class="bonc">✓</b>':`<button class="btn g" data-sig ${(G.elmas||0)<5?'disabled':''}>5 💎</button>`}</div>`}
 
 /* ---------- ortam sesleri ---------- */
 function vox(pts,type,vol,delay,lp){const a=AC;if(!a||!G.snd||document.hidden)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain(),d=pts[pts.length-1][0];o.type=type||'sine';o.frequency.setValueAtTime(pts[0][1],t);pts.slice(1).forEach(([q,f])=>o.frequency.linearRampToValueAtTime(f,t+q));g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(0.06,d*0.25));g.gain.setValueAtTime(vol,t+d*0.7);g.gain.exponentialRampToValueAtTime(0.0001,t+d);let n=o;if(lp){const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;o.connect(f);n=f}n.connect(g);g.connect(OUT());o.start(t);o.stop(t+d+0.05)}
@@ -1847,6 +1889,7 @@ levelUp();
 refresh();actions([]);const g=K.model.g,w=K.work;tween(0.4,k=>g.scale.setScalar(Math.max(0.01,1-k)),()=>craft.remove(w));toast('+'+r.pay+' altın',1200);sfx.coin();if(r.stars===5)sfx.fan();save();
 setTimeout(()=>{G.bubOn=false;say(null);leave(c)},1300)}
 
+let hzN=0;
 /* ---------- dokunma ---------- */
 const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),hv=V(0,0,0);
 function setRay(e){const r=canvas.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,cam)}
@@ -1868,7 +1911,7 @@ else if(view==='pazar'){const h=ray.intersectObjects(STALLS,true)[0];if(h){let o
 else if(view==='depo'){depoTap()}
 else if(view==='vitrin'){const h=ray.intersectObjects(VIT.children,true)[0];if(h){let o=h.object;while(o&&o.userData.sid==null)o=o.parent;if(o){const it=G.stock.find(x=>x.id===o.userData.sid);if(it)openItem(it)}}}
 else if(view==='bahce'){const pt=PETS[0]&&PETS[0].visible&&ray.intersectObjects(PETS,true)[0];if(pt){petTap(e);return}const h=ray.intersectObjects(COLL.filter(o=>o.userData.coll.alive),true)[0];if(!h){const q=ray.intersectObjects(PL.map(o=>o.g),true)[0];if(q){let o=q.object;while(o&&!o.userData.plot)o=o.parent;if(o)plotTap(o.userData.plot)}return}let o=h.object;while(o&&!o.userData.coll)o=o.parent;
-const c=o.userData.coll;if(depoFull(1))return;c.alive=false;c.t=NOW()+(RTM[c.mat]||c.rt||60);const yq=({yun:2,kum:3,kil:2,tas:2,sogut:2,koza:2,kutuk:2})[c.mat]||1;G.inv[c.mat]+=yq;if(c.mat==='yun')sfx.cut();G.st.coll++;sfx.pick();gemRoll(GEM_P.topla,'Toplarken elmas buldun!');floatTxt(e.clientX,e.clientY,img(c.mat)+'+'+yq);const y0=o.position.y;
+const c=o.userData.coll;if(hzSheet(c.src))return;if(depoFull(1))return;c.alive=false;c.t=NOW()+(RTM[c.mat]||c.rt||60);const yq=({yun:2,kum:3,kil:2,tas:2,sogut:2,koza:2,kutuk:2})[c.mat]||1;G.inv[c.mat]+=yq;if(c.mat==='yun')sfx.cut();G.st.coll++;sfx.pick();gemRoll(GEM_P.topla,'Toplarken elmas buldun!');floatTxt(e.clientX,e.clientY,img(c.mat)+'+'+yq);const y0=o.position.y;
 tween(0.3,k=>{o.scale.copy(c.base).multiplyScalar(Math.max(0.01,1-k));o.position.y=y0+k*0.35},()=>{o.visible=false;o.position.y=y0});refresh()}}
 canvas.addEventListener('pointerdown',e=>{
 if(G.phase==='craft'&&K){const st=G.step;
@@ -1943,7 +1986,7 @@ for(let i=tweens.length-1;i>=0;i--){const w=tweens[i];w.t+=dt;const k=Math.min(1
 if(K&&G.step==='rhythm'&&K.dot&&K.dot.live){K.dot.t+=dt;if(ringScale(K.dot.t)<0.45){K.dot.live=false;K.rs.push(0);dotDone(K.dot,0)}}
 if(K&&G.step==='hold'&&K.holding){K.hv+=dt*60;const f=$('gf');if(f)f.style.width=Math.min(100,K.hv)+'%';pressPos(K.hv);if(K.hv>=100)eHold()}
 if(G.started&&!G.night&&!document.hidden)G.tm+=dt*1.5;
-secT+=dt;if(secT>0.25){secT=0;tick();stationLabels();ambTick(0.25)}
+secT+=dt;if(secT>0.25){secT=0;tick();stationLabels();ambTick(0.25);if((hzN=(hzN||0)+1)%20===0){hzTick();gSync()}}
 const a=pg.attributes.position;for(let i=0;i<DN;i++){a.setY(i,a.getY(i)+Math.sin(tt*0.6+i)*0.0015);a.setX(i,a.getX(i)+Math.cos(tt*0.4+i*1.7)*0.0012)}a.needsUpdate=true;
 custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';if(c.mix)return;c.head.rotation.y=Math.sin(tt*0.9+i)*0.25;c.g.position.y=c.walking?Math.abs(Math.sin(tt*9))*0.05:Math.abs(Math.sin(tt*1.6+i))*0.012});
 ALLC.forEach(c=>{if(c.mix)c.mix.update(dt)});MIX.forEach(m=>m.update(dt));wxTick(dt);if(SPL){const a=Math.sin(tt*0.07)*0.7,r=8.6+Math.sin(tt*0.11)*0.6;camCur.l.set(OP,-1.3,0.2);camCur.p.set(OP+Math.sin(a)*r,4.7+Math.sin(tt*0.09)*0.25,0.4+Math.cos(a)*r)}catTick(dt);wandTick(dt);collFx(dt);BOB.forEach(b=>{const k=tt*b.sp+b.ph;if(b.br){b.o.scale.y=b.s0*(1+Math.sin(k)*0.025)}else{b.o.rotation.order='YXZ';b.o.rotation.y=b.r0+Math.sin(k*0.11)*0.25;if(b.sp>=3){b.o.position.y=Math.max(0,Math.sin(k))*0.03;b.o.rotation.x=0}else{b.o.position.y=0;b.o.rotation.x=Math.pow(Math.max(0,Math.sin(k*0.7)),2)*(b.sp<1?0.22:0.45)}}});if(DOORH){const tg=(G.open&&!G.night)||ALLC.some(c=>c.walking&&!c.wand)?-1.55:0;DOORH.rotation.y+=(tg-DOORH.rotation.y)*Math.min(1,dt*4)}

@@ -18,7 +18,7 @@ function plotSow(o,k,t){if(!o.own||o.seed||!(G.inv[k]>0))return false;G.inv[k]--
 function plotHarv(o){const k=o.seed,c=CROPS[k];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;o.last=k;o.seed=null;o.w=false;plotSync(o);return k}
 /* Oto modda sıradaki tohum: eldeki tohumlar arasında döner; hiç yoksa Tohumcu fiyatından satın alır */
 function trakSeed(dry){const L=Object.keys(CROPS).filter(k=>!CROPS[k].t||G.tier>=CROPS[k].t),n=L.length;for(let i=0;i<n;i++){const j=((G.trakI||0)+i)%n,k=L[j];if(G.inv[k]>0||G.gold>=CROPS[k].f){if(dry)return k;if(!(G.inv[k]>0)){G.gold-=CROPS[k].f;G.inv[k]=(G.inv[k]||0)+1;hud()}G.trakI=j+1;return k}}return null}
-function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t;
+function trakPlan(t,kos){const A=[],rdy=o=>o.own&&o.seed&&o.w&&o.end<=t&&!hzOf('P'+PL.indexOf(o));
  if(!kos){PL.forEach(o=>{if(!o.own)return;if(o.seed&&!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=t+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o)){plotHarv(o);const k=trakSeed();if(k)plotSow(o,k,t)}}});else if(!o.seed&&trakSeed(1))A.push({o,fn:()=>{if(!o.seed){const k=trakSeed();if(k)plotSow(o,k,t)}}})});return A}
  const raw=otoNeeds().raw;Object.keys(raw).forEach(m=>{const sk=Object.keys(CROPS).find(k=>CROPS[k].out===m);if(!sk)return;let lack=raw[m];
   PL.forEach(o=>{if(!o.own||o.seed!==sk)return;lack-=CROPS[sk].n;if(!o.w)A.push({o,fn:()=>{if(o.seed&&!o.w){o.w=true;o.end=NOW()+o.dur;plotSync(o)}}});else if(rdy(o))A.push({o,fn:()=>{if(rdy(o))plotHarv(o)}})});
