@@ -1,5 +1,5 @@
 /* ---------- otomasyon: traktör (bostan) ve çırak (atölye) · mod: oto / kosul / pasif ---------- */
-const OTO_P=1800,OTO_COST={cirak:5000,trak:10000},OTO_AD={oto:'Oto',kosul:'Koşullu',pasif:'Pasif'};
+const OTO_P=1800,OTO_COST={cirak:100,trak:200},OTO_AD={oto:'Oto',kosul:'Koşullu',pasif:'Pasif'};
 function otoMode(k){return G[k]?(G[k+'M']||'oto'):'pasif'}
 function otoLeft(k){return Math.max(0,OTO_P-(NOW()-(G[k+'Last']||0)))}
 /* Bekleyen siparişlerin eksik malzemeleri; atölyede üretilebilenler tarifleriyle (make), kalanı ham olarak (raw) döner */
@@ -55,5 +55,5 @@ function cirakTick(){if(!G.cirak)return;G.stLast=G.stLast||{};const m=otoMode('c
  if(m==='oto')A=otoRounds('cirak',t=>cirPlan(t));else if(m==='kosul'){if(++ciN%4)return;A=cirPlan(NOW(),true)}if(!A.length)return;
  if(G.started&&view==='islik'&&!document.hidden&&cirChar())cirDrive(A);else{A.forEach(a=>a.fn());if(G.started)save()}}
 /* Ticaret menüsündeki satır */
-function otoRow(k,ad,off,on){const own=G[k],c=OTO_COST[k],m=otoMode(k);if(!own)return `<div class="row"><div class="n">${ad}<small>${off} · Kademe 2</small></div><button class="btn g" data-buy="${k}" ${G.tier<2||G.gold<c?'disabled':''}>${c} altın</button></div>`;
+function otoRow(k,ad,off,on){const own=G[k],c=OTO_COST[k],m=otoMode(k);if(!own)return `<div class="row"><div class="n">${ad}<small>${off} · Kademe 2 · Elmasın: ${G.elmas||0}</small></div><button class="btn g" data-buy="${k}" ${G.tier<2||(G.elmas||0)<c?'disabled':''}>${c} 💎</button></div>`;
  return `<div class="row"><div class="n">${ad}<small>${on[m]}${m==='oto'?' · sonraki tur '+fmtT(otoLeft(k)):''}</small></div><div class="omode">${['oto','kosul','pasif'].map(x=>`<button data-om="${k}:${x}" class="${x===m?'on':''}">${OTO_AD[x]}</button>`).join('')}</div></div>`}

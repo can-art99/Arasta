@@ -155,6 +155,6 @@ if(!o.seed){const ks=Object.keys(CROPS).filter(k=>G.inv[k]>0);openSheet('plot','
 ui.sheet.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>{const k=b.dataset.sd;if(G.inv[k]<1)return;G.inv[k]--;o.seed=k;o.w=false;o.dur=CROPS[k].s;o.end=0;plotSync(o);sfx.plant();sfx.seed();burst(o.g.position,CROPS[k].hex,9,'s');burst(o.g.position,'#6b4a30',7,'up');closeSheet();toast('Şimdi tarlayı sula',1300)});return}
 if(!o.w){o.w=true;o.end=NOW()+o.dur;sfx.water();burst(o.g.position,'#7fc4e8',16,'w');plotTick();save();return}
 if(o.end>NOW()){toast(`${fmtT(o.end-NOW())} sonra hasat`,1000);return}
-const c=CROPS[o.seed];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;burst(o.g.position,c.hex,8,'up');o.seed=null;o.w=false;plotSync(o);sfx.pick();toast(`+${c.n} ${MATS[c.out].ad}`,1200);refresh()}
+const c=CROPS[o.seed];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;burst(o.g.position,c.hex,8,'up');setTimeout(()=>gemRoll(GEM_P.topla*2,'Hasatta elmas çıktı!'),900);o.seed=null;o.w=false;plotSync(o);sfx.pick();toast(`+${c.n} ${MATS[c.out].ad}`,1200);refresh()}
 PL.forEach(plotSync);
 function label(v,pos,txt,below){const el=document.createElement('div');el.className='lbl hide'+(below?' below':'');if(txt)el.textContent=txt;$('labels').appendChild(el);const o={el,pos,v,last:'',below,hid:true};LBL.push(o);return o}

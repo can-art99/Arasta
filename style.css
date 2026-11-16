@@ -151,4 +151,5 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--tl);heig
 #splash p{font-size:15px;white-space:nowrap}#splash p:before,#splash p:after{margin:0 5px}.sptl{padding:16px 20px 10px}
 .spc .tile{width:104px;height:104px;border:0;background:none;border-radius:26px;box-shadow:0 5px 0 var(--ln),0 0 0 6px rgba(255,248,234,.5),0 0 34px rgba(255,214,140,.7)}.spc .tile svg{width:104px;height:104px;display:block}
 .omode{display:flex;flex:0 0 auto;border:2px solid var(--ln);border-radius:12px;overflow:hidden;box-shadow:0 2px 0 var(--ln)}.omode button{border:0;background:#fffaf0;color:var(--ink);font:700 12px inherit;font-family:inherit;padding:8px 9px;border-left:2px solid var(--ln)}.omode button:first-child{border-left:0}.omode button.on{background:var(--tl);color:#fff8ea}
+#top{gap:4px}#top .pill{padding:3px 7px;font-size:13px;gap:3px;min-width:30px;flex-shrink:1;overflow:hidden}#top .pill svg{flex:0 0 auto}
 
