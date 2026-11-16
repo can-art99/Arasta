@@ -11,3 +11,5 @@ function strike(set,o){const H=o.own||{},id=H.sid=(H.sid||0)+1,t0=tt,a=o.wind==n
 /* Çarpma: kamera hafif sarsılır, parça bir an çöküp geri gelir */
 function jolt(obj,a){if(!obj||!obj.position)return;const U=obj.userData;if(!U.jT){U.jT=1;U.jb=obj.position.y}const y0=U.jb;tween(0.16,k=>{obj.position.y=y0-a*Math.sin(Math.min(1,k)*Math.PI)},()=>{obj.position.y=y0;U.jT=0})}
 function impactFx(pw,obj){const p=pw*0.011;tween(0.24,k=>{SHK=p*(1-k)},()=>{SHK=0});if(obj)jolt(obj,0.0035*pw)}
+/* Doğrusal zamanlı tween: fn(0..1), yumuşatma eğrisi olmadan */
+function tweenLin(dur,fn,done){const t0=tt;tween(dur,()=>fn(Math.min(1,(tt-t0)/dur)),done)}
