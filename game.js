@@ -1747,6 +1747,7 @@ function bRoll(){moveCam({p:V(0,1.95,2.5),l:V(0,Y+0.05,BC.z-0.06)},0.7);const C=
   const k=Math.min(1,acc/(Math.PI*2*1.3)),th=th0+(Math.PI*2-th0)*k;if(tt-lastDraw>0.05||k>=1){lastDraw=tt;draw(th)}tipStep(`Kıvırma %${Math.round(k*100)}`);if(tt-(K.rsn||0)>0.25){K.rsn=tt;noise(0.12,0.03,500,0.4,0,200)}
   if(k>=1){hookClear();toolUp();sfx.good();moveCam(VIEWS.bench,0.6);fin(clamp(1.25-(tt-t0)/8-(all?(1-ok/all)*0.3:0),0.4,1),'Taç halkası tamam!')}};
  K.pu=()=>{la=null;toolUp()};K.skipFn=()=>{draw(Math.PI*2);moveCam(VIEWS.bench,0.5)};tipStep('Parmağınla plakanın etrafında daire çizerek kıvır')}
+let purT=0;setInterval(()=>{if(purT&&performance.now()-purT>220){purT=0;loopSet('purmuz',0)}},100);
 /* Daldırma, vidalama (yerleştir + tornavida) */
 /* Körük + ocak */
 function bForge(){const obj=(K.is3d&&K.m3)?K.m3.g:K.piece;const bp=V(BC.x+0.3,Y,BC.z-0.12),fg=new THREE.Group();fg.position.copy(bp);K.work.add(fg);
@@ -1839,7 +1840,7 @@ let TCH=null;function torchAt(p){if(!TCH||TCH.parent!==K.work){TCH=new THREE.Gro
  const f=put(hi,new THREE.ConeGeometry(0.018,0.07,8),new THREE.MeshBasicMaterial({color:'#5ab0ff',transparent:true,opacity:0.85}),0,0.0,0);f.rotation.x=Math.PI;const f2=put(hi,new THREE.ConeGeometry(0.01,0.04,6),new THREE.MeshBasicMaterial({color:'#ffd27a'}),0,-0.005,0);f2.rotation.x=Math.PI;
  const hose=new THREE.Mesh(new THREE.BufferGeometry(),M('#1e1e1e',0.7));TCH.add(hose);TCH.userData={f,f2,TB,TH,hi,hose,bp};K.work.add(TCH)}
  const U=TCH.userData,bp=U.bp,rest=!p;if(rest)p={x:bp.x-0.12,z:bp.z+0.06,y:Y+0.02};U.f.visible=U.f2.visible=!rest;
- TCH.visible=true;const py=(p.y||K.top)+0.035;U.TH.position.set(p.x,py,p.z);U.TH.rotation.y=Math.atan2(bp.x-p.x,bp.z-p.z);U.f.scale.y=0.8+Math.random()*0.5;{const q=U.lp,sv=q&&!rest?Math.hypot(p.x-q.x,p.z-q.z):0;U.f.scale.y+=Math.min(0.7,sv*25);U.f2.scale.y=0.8+Math.random()*0.4;U.lp=rest?null:{x:p.x,z:p.z};if(!rest&&Math.random()<0.12)puff(V(p.x,(p.y||K.top)+0.005,p.z),1,Math.random()<0.5?'#ffb040':'#ffe08a')}
+ TCH.visible=true;if(!rest){purT=performance.now();loopSet('purmuz',0.3)}const py=(p.y||K.top)+0.035;U.TH.position.set(p.x,py,p.z);U.TH.rotation.y=Math.atan2(bp.x-p.x,bp.z-p.z);U.f.scale.y=0.8+Math.random()*0.5;{const q=U.lp,sv=q&&!rest?Math.hypot(p.x-q.x,p.z-q.z):0;U.f.scale.y+=Math.min(0.7,sv*25);U.f2.scale.y=0.8+Math.random()*0.4;U.lp=rest?null:{x:p.x,z:p.z};if(!rest&&Math.random()<0.12)puff(V(p.x,(p.y||K.top)+0.005,p.z),1,Math.random()<0.5?'#ffb040':'#ffe08a')}
  U.TH.updateMatrixWorld(true);const e=U.hi.localToWorld(V(0,0.16,0)),a=V(bp.x,bp.y+U.TB.userData.h,bp.z),c=a.clone().add(e).multiplyScalar(0.5);c.y=Math.max(a.y,e.y)+0.1;
  U.hose.geometry.dispose();U.hose.geometry=new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a,c,e),20,0.008,6,false);if(rest)return;
  if(Math.random()<0.5)puff(V(p.x,(p.y||K.top)+0.01,p.z),1,Math.random()<0.5?'#ff8a30':'#ffd27a');if(Math.random()<0.3)noise(0.08,0.02,900,0.4,0,300);
