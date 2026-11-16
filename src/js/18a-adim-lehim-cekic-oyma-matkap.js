@@ -61,7 +61,7 @@ function bShuttle(){const n=K.st.n||10,bb=shapeBB(),W=bb.w,L=bb.l,sh=mkTool('shu
  K.pd=mv;K.pm=mv;K.skipFn=()=>{rows.forEach(r=>K.work.remove(r));K.work.remove(warp);K.piece=flat(K.p.shape(),K.p.wood?0.03:0.012,K.p.sheet);K.piece.position.copy(BC);K.work.add(K.piece)};tipStep('Mekiği bir uçtan diğerine kaydır')}
 
 /* Kaşık: oyma kalemiyle oyma */
-function bChisel(){const g=mkTool('gouge'),cells=[];for(let x=-0.085;x<=0.085;x+=0.022)for(let y=0.07;y<=0.33;y+=0.022)if((x/0.085)**2+((y-0.2)/0.13)**2<1)cells.push({p:V(BC.x+x,K.top,BC.z-y),on:false});
+function bChisel(){const g=mkTool('gouge'),cells=[],cc=K.st.c||[0,0.2],rr2=K.st.r||[0.085,0.13];for(let x=cc[0]-rr2[0];x<=cc[0]+rr2[0];x+=0.022)for(let y=cc[1]-rr2[1];y<=cc[1]+rr2[1];y+=0.022)if(((x-cc[0])/rr2[0])**2+((y-cc[1])/rr2[1])**2<1)cells.push({p:V(BC.x+x,K.top,BC.z-y),on:false});
  const dm=new THREE.MeshBasicMaterial({color:'#5a3a1a',transparent:true,opacity:0.55});cells.forEach(c=>{c.m=put(K.work,Cy(0.005,0.005,0.002,6),dm,c.p.x,c.p.y+0.001,c.p.z);c.m.castShadow=false});
  const hol=put(K.work,Cy(0.085,0.085,0.003,24),new THREE.MeshStandardMaterial({color:shade(K.p.sheet,-0.35),transparent:true,opacity:0}),BC.x,K.top+0.001,BC.z-0.2);hol.scale.z=0.13/0.085;let taps=0,rm=0;
  K.pd=p=>{taps++;g.visible=true;g.position.set(p.x,K.top+0.02,p.z);let got=0;cells.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.04){c.on=true;got++;rm++;K.work.remove(c.m)}});
