@@ -1,0 +1,122 @@
+/* ---------- müşteri ---------- */
+const DOOR=V(-1.4,0,-3.4),SLOT=[V(0.3,0,-0.45),V(-0.4,0,-1.65),V(-1.0,0,-2.7)],Q=[];let cust=null,spawnT=1.2;
+const tweens=[];const ease=k=>k<0.5?2*k*k:1-((-2*k+2)**2)/2;
+function tween(dur,fn,done){tweens.push({t:0,dur,fn,done})}
+let camTok=0;
+function moveCam(to,dur,done){const id=++camTok,fp=camCur.p.clone(),fl=camCur.l.clone();tween(dur,k=>{if(id!==camTok)return;camCur.p.lerpVectors(fp,to.p,k);camCur.l.lerpVectors(fl,to.l,k)},()=>{if(id===camTok&&done)done()})}
+/* ---------- 3D modeller ---------- */
+const CHR=[],ALLC=[];let DOORH=null;
+function prepModel(sc,nc){sc.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false;const ga=o.geometry.attributes;if(!ga.normal)o.geometry.computeVertexNormals();(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(m.userData.prep)return;m.userData.prep=1;
+
+if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}else{if(!nc)m.color.convertLinearToSRGB().multiplyScalar(1.12);m.flatShading=true}m.roughness=0.85;m.metalness=0;m.needsUpdate=true})}})}
+const NOCONV=new Set(['wb_big','bookcase_open','scissors','scissors2','wallshelf']),OVR={wb_grind:{wood:'#a8743e',woodDark:'#6b4528',metal:'#9aa0a8'},wb_kenney:{wood:'#a8743e',woodDark:'#6b4528',metal:'#9aa0a8',rock:'#e8dcc0'},handsaw:{lambert3SG:'#c4c8cc',lambert4SG:'#3a3a3a',lambert2SG:'#8a3a20'},scissors2:{Handle1Scissors1:'#b8402e',Steel1Scissors1:'#cfd3d8'},pine:{Bark_NormalTree:'#6b4a2b',Leaves_Pine:'#46733a'},m_rasp:{F44336:'#4a2350',FFFFFF:'#3f6a34'},m_coco:{_crayfishdiffuse:'#6b4a2b'},m_pondJ:{'8BC34A':'#7a9a50','4CAF50':'#6a8a44','039BE5':'#3a86c0','00BCD4':'#4aa0c8'},m_rocks:{'Material.040':'#8d8a84'},m_orn:{_crayfishdiffuse:'#c9a23a'},m_mulberry:{mat9:'#4a7a34',mat20:'#5a3a22'}},FLP=['#4f7a3a','#f2c230','#d9534f','#f4f0e6','#8a5bd0','#5f8a44','#f29ac0'],MIX=[];
+function glb(n,cb){if(GLC[n]){cb(GLC[n]);return}if(!THREE.GLTFLoader)return;if(GLW[n]){GLW[n].push(cb);return}GLW[n]=[cb];
+ new THREE.GLTFLoader().load('models/'+n+'.glb',g=>{prepModel(g.scene,NOCONV.has(n));let fi=0;g.scene.traverse(o=>{if(o.isMesh)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{const ov=OVR[n];if(ov&&ov[m.name])m.color.set(ov[m.name]);if(n==='scissors2'&&/Steel/.test(m.name))m.roughness=0.3;if(n==='pine'){const ps=o.geometry.attributes.position;o.geometry.computeBoundingBox();const bb=o.geometry.boundingBox,H=bb.max.y-bb.min.y,R=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z)/2,cx=(bb.max.x+bb.min.x)/2,cz=(bb.max.z+bb.min.z)/2,col=new Float32Array(ps.count*3),bk=new THREE.Color('#6b4a2b'),lf=new THREE.Color('#3f6a34'),lt=new THREE.Color('#5f8a44'),t=new THREE.Color();for(let i=0;i<ps.count;i++){const h=(ps.getY(i)-bb.min.y)/H,r=Math.hypot(ps.getX(i)-cx,ps.getZ(i)-cz)/R;if(h<0.3&&r<0.16)t.copy(bk);else t.copy(lf).lerp(lt,Math.min(1,h*0.9+r*0.3));col[i*3]=t.r;col[i*3+1]=t.g;col[i*3+2]=t.b}o.geometry.setAttribute('color',new THREE.BufferAttribute(col,3));m.vertexColors=true;m.color.set('#ffffff');m.needsUpdate=true}if(n==='flowers')m.color.set(FLP[fi++%FLP.length])})});
+ GLC[n]=g;GLW[n].forEach(f=>f(g));GLW[n]=null},undefined,()=>{})}
+function skin(o,n,opt){place(n,Object.assign({par:o,swap:1},opt,{cb:w=>{if(o.isMesh)o.material=HID}}))}
+function fitM(n,o){const g=GLC[n];if(!g)return null;const m=g.scene.clone(),w=new THREE.Group();m.rotation.set(o.rx||0,0,o.rz||0);w.add(m);m.updateMatrixWorld(true);let bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(V(0,0,0));m.scale.multiplyScalar(o.h?o.h/sz.y:o.w/Math.max(sz.x,sz.z));m.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(m);m.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);return w}
+function place(n,o){glb(n,g=>{const sk=g.animations.length&&THREE.SkeletonUtils,m=sk?THREE.SkeletonUtils.clone(g.scene):g.scene.clone(),w=new THREE.Group();m.rotation.set(o.rx||0,0,o.rz||0);w.add(m);m.updateMatrixWorld(true);
+ let bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(V(0,0,0));m.scale.multiplyScalar(o.h?o.h/sz.y:o.w/Math.max(sz.x,sz.z));m.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(m);
+ m.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);w.position.set(o.x||0,o.y||0,o.z||0);w.rotation.y=o.ry||0;(o.par||S).add(w);
+ if(o.anim&&g.animations.length){const mx=new THREE.AnimationMixer(m),a=g.animations.find(c=>c.name===o.anim)||g.animations[0];const ac=mx.clipAction(a);ac.time=Math.random()*a.duration;ac.play();MIX.push(mx)}
+ if(o.par&&o.swap)o.par.children.forEach(c=>{if(c!==w&&c.material!==HID)c.visible=false});o.cb&&o.cb(w)})}
+function fitModel(o,h,ax){const bb=new THREE.Box3().setFromObject(o),sz=bb.getSize(V(0,0,0)),sc=h/sz[ax||'y'];o.scale.multiplyScalar(sc);const b2=new THREE.Box3().setFromObject(o);return b2}
+if(THREE.GLTFLoader){const GL=new THREE.GLTFLoader();
+['m_Casual','m_LongSleeve','m_Shirt','m_Suit','f_Casual','f_Alternative','f_Dress','f_TankTop','c_farmer','c_business','c_punk','c_astro'].forEach(n=>GL.load('models/'+n+'.glb',g=>{prepModel(g.scene);const bb=new THREE.Box3().setFromObject(g.scene);g.h=bb.max.y-bb.min.y;g.y0=bb.min.y;CHR.push(g)},undefined,()=>{}));
+GL.load('models/door.glb',g=>{const d=g.scene;prepModel(d);const b=fitModel(d,2.3);d.position.set(-b.min.x,-b.min.y,-(b.min.z+b.max.z)/2);DOORH=new THREE.Group();DOORH.add(d);DOORH.position.set(-2.02,0,-3.8);DOORH.rotation.y=-1.55;S.add(DOORH)},undefined,()=>{});}
+function anim(c,n,once){if(!c||!c.A||!c.A[n])return;if(c.cur===n&&!once)return;const nx=c.A[n],pv=c.A[c.cur];nx.reset();nx.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat);nx.clampWhenFinished=!!once;nx.play();if(pv&&pv!==nx)pv.crossFadeTo(nx,0.3,false);c.cur=n;
+ if(once){clearTimeout(c.ct);c.ct=setTimeout(()=>{if(c.cur===n)anim(c,c.walking?'walk':'idle')},nx.getClip().duration*1000+200)}}
+const WN=[[-2.5,-0.7],[0,-0.75],[2.5,-0.7],[-2.65,2.25],[0,2.25],[2.65,2.25]],WE=[[1,3],[0,2],[1,5],[0,4],[3,5],[4,2]];
+const WND=[];function mkWand(){if(!CHR.length){setTimeout(mkWand,3000);return}[0,2,4].forEach((n,i)=>{const c=makeCustomer();c.wand=true;c.n=n;c.g.position.set(OP+WN[n][0],0,WN[n][1]);WND.push(c);
+  c.go=()=>{const taken=WND.filter(o=>o!==c).map(o=>o.n),opts=WE[c.n].filter(x=>!taken.includes(x));if(!opts.length){setTimeout(c.go,1500);return}const nx=pick(opts),q=WN[nx];c.n=nx;c.wt=V(OP+q[0]+(Math.random()-0.5)*0.3,0,q[1]+(Math.random()-0.5)*0.2);c.bl=0;c.tok++;c.walking=true;anim(c,'walk')};setTimeout(c.go,800+i*2200)})}
+function wandTick(dt){WND.forEach(c=>{if(!c.wt)return;const p=c.g.position,dx=c.wt.x-p.x,dz=c.wt.z-p.z,d=Math.hypot(dx,dz);if(d<0.03){c.wt=null;c.walking=false;anim(c,'idle');setTimeout(c.go,1500+Math.random()*5000);return}const ux=dx/d,uz=dz/d;
+  const blk=c.bl<3.5&&WND.some(o=>{if(o===c)return false;const ox=o.g.position.x-p.x,oz=o.g.position.z-p.z,od=Math.hypot(ox,oz);return od<0.6&&(ox*ux+oz*uz)>0.15*od});
+  if(blk){c.bl+=dt;if(c.walking){c.walking=false;anim(c,'idle')}return}if(!c.walking){c.walking=true;anim(c,'walk')}if(c.bl>0)c.bl=Math.max(0,c.bl-dt*0.5);const st=Math.min(d,0.8*dt);p.x+=ux*st;p.z+=uz*st;const ry=Math.atan2(ux,uz);let a=ry-c.g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));c.g.rotation.y+=a*Math.min(1,dt*8)})}
+setTimeout(mkWand,6000);
+function makeCustomer(){if(CHR.length){const src=pick(CHR),m=THREE.SkeletonUtils.clone(src.scene),w=new THREE.Group(),sc=1.72/src.h;m.scale.multiplyScalar(sc);m.position.y=-src.y0*sc;w.add(m);w.position.copy(DOOR);S.add(w);
+ const mix=new THREE.AnimationMixer(m),A={};src.animations.forEach(a=>A[a.name]=mix.clipAction(a));const c={g:w,head:new THREE.Object3D(),tok:0,at:false,mix,A,cur:'idle'};if(A.idle){A.idle.time=Math.random()*3;A.idle.play()}ALLC.push(c);return c}
+const g=new THREE.Group(),head=new THREE.Group();
+put(g,B(0.5,0.5,0.3),M('#3a2f28'),0,0.25,0);put(g,Cy(0.28,0.36,1.05,8),M(pick(['#3f6fa8','#4f7a3a','#8a3a28','#6b4f8a','#c08a2a'])),0,1.0,0);
+head.add(mesh(new THREE.SphereGeometry(0.24,12,10),M(pick(['#e8b58c','#c98d63','#f0c9a4','#9a6a48']))));
+[-0.08,0.08].forEach(x=>put(head,new THREE.SphereGeometry(0.03,6,6),M('#1a1410'),x,0.04,0.21));
+if(Math.random()<0.6)put(head,Cy(0.2,0.3,0.18,8),M(pick(['#5a3519','#2a2420','#7a5a3a'])),0,0.22,0);
+head.position.y=1.78;g.add(head);g.position.copy(DOOR);S.add(g);const c={g,head,tok:0,at:false};ALLC.push(c);return c}
+function walk(c,to,dur,done){const id=++c.tok,fr=c.g.position.clone();if(fr.distanceTo(to)>0.05)c.g.rotation.y=Math.atan2(to.x-fr.x,to.z-fr.z);c.walking=true;anim(c,'walk');tween(dur,k=>{if(id===c.tok)c.g.position.lerpVectors(fr,to,k)},()=>{if(id!==c.tok)return;c.walking=false;anim(c,'idle');done&&done()})}
+function mkOrder(){const pool0=PRODS.filter(unlocked),sp=SEAS[season()].p,pool=pool0.concat(pool0.filter(x=>sp.includes(x.id)),pool0.filter(x=>sp.includes(x.id))),p=pick(pool),color=p.need.boya?pick(PAINTS):null,style=p.styles&&Math.random()<0.6?pick(p.styles):null;
+if(G.first)Object.entries(p.need).forEach(([k,n])=>{const key=k==='boya'?'boya_'+color.id:k;G.inv[key]=Math.max(G.inv[key],n)});
+return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)*(sp.includes(p.id)?1.2:1)/5)*5,hurry:!G.first&&Math.random()<0.15}}
+function spawn(){if(Q.length>=3)return;const c=makeCustomer(),pv=G.stock.filter(x=>x.price>0);
+if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
+else{const o=c.order=mkOrder(),h=o.hurry;if(!G.first&&(G.reg||[]).length&&Math.random()<0.3){const rg=pick(G.reg),fp=PRODS.find(x=>x.id===rg.fav);if(fp&&unlocked(fp)&&fp.id!==o.p.id){o.p=fp;o.color=fp.need.boya?pick(PAINTS):null;o.style=null;o.budget=Math.round(fp.base*(1+Math.random()*0.3)/5)*5}o.reg=rg.ad}c.acc=c.accMax=G.first?9999:h?45:75;c.dead=c.deadMax=G.first?9999:(h?150:280)+o.p.steps.length*20;c.wait=h?100:170}
+c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];hud();seat(c)}
+function seat(c){const i=Q.indexOf(c);if(i<0)return;c.at=false;const to=SLOT[i];walk(c,to,Math.max(0.5,c.g.position.distanceTo(to)/1.5),()=>{c.g.rotation.y=0;c.at=true;if(Q[0]===c&&G.phase==='idle')present(c)})}
+function present(c){const o=G.order=c.order;G.phase='ordering';G.bubOn=true;sfx.bell();if(o.buy){presentBuy(c,o);return}
+say(`${o.reg?'<b>'+o.reg+':</b> Yine ben geldim usta! ':''}${o.hurry?'<b>Acelem var!</b> ':o.reg?'':pick(['Merhaba usta! ','İyi günler! ','Selam! '])}${o.color?o.color.ad+' ':''}${o.style?o.style.toLowerCase()+' ':''}${o.p.ad.toLowerCase()} istiyorum. Bütçem ${o.budget} altın${o.hurry?', zamanında biterse %20 fazlasını veririm':''}.`);
+refresh();if(view==='home')orderActions();else toast('Dükkâna müşteri geldi',1800)}
+function leave(c){const i=Q.indexOf(c);if(i<0)return;Q.splice(i,1);cust=Q[0]||null;c.g.visible=G.phase!=='craft';walk(c,DOOR,2,()=>{S.remove(c.g);const j=ALLC.indexOf(c);if(j>=0)ALLC.splice(j,1);if(c.mix)c.mix.stopAllAction()});
+if(i===0&&(!G.order||G.order===c.order)){G.order=null;G.phase='idle';G.bubOn=false;say(null);actions([]);refresh()}hud();Q.forEach((x,j)=>{if(j>=i)seat(x)})}
+function lose(c,msg,rp){G.st.lost++;G.rep=Math.max(0,G.rep-rp);toast(rp?`${msg}<br>İtibar −${rp}`:msg,2400);sfx.bad();leave(c)}
+function qSer(){try{return Q.filter(c=>c.order).map(c=>{const o=c.order,so={};for(const k in o){const v=o[k];if(k==='p')so.p=v&&v.id;else if(k==='color')so.color=v&&v.id;else if(v==null||typeof v!=='object')so[k]=v}
+ return {o:so,acc:c.acc,accMax:c.accMax,dead:c.dead,deadMax:c.deadMax,wait:c.wait,act:G.order===o&&(G.phase==='active'||G.phase==='craft')}})}catch(e){return []}}
+function qRestore(){const L=G.qsL;G.qsL=null;if(!L)return;const el=Math.max(0,(Date.now()-(G.qsT||Date.now()))/1000);L.slice(0,3).forEach((d,i)=>{const p=PRODS.find(x=>x.id===d.o.p);if(!p)return;
+ const o=Object.assign({},d.o,{p,color:d.o.color?PAINTS.find(x=>x.id===d.o.color)||null:null});if(o.buy&&!G.stock.some(x=>x.id===o.buy))return;const c=makeCustomer();c.order=o;
+ const keep=(v,mx)=>Math.max(el<600?Math.min(mx,25):0,v-el);c.accMax=d.accMax||75;c.deadMax=d.deadMax||300;c.acc=keep(d.acc!=null?d.acc:c.accMax,c.accMax);c.dead=keep(d.dead!=null?d.dead:c.deadMax,c.deadMax);c.wait=keep(d.wait!=null?d.wait:120,120);
+ if((d.act?c.dead:c.acc)<=0&&i===0)return;c.g.visible=true;Q.push(c);if(i===0&&d.act&&Q.length===1){G.order=o;G.phase='active';G.bubOn=false}seat(c)});cust=Q[0]||null;hud();refresh()}
+addEventListener('pagehide',()=>{try{save()}catch(e){}});document.addEventListener('visibilitychange',()=>{if(document.hidden)try{save()}catch(e){}});
+function custTick(dt){if(!G.started)return;if(G.qsL&&ALLC!==undefined){qRestore()}if(G.open&&!G.night){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:22+Math.random()*24;spawn()}}
+for(let i=Q.length-1;i>=0;i--){const c=Q[i];if(!c.at)continue;
+const mine=G.order&&G.order===c.order;
+if(i>0||(!mine&&G.phase!=='idle')){c.wait-=dt;if(c.wait<=0){G.st.lost++;toast('Sırada bekleyen müşteri sıkılıp gitti',1800);sfx.bad();leave(c)}}
+else if(G.phase==='ordering'){if(modalMode!=='haggle')c.acc-=dt;if(c.acc<=0)lose(c,'Müşteri beklemekten sıkıldı ve gitti',1)}
+else if(G.phase==='active'||G.phase==='craft'){c.dead-=dt;if(c.dead<=0){if(G.phase==='craft'){c.dead=0;if(K)K.late=true}else lose(c,'Sipariş yetişmedi, müşteri gitti',2)}}}}
+function patUI(){const c=Q[0],el=$('pat');let v=-1;if(c&&c.at){if(G.phase==='ordering'&&c.accMax<9000)v=c.acc/c.accMax;else if((G.phase==='active'||G.phase==='craft')&&c.deadMax<9000)v=c.dead/c.deadMax}
+show(el,v>=0);if(v>=0){const b=el.firstChild;b.style.width=(v*100)+'%';b.style.background=v>0.5?'#9be37a':v>0.25?'#ffcf3a':'#ff7a5a'}}
+function setOpen(v,quiet){G.open=v;doorM.color.set(v?'#f6d38a':'#5e5044');opM.color.set(v?'#2f6b5a':'#b5533c');if(quiet)return;sfx.bell();
+if(!v){toast('Dükkân kapandı<br>İçerdekiler kalır, yeni müşteri gelmez',2000)}else{if(!G.first)spawnT=Math.min(spawnT,4);toast('Dükkân açıldı',1200)}refresh();save()}
+$('openB').onclick=()=>{if(G.night){toast('Akşam oldu<br>Dükkân yarın sabah açılır',1600);return}setOpen(!G.open)};
+const r5=v=>Math.max(5,Math.round(v/5)*5);
+const pr=it=>PRODS.find(x=>x.id===it.pid);
+const itemVal=it=>pr(it).base*(0.55+0.12*it.stars);
+const sugg=it=>r5(itemVal(it)*1.05);
+const desc=it=>`${it.col?paintOf(it.col).ad.toLowerCase()+' ':''}${it.style?it.style.toLowerCase()+' ':''}${pr(it).ad.toLowerCase()}`;
+function matchStock(o){if(!o||o.buy||o.free)return null;return G.stock.filter(it=>it.pid===o.p.id&&(!o.color||it.col===o.color.id)&&(!o.style||it.style===o.style)).sort((a,b)=>b.stars-a.stars)[0]||null}
+function orderActions(){const o=G.order;if(!o)return;if(o.buy){buyActions();return}const L=[btn('Siparişi al','g',()=>acceptOrder())];if(!o.haggled)L.push(btn('Pazarlık','',haggleOrder));
+const m=matchStock(o);if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));L.push(btn('Reddet','r',rejectOrder));actions(L)}
+let HG=null;
+function haggle(o){HG=Object.assign({round:1},o);renderH()}
+function renderH(){const h=`<h3>Pazarlık</h3><p class="hq">“${HG.line}”</p>
+<div class="brk"><span>Müşterinin teklifi</span><b>${HG.offer} altın</b></div><div class="brk"><span>Tur</span><b>${HG.round} / 3</b></div>
+<div class="grp">Senin istediğin fiyat</div><div class="hgv"><button class="btn l" data-hd="-5">−5</button><b id="hv">${HG.ask}</b><button class="btn l" data-hd="5">+5</button></div>
+<input type="range" id="hr" min="${HG.lo}" max="${HG.hi}" step="5" value="${HG.ask}" aria-label="Fiyat">
+<div class="pk" style="justify-content:center;margin-top:10px"><button class="btn g" id="hOff">Teklif ver</button><button class="btn" id="hAcc">${HG.offer} altına anlaş</button><button class="btn r" id="hBack">Vazgeç</button></div>`;
+openSheet('haggle',h);const hv=$('hv'),hr=$('hr'),setA=v=>{HG.ask=clamp(v,HG.lo,HG.hi);hv.textContent=HG.ask;hr.value=HG.ask};
+hr.oninput=()=>setA(+hr.value);ui.sheet.querySelectorAll('[data-hd]').forEach(b=>b.onclick=()=>setA(HG.ask+ +b.dataset.hd));
+$('hOff').onclick=hOffer;$('hAcc').onclick=()=>hDeal(HG.offer);$('hBack').onclick=hBack}
+function hClose(){show(ui.modal,false);modalMode=null;const h=HG;HG=null;return h}
+function hBack(){if(!HG)return;const h=hClose();h.onBack&&h.onBack()}
+function hDeal(p){if(!HG)return;const h=hClose();sfx.good();h.onDeal(p)}
+function hOffer(){if(!HG)return;const a=HG.ask;if(a<=HG.max){hDeal(a);return}const big=a>HG.max*1.35;HG.round+=big?2:1;
+if(HG.round>3){const h=hClose();sfx.bad();h.onBreak();return}
+HG.offer=Math.min(HG.max,r5(HG.offer+(HG.max-HG.offer)*0.55));HG.line=big?`${a} mı? Çok fazla! En fazla ${HG.offer} veririm.`:HG.round===3?`Son teklifim ${HG.offer} altın.`:pick([`Biraz artırayım: ${HG.offer} altın.`,`${HG.offer} olsun, anlaşalım.`,`En fazla ${HG.offer} verebilirim.`]);sfx.tap();renderH()}
+function haggleOrder(){const o=G.order,c=Q[0];if(!o||o.haggled||G.phase!=='ordering')return;if(o.hmax==null)o.hmax=r5(o.budget*(1.08+Math.random()*0.35+(o.hurry?0.15:0)));
+haggle({line:`Bütçem ${o.budget} altın, ne dersin?`,offer:o.budget,max:o.hmax,ask:r5(o.budget*1.25),lo:o.budget,hi:r5(o.budget*1.8),
+ onDeal:p=>{o.budget=p;o.haggled=true;acceptOrder(`Anlaştık, ${p} altın!`)},onBreak:()=>{o.haggled=true;lose(c,'Pazarlık bozuldu, müşteri gitti',1)},onBack:()=>{o.haggled=true;orderActions()}})}
+function rmStock(it){G.stock=G.stock.filter(x=>x!==it);vitrinSync()}
+function levelUp(){const nt=tierOf(G.rep);if(nt>G.tier){G.tier=nt;restock();setTimeout(()=>{toast(`Kademe ${nt} açıldı!<br>Yeni araçlar ve malzemeler`,2600);sfx.fan()},1500)}checkUnl()}
+function cancelOrder(){const c=Q[0];if(!c||G.phase!=='active')return;if(!armBuy('cancel','Sipariş iptal edilsin mi? İtibar −3'))return;buyArm=null;say('Peki, başka zaman...');G.bubOn=true;lose(c,'Sipariş iptal edildi',3)}
+function stockDeliver(it){const o=G.order,c=Q[0];if(!o||!c||!G.stock.includes(it))return;rmStock(it);const st=it.stars;let pay=Math.round(o.budget*(0.6+0.08*st));if(o.hurry)pay+=Math.round(o.budget*0.2);if(st===5)pay+=15;
+G.gold+=pay;G.st.earned+=pay;G.st.deliv++;if(st===5)G.st.five++;G.rep=Math.max(0,G.rep+(st>=3?st:-1));if(G.first){G.first=false;spawnT=5}G.phase='leaving';G.order=null;G.n++;levelUp();
+if(st>=4)anim(c,'clap',true);say(st>=4?'Hazır varmış, harika! Teşekkürler.':'Olur, idare eder.');sfx.coin();toast('+'+pay+' altın',1200);actions([]);refresh();save();setTimeout(()=>{G.bubOn=false;say(null);leave(c)},1300)}
+function presentBuy(c,o){const it=G.stock.find(x=>x.id===o.buy);if(!it){say('Aradığım ürün satılmış galiba... Başka zaman.');actions([]);setTimeout(()=>{if(Q[0]===c)leave(c)},1700);return}
+c.wtp=r5(itemVal(it)*(0.85+Math.random()*0.45));o.ok=it.price<=c.wtp;o.offer=o.ok?it.price:Math.min(it.price-5,r5(c.wtp*0.82));
+say(o.ok?`Vitrindeki ${desc(it)} çok güzel! ${it.price} altına alıyorum.`:`Vitrindeki ${desc(it)} hoşuma gitti ama ${it.price} altın fazla. ${o.offer} olur mu?`);
+refresh();if(view==='home'||view==='vitrin')buyActions();else toast('Vitrin için müşteri geldi',1800)}
+function buyActions(){const o=G.order,c=Q[0],it=o&&G.stock.find(x=>x.id===o.buy);if(!it){actions([]);return}
+if(o.ok)actions([btn(`Sat · ${it.price} altın`,'g',()=>sale(it,it.price)),btn('Vazgeç','r',rejectOrder)]);
+else{const L=[btn(`${o.offer} altına sat`,'g',()=>sale(it,o.offer))];if(!o.haggled)L.push(btn('Pazarlık','',()=>{o.haggled=true;haggle({line:`${o.offer} altın verebilirim.`,offer:o.offer,max:c.wtp,ask:it.price,lo:o.offer,hi:Math.max(it.price,r5(c.wtp*1.6)),
+ onDeal:p=>sale(it,p),onBreak:()=>lose(c,'Müşteri vazgeçip gitti',0),onBack:buyActions})}));L.push(btn('Reddet','r',rejectOrder));actions(L)}}
+function sale(it,p){const c=Q[0];anim(c,'clap',true);if(!G.stock.includes(it))return;rmStock(it);G.gold+=p;G.st.earned+=p;G.st.sold++;sfx.cash();toast(`+${p} altın`,1200);say('Teşekkürler, güle güle kullanırım!');
+G.phase='leaving';G.order=null;actions([]);refresh();save();setTimeout(()=>{G.bubOn=false;say(null);if(c)leave(c)},1200)}
+function acceptOrder(msg){if(G.phase!=='ordering')return;G.phase='active';say(msg||'Harika, bekliyorum!');setTimeout(()=>{if(G.phase==='active'){G.bubOn=false;say(null)}},1800);refresh();
+if(G.first)setTimeout(()=>toast('Kartta neyin eksik olduğu yazıyor.<br>Eksikleri bahçeden topla, atölyede işle.',3200),600)}
+function rejectOrder(){if(G.phase!=='ordering')return;leave(Q[0])}

@@ -1,0 +1,121 @@
+/* ---------- dokunma ---------- */
+const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),hv=V(0,0,0);
+function setRay(e){const r=canvas.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,cam)}
+function hit(e,h){setRay(e);return ray.ray.intersectPlane(new THREE.Plane(V(0,1,0),-h),hv)?hv.clone():null}
+function hitW(e){if(K&&K.is3d&&K.m3){setRay(e);const h=ray.intersectObject(K.m3.g,true)[0];if(h)return h.point.clone()}return hit(e,K.top)}
+let dragging=null,drawing=false,tap=null,pinch=null;const RZ={z:1,t:1},V2T=new THREE.Vector2(),DP=new Map();
+const PT=new Map(),ZM={z:1,t:1,px:0,pz:0};
+const zoomable=()=>view==='bahce'||view==='islik'||view==='pazar'||view==='depo';
+function clampPan(){const r=0.3+(ZM.t-1)*2.4;ZM.px=clamp(ZM.px,-r,r);ZM.pz=clamp(ZM.pz,-r*1.3,r*1.3)}
+function setZoom(t){ZM.t=clamp(t,1,2.5);clampPan()}
+$('zi').onclick=()=>setZoom(ZM.t*1.35);$('zo').onclick=()=>setZoom(ZM.t/1.35);
+canvas.addEventListener('wheel',e=>{if(G.phase==='result'||(G.phase==='craft'&&G.step==='design')){RZ.t=clamp(RZ.t*(e.deltaY<0?1.12:0.89),1,3.2);return}if(zoomable()){e.preventDefault();setZoom(ZM.t*(e.deltaY<0?1.12:0.89))}},{passive:false});
+function floatTxt(cx,cy,html){const r=frame.getBoundingClientRect(),d=document.createElement('div');d.className='flt';d.innerHTML=html;d.style.left=(cx-r.left)+'px';d.style.top=(cy-r.top)+'px';$('ui').appendChild(d);setTimeout(()=>d.remove(),900)}
+function stationTap(s){if(G.phase==='craft'||G.phase==='result'||switching)return;if(!stOwned(s)){buyStation(s);return}
+if(s.ready&&G.tier>=s.tier){if(depoFull(Object.values(s.ready).reduce((a,b)=>a+b,0)))return;giveAll(s.ready);G.st.proc++;sfx.pick();toast('+ '+Object.entries(s.ready).map(([k,n])=>n+' '+MATS[k].ad).join(', '),1400);s.ready=null;refresh()}else openStation(s)}
+function worldTap(e){if(SPL)return;setRay(e);
+if(view==='islik'){const h=ray.intersectObjects(ST.map(s=>s.g),true)[0];if(h){let o=h.object;while(o&&!o.userData.st)o=o.parent;if(o)stationTap(o.userData.st)}}
+else if(view==='pazar'){const h=ray.intersectObjects(STALLS,true)[0];if(h){let o=h.object;while(o&&!o.userData.tab)o=o.parent;if(o)marketTab(o.userData.tab)}}
+else if(view==='depo'){depoTap()}
+else if(view==='vitrin'){const h=ray.intersectObjects(VIT.children,true)[0];if(h){let o=h.object;while(o&&o.userData.sid==null)o=o.parent;if(o){const it=G.stock.find(x=>x.id===o.userData.sid);if(it)openItem(it)}}}
+else if(view==='bahce'){const pt=PETS[0]&&PETS[0].visible&&ray.intersectObjects(PETS,true)[0];if(pt){petTap(e);return}const h=ray.intersectObjects(COLL.filter(o=>o.userData.coll.alive),true)[0];if(!h){const q=ray.intersectObjects(PL.map(o=>o.g),true)[0];if(q){let o=q.object;while(o&&!o.userData.plot)o=o.parent;if(o)plotTap(o.userData.plot)}return}let o=h.object;while(o&&!o.userData.coll)o=o.parent;
+const c=o.userData.coll;if(depoFull(1))return;c.alive=false;c.t=NOW()+(RTM[c.mat]||c.rt||60);const yq=({yun:2,kum:3,kil:2,tas:2,sogut:2,koza:2,kutuk:2})[c.mat]||1;G.inv[c.mat]+=yq;if(c.mat==='yun')sfx.cut();G.st.coll++;sfx.pick();floatTxt(e.clientX,e.clientY,img(c.mat)+'+'+yq);const y0=o.position.y;
+tween(0.3,k=>{o.scale.copy(c.base).multiplyScalar(Math.max(0.01,1-k));o.position.y=y0+k*0.35},()=>{o.visible=false;o.position.y=y0});refresh()}}
+canvas.addEventListener('pointerdown',e=>{
+if(G.phase==='craft'&&K){const st=G.step;
+ if(K.pd){const p=hit(e,K.hy!=null?K.hy:K.top);K.pdn=true;if(p)K.pd(p,e);try{canvas.setPointerCapture(e.pointerId)}catch(_){}return}
+ if((st==='drag'||st==='asm')&&K.drag){const p=hit(e,K.top);if(p&&Math.hypot(p.x-K.drag.obj.position.x,p.z-K.drag.obj.position.z)<0.3){dragging={dx:K.drag.obj.position.x-p.x,dz:K.drag.obj.position.z-p.z};canvas.setPointerCapture(e.pointerId)}}
+ else if(st==='trace'&&K.path){const p=hit(e,K.top);if(p){drawing=true;K.strokes.push([]);K.sLp=null;K.sDir=0;K.sAcc=0;cutPoint(p);canvas.setPointerCapture(e.pointerId)}}
+ else if(st==='rhythm')rhythmTap();
+ else if(st==='rub'&&K.cells){const p=hitW(e);if(p){K.rubbing=true;rubAt(p);canvas.setPointerCapture(e.pointerId)}}
+ else if(st==='design'&&K.pc){const p=hit(e,Y+0.12);if(p){K.rubbing=true;paintAt(p);canvas.setPointerCapture(e.pointerId)}}
+ else if(st==='design'&&K.model){DP.set(e.pointerId,{x:e.clientX,y:e.clientY});if(DP.size>=2){K.spin=null;const a=[...DP.values()];pinch={d:Math.max(20,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)),z:RZ.t,dz:1}}else K.spin={x:e.clientX,y:e.clientY,ry:K.ry||0,rx:K.rx||0};canvas.setPointerCapture(e.pointerId)}
+ return}
+if(!(zoomable()||view==='vitrin'||G.phase==='result')||switching)return;
+PT.set(e.pointerId,{x:e.clientX,y:e.clientY});try{canvas.setPointerCapture(e.pointerId)}catch(_){}
+if(PT.size===1)tap={x:e.clientX,y:e.clientY,moved:false};
+else if(PT.size===2){const a=[...PT.values()];pinch={d:Math.max(20,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)),z:G.phase==='result'?RZ.t:ZM.t};if(tap)tap.moved=true}});
+canvas.addEventListener('pointermove',e=>{if(DP.has(e.pointerId)){DP.set(e.pointerId,{x:e.clientX,y:e.clientY});if(DP.size>=2&&pinch&&pinch.dz){const a=[...DP.values()];RZ.t=clamp(pinch.z*Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)/pinch.d,1,3);return}}
+if(PT.has(e.pointerId)){const p=PT.get(e.pointerId),dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
+ if(PT.size===2&&pinch){const a=[...PT.values()],q=pinch.z*Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)/pinch.d;if(G.phase==='result')RZ.t=clamp(q,1,3.2);else setZoom(q)}
+ else if(tap){if(!tap.moved&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>8)tap.moved=true;
+  if(tap.moved&&G.phase==='result'&&K&&K.model){K.model.g.rotation.y+=dx*0.012}
+  if(tap.moved&&zoomable()){const w=VIEWS[view].p.distanceTo(VIEWS[view].l)*1.2/H/ZM.z;ZM.px-=dx*w;ZM.pz-=dy*w*1.35;clampPan()}}
+ return}
+if(!K)return;
+if(K.pm&&K.pdn){const p=hit(e,K.hy!=null?K.hy:K.top);if(p)K.pm(p,e);return}
+if(dragging&&(G.step==='drag'||G.step==='asm')&&K.drag){const p=hit(e,K.top);if(p){K.drag.obj.position.x=clamp(p.x+dragging.dx,-0.72,0.72);K.drag.obj.position.z=clamp(p.z+dragging.dz,1.2,2.12)}}
+else if(drawing&&G.step==='trace'&&K.path){const p=hit(e,K.top);if(p){const st=K.strokes[K.strokes.length-1];if(!st){drawing=false;return}const l=st[st.length-1];if(!l||Math.hypot(l.x-p.x,l.z-p.z)>0.006)cutPoint(p)}}
+else if(K.rubbing&&G.step==='rub'&&K.cells){const p=hitW(e);if(p)rubAt(p)}
+else if(K.rubbing&&G.step==='design'&&K.pc){const p=hit(e,Y+0.12);if(p)paintAt(p)}
+else if(K.spin&&G.step==='design'){K.ry=K.spin.ry+(e.clientX-K.spin.x)*0.012;K.rx=clamp(K.spin.rx+(e.clientY-K.spin.y)*0.008,-0.9,0.7);applySpin()}});
+const up=e=>{if(DP.has(e.pointerId)){DP.delete(e.pointerId);if(DP.size<2&&pinch&&pinch.dz)pinch=null}toolUp();if(K)K.spin=null;if(K&&K.pdn){K.pdn=false;if(K.pu)K.pu(e)}if(PT.has(e.pointerId)){PT.delete(e.pointerId);if(PT.size<2)pinch=null;if(PT.size===0){if(tap&&!tap.moved&&e.type==='pointerup')worldTap(e);tap=null}return}
+if(dragging&&G.step==='drag'&&K&&K.drag){dragging=null;eDrag()}else if(dragging&&G.step==='asm'&&K&&K.drag){dragging=null;asmDrop()}dragging=null;drawing=false;if(K)K.rubbing=false};
+canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+
+/* ---------- çizim katmanı ---------- */
+const tmp=V(0,0,0);
+function scr(v){tmp.copy(v).project(cam);return[(tmp.x+1)/2*W,(1-tmp.y)/2*H,tmp.z]}
+function poly(pts,close){ctx.beginPath();pts.forEach((p,i)=>{const s=scr(p);i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1])});if(close)ctx.closePath();ctx.stroke()}
+function drawFx(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);if(G.phase!=='craft'||!K)return;ctx.lineCap='round';ctx.lineJoin='round';
+if((G.step==='drag'||G.step==='asm')&&K.drag){ctx.setLineDash([8,7]);ctx.lineDashOffset=-tt*20;ctx.lineWidth=3;ctx.strokeStyle='#fff6d8';poly(K.drag.outline,true);ctx.setLineDash([])}
+if(G.step==='trace'&&K.path){ctx.setLineDash([7,6]);ctx.lineWidth=2.5;ctx.strokeStyle='#fff6d8';poly(K.path,true);ctx.setLineDash([]);if(K.sawM){if(K.sh>1){ctx.lineWidth=3.5;ctx.strokeStyle='#5a3a1a';poly(K.path.slice(0,Math.min(K.sh,K.path.length-1)+1))}}else{ctx.lineWidth=4;ctx.strokeStyle='#ffcf3a';K.strokes.forEach(s=>{if(s.length>1)poly(s)})}}
+if(G.step==='rhythm'&&K.dot&&K.dot.live){const s=scr(K.dot.m.position),sc=ringScale(K.dot.t);ctx.lineWidth=4;ctx.strokeStyle=Math.abs(sc-1)<0.3?'#9be37a':'#ffcf3a';
+ctx.beginPath();ctx.arc(s[0],s[1],12*sc,0,Math.PI*2);ctx.stroke();ctx.lineWidth=1.5;ctx.strokeStyle='#fff6d8';ctx.beginPath();ctx.arc(s[0],s[1],12,0,Math.PI*2);ctx.stroke()}
+if(G.step==='design'&&K.pc){ctx.fillStyle='rgba(255,250,235,.6)';K.pc.forEach(c=>{if(c.on)return;const s=scr(c.p);ctx.beginPath();ctx.arc(s[0],s[1],2.6,0,7);ctx.fill()})}
+if(G.step==='rub'&&K.cells){const ci=K.st.k==='cila'||K.st.k==='parlat';ctx.fillStyle=ci?'rgba(255,250,235,.55)':'rgba(90,60,30,.55)';K.cells.forEach((c,i)=>{if(c.on)return;const s=scr(c.p);ctx.beginPath();ctx.arc(s[0]+(i%3-1)*2,s[1]+(i%2)*2,ci?3.5:2.5,0,Math.PI*2);ctx.fill()})}}
+var SPL=false;let zOn=false,dOn=false,dV='';function drawLabels(){const zv=view==='bahce'&&!switching&&G.phase!=='craft';if(zv!==zOn){zOn=zv;$('zones').classList.toggle('hide',!zv)}const dv=(view==='depo'||view==='vitrin')&&!switching&&G.phase!=='craft'&&!SPL;if(dv!==dOn||(dv&&dV!==view)){dOn=dv;dV=view;$('dtabs').classList.toggle('hide',!dv);document.body.classList.toggle('dt',dv);document.querySelectorAll('#dtabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view))}for(const o of LBL){if(o.v!==view||switching||o.off||SPL){if(!o.hid){o.el.classList.add('hide');o.hid=true}continue}
+const s=scr(o.pos);if(s[0]<-70||s[0]>R.domElement.clientWidth+70){if(!o.hid){o.el.classList.add('hide');o.hid=true}continue}if(o.hid){o.el.classList.remove('hide');o.hid=false}o.el.style.transform=`translate(${s[0].toFixed(1)}px,${s[1].toFixed(1)}px) translate(-50%,${o.below?'0':'-100%'})`}}
+function stationLabels(){ST.forEach(s=>{const own=stOwned(s);if(s.m.visible!==own)s.m.visible=own;if(!own){const t=`🔒 ${s.ad}<small>${G.tier<s.tier?'Kademe '+s.tier:'Kur · '+STC[s.id]+' altın'}</small>`;if(t!==s.lbl.last){s.lbl.el.innerHTML=t;s.lbl.last=t;s.lbl.el.classList.add('lock');s.lbl.el.classList.remove('rdy');s.base.material.color.set('#3d2c20')}return}const lk=G.tier<s.tier,st=lk?0:s.ready?3:s.jobs.length?2:1,cap=s.lvl>1?` · ${s.jobs.length}/${s.lvl}`:'';
+const t=lk?`${s.ad}<small>Kademe ${s.tier}</small>`:s.ready?`${s.ad}<small>Hazır! Topla${cap}</small>`:s.jobs.length?`${s.ad}<small>${fmtT(Math.min(...s.jobs.map(j=>j.end))-NOW())}${cap}</small>`:`${s.ad}<small>Boşta${cap}</small>`;
+if(t!==s.lbl.last){s.lbl.el.innerHTML=t;s.lbl.last=t;s.lbl.el.classList.toggle('lock',lk);s.lbl.el.classList.toggle('rdy',st===3);s.base.material.color.set(['#3d2c20','#6e4a2c','#b8742a','#6fae4a'][st])}})}
+
+const ISX={ors:[1.1,0.5,()=>{const v=0.9+Math.random()*0.2;tone(1700*v,0.09,'triangle',0.02,1350*v);tone(2650*v,0.06,'sine',0.009);noise(0.04,0.012,3200,1);if(Math.random()<0.35){tone(1700*v,0.07,'triangle',0.014,1350*v,0.22);noise(0.03,0.009,3200,1,0.22)}}],
+cikrik:[0.55,0.15,()=>{noise(0.45,0.007,420,1.6,0,520);tone(230,0.03,'triangle',0.006)}],
+kazan:[0.22,0.35,()=>{const f=170+Math.random()*160;tone(f,0.07,'sine',0.012,f*1.7)}],
+fici:[2.2,1.2,()=>{noise(0.4,0.01,650,0.8,0,330)}],
+kalip:[2.4,0.8,()=>{tone(95,0.16,'sine',0.022,62);noise(0.25,0.006,380,2,0.05,260)}],
+testere:[0.36,0.05,()=>{noise(0.24,0.011,2400,0.9,0,1700)}],
+cark:[0.45,0.1,()=>{noise(0.42,0.006,260,2.2,0,300)}],
+dokuma:[1.1,0.3,()=>{tone(330,0.05,'square',0.006,210);noise(0.03,0.012,1600,1)}]};
+function islikSfx(dt){if(view!=='islik'||G.phase==='craft'||document.hidden)return;ST.forEach(s=>{const d=ISX[s.id];if(!d||!s.jobs.length||s.ready)return;s.sT=(s.sT==null?Math.random()*d[0]:s.sT)-dt;if(s.sT<=0){s.sT=d[0]+Math.random()*d[1];d[2]()}})}
+/* ---------- döngü ---------- */
+const clock=new THREE.Clock(),look=V(0,0,0);
+let lastF=0,busy=true,shT=0,lastIn=0,hotNow=true;['pointerdown','pointermove','touchstart','wheel','keydown'].forEach(t=>addEventListener(t,()=>{lastIn=performance.now()/1000},{passive:true,capture:true}));
+function loop(now){requestAnimationFrame(loop);now=(now||performance.now())/1000;if(document.hidden)return;hotNow=PT.size>0||!!(K&&(K.pdn||K.drag||K.holding))||switching||(now-lastIn<2.5&&(G.phase==='craft'||G.phase==='result'||tweens.length>0));const gap=hotNow?0.012:(busy||now-lastIn<12)?0.031:0.05;if(now-lastF<gap)return;lastF=now;const dt=Math.min(clock.getDelta(),0.07);tt+=dt;if(K&&K.hoseF)K.hoseF();if(K&&K.tick)K.tick(dt);if(frame.clientWidth!==W||frame.clientHeight!==H)resize();
+for(let i=tweens.length-1;i>=0;i--){const w=tweens[i];w.t+=dt;const k=Math.min(1,w.t/w.dur);w.fn(ease(k));if(k>=1){tweens.splice(i,1);w.done&&w.done()}}
+if(K&&G.step==='rhythm'&&K.dot&&K.dot.live){K.dot.t+=dt;if(ringScale(K.dot.t)<0.45){K.dot.live=false;K.rs.push(0);dotDone(K.dot,0)}}
+if(K&&G.step==='hold'&&K.holding){K.hv+=dt*60;const f=$('gf');if(f)f.style.width=Math.min(100,K.hv)+'%';pressPos(K.hv);if(K.hv>=100)eHold()}
+if(G.started&&!G.night&&!document.hidden)G.tm+=dt*1.5;
+secT+=dt;if(secT>0.25){secT=0;tick();stationLabels();ambTick(0.25)}
+const a=pg.attributes.position;for(let i=0;i<DN;i++){a.setY(i,a.getY(i)+Math.sin(tt*0.6+i)*0.0015);a.setX(i,a.getX(i)+Math.cos(tt*0.4+i*1.7)*0.0012)}a.needsUpdate=true;
+custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';if(c.mix)return;c.head.rotation.y=Math.sin(tt*0.9+i)*0.25;c.g.position.y=c.walking?Math.abs(Math.sin(tt*9))*0.05:Math.abs(Math.sin(tt*1.6+i))*0.012});
+ALLC.forEach(c=>{if(c.mix)c.mix.update(dt)});MIX.forEach(m=>m.update(dt));wxTick(dt);if(SPL){const a=tt*0.05+0.6;camCur.l.set(OP,0.9,-0.8);camCur.p.set(OP+Math.sin(a)*6.8,3.6,-0.8+Math.cos(a)*6.8)}catTick(dt);wandTick(dt);collFx(dt);BOB.forEach(b=>{const k=tt*b.sp+b.ph;if(b.br){b.o.scale.y=b.s0*(1+Math.sin(k)*0.025)}else{b.o.rotation.order='YXZ';b.o.rotation.y=b.r0+Math.sin(k*0.11)*0.25;if(b.sp>=3){b.o.position.y=Math.max(0,Math.sin(k))*0.03;b.o.rotation.x=0}else{b.o.position.y=0;b.o.rotation.x=Math.pow(Math.max(0,Math.sin(k*0.7)),2)*(b.sp<1?0.22:0.45)}}});if(DOORH){const tg=(G.open&&!G.night)||ALLC.some(c=>c.walking&&!c.wand)?-1.55:0;DOORH.rotation.y+=(tg-DOORH.rotation.y)*Math.min(1,dt*4)}
+islikSfx(dt);if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.jobs.length)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
+AWN.visible=camCur.p.y<2.05;toolTick();if(lamp.visible)lamp.intensity=1.35+Math.sin(tt*2.3)*0.05;
+ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1;cam.position.copy(camCur.p).sub(camCur.l).divideScalar(zz).add(camCur.l);
+cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.9)*0.01*sway;cam.position.z+=ZM.pz;look.copy(camCur.l);look.x+=ZM.px;look.z+=ZM.pz;const dsg=G.phase==='craft'&&G.step==='design';if((G.phase==='result'||dsg)&&K&&K.model){RZ.z+=(RZ.t-RZ.z)*Math.min(1,dt*10);if(Math.abs(RZ.z-1)>0.002){const P=K.model.g.position.clone();P.y+=0.08;const f=1-1/RZ.z;cam.position.lerp(P,f*0.9);look.lerp(P,Math.min(1,Math.max(0,f*1.3)));const sz=R.getSize(V2T);if(!dsg)cam.setViewOffset(sz.x,sz.y,0,sz.y*0.25*clamp(f*2.2,0,1),sz.x,sz.y);else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else{RZ.z=RZ.t=1;if(cam.view&&cam.view.enabled)cam.clearViewOffset();const h=document.getElementById('zhint');if(h&&!h.classList.contains('hide'))h.classList.add('hide')}cam.lookAt(look);
+busy=PT.size>0||tweens.length>0||!!(K&&(K.tick||K.pdn))||!!(K&&(K.drag||K.holding))||switching||(G.phase==='craft'&&['rhythm','hold','pump','rub','trace'].includes(G.step))||ALLC.some(c=>c.walking&&!c.wand);shT+=dt;if((busy&&hotNow)||shT>(G.phase==='craft'?0.1:view==='bahce'||view==='pazar'?0.25:0.4)){shT=0;R.shadowMap.needsUpdate=true}R.render(S,cam);drawFx();drawLabels()}
+glb('backpack',()=>{ICON.sirt=snap(PRODS.find(p=>p.id==='sirt').build('#8a4a26').g);vitrinSync()});
+['good','bad','punch','coin','thud'].forEach(k=>{const f=sfx[k];if(f)sfx[k]=(...a)=>{f(...a);vib(k==='bad'?[25,40,25]:k==='coin'?12:18)}});
+load();ST.forEach(s=>s.lvl=G.stLv[s.id]||1);try{if(localStorage.getItem('arasta-owner')===OWNER_H)G.owner=true}catch(e){}lockInit();decoApply();if(!G.cap)G.cap={d:0,s:0,v:G.stock.length>3?(G.stock.length>6?2:1):0};G.store=(G.store||[]).filter(it=>PRODS.some(p=>p.id===it.pid));storeSync();EQ.forEach(e=>eqS(e.id));eqBadge();eqIcons();if(G.cloud){let lts=0;try{lts=JSON.parse(localStorage.getItem(SK)).ts||0}catch(e){}rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(d&&d.ts&&d.ts>lts+3000){d.cloud=G.cloud;if(!G.started){localStorage.setItem(SK,JSON.stringify(d));save=()=>{};location.reload()}else toast('Bulutta daha yeni kayıt var<br>Oyunu yeniden açınca yüklenir',2200)}}).catch(()=>{})}if(!G.ds)G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
+if(location.hash==='#test')window.__k={ST:()=>ST,ANS:()=>ANS,amb:d=>ambTick(d),WND:()=>WND,swingRig:(a,b,c,d)=>swingRig(a,b,c,d),fitM:(n,o)=>fitM(n,o),glb:(n,c)=>glb(n,c),snap:o=>{IR.setSize(420,420);const u=snap(o);IR.setSize(96,96);return u},dbg:()=>JSON.stringify(ANIMS.map(g=>[g.userData.src,g.visible,g.parent&&g.parent.type])),wxSet:(n,sa)=>{setWx(n,1);wxK=1;snowAcc=sa||0},G,Q,PRODS,scr,go,startCraft,get K(){return K},get view(){return view},R,BC,Y,ICON,iconsRefresh,GLC,torchAt,vitrinSync,nextStep,hookClear,get CAT(){return CAT}};
+setLights('home');hud();refresh();loop();
+const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.classList.toggle('on',!!G.mus);spS.classList.toggle('on',!!G.snd);$('musB').classList.toggle('off',!G.mus)};spSync();
+spM.onclick=()=>{G.mus=!G.mus;spSync()};spS.onclick=()=>{G.snd=!G.snd;spSync()};
+$('musB').onclick=()=>{musSet(!G.mus);save()};
+{const fl=document.querySelector('.flags');if(fl){let h='';[[8,0],[30,1]].forEach(([y0,r])=>{h+=`<path d="M-5 ${y0} Q180 ${y0+26} 365 ${y0}" stroke="#5a3519" stroke-width="1.5" fill="none"/>`;const C=['#b5533c','#e8c77a','#2f6b5a','#f3e6cf','#3f6fa8'];for(let i=0;i<15;i++){const x=6+i*24+r*12,t=x/360,y=y0+4*t*(1-t)*26;h+=`<path d="M${x-8} ${y} L${x+8} ${y} L${x} ${y+15} Z" fill="${C[(i+r*2)%5]}"/>`}});fl.innerHTML=h}
+ const inf=slotInfo(SSLOT);$('spInfo').textContent=inf?`${inf.ad} · ${inf.day}. gün · ${inf.gold} altın`:'';$('startB').textContent=inf?'Devam et':'Dükkânı aç';let nA=false;$('spNew').onclick=()=>{if(!inf){$('startB').click();return}if(!nA){nA=true;$('spNew').textContent='Yeni yerde açılsın mı? Dokun';return}if(!newSlot())toast('3 dükkân yeri dolu<br>Ayarlardan birini sil',2200)};
+ $('spLog').onclick=()=>{$('spLogBox').classList.toggle('hide');$('spU').focus()};$('spLogGo').onclick=async()=>{const b=$('spLogGo'),u=$('spU').value,p=$('spP').value;b.textContent='…';let r;try{r=await rpc('arasta_user_get',{p_uname:u,p_pin:p})}catch(e){r={err:'net'}}b.textContent='Giriş';if(!r||r.err){msg(ACM[r&&r.err]||'Bağlantı kurulamadı','no');return}const L=r.shops||[];if(!L.length){msg('Bu hesapta kayıtlı dükkân yok','no');return}try{localStorage.setItem('arasta-acct',JSON.stringify({u:u.toLowerCase().trim(),p}))}catch(e){}const go=c=>{msg('Yükleniyor…','ok');cloudLoadInto(c).then(x=>{if(x!=='ok')msg({full:'3 dükkân yeri dolu · önce birini sil',net:'Bağlantı kurulamadı'}[x]||'Yüklenemedi','no')})};if(L.length===1){go(L[0].code);return}$('spShops').innerHTML=L.map(s=>`<button class="btn l" data-sc="${s.code}">${esc(s.ad||'Dükkân')} · K${s.tier||1} · ${s.gold||0} altın</button>`).join('');$('spShops').querySelectorAll('[data-sc]').forEach(x=>x.onclick=()=>go(x.dataset.sc))};
+ $('spCode').onclick=()=>{$('spCodeBox').classList.toggle('hide');$('spCodeIn').focus()};
+ const ci=$('spCodeIn'),msg=(t,c)=>{const m=$('spMsg');m.className=c||'';m.innerHTML=t||''};
+ const fmt=v=>{const r=(v||'').toUpperCase().replace(/[İı]/g,'I').replace(/[^A-Z0-9]/g,'').slice(0,12);return r.replace(/(.{4})(?=.)/g,'$1-')};
+ ci.addEventListener('input',()=>{const v=fmt(ci.value);if(ci.value!==v)ci.value=v;msg()});
+ ci.addEventListener('paste',e=>{const t=(e.clipboardData||window.clipboardData);if(!t)return;e.preventDefault();ci.value=fmt(t.getData('text'));msg()});
+ ci.addEventListener('keydown',e=>{if(e.key==='Enter')$('spCodeGo').click()});
+ $('spCodeGo').onclick=async()=>{const b=$('spCodeGo'),v=fmt(ci.value);ci.value=v;if(v.replace(/-/g,'').length!==12){msg('Kod 12 harf/rakam olmalı','no');return}
+  try{const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));const h=[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('');if(h===OWNER_H){G.owner=true;try{localStorage.setItem('arasta-owner',OWNER_H)}catch(e){}save();sfx.fan&&sfx.fan();msg('Yönetici modu açıldı · bu cihazda hep açık','ok');ci.value='';return}}catch(e){}
+  b.textContent='…';cloudLoadInto(v).then(r=>{b.textContent='Yükle';if(r!=='ok')msg({bad:'Kod 12 harf/rakam olmalı',none:'Bu koda ait kayıt bulunamadı',full:'3 dükkân yeri dolu · önce birini sil',net:'Bağlantı kurulamadı, tekrar dene'}[r]||'Yüklenemedi','no')})};
+ SPL=true;document.body.classList.add('spl');view='pazar';setLights('pazar')}
+$('startB').onclick=()=>{ac();musSet(G.mus);sfx.bell();G.started=true;if(!G.cloud){G.cloud=newCode();setTimeout(()=>{save();cloudPush(true).then(r=>{if(r)toast(`Bulut kaydın otomatik açıldı<br>Kodun: <b>${fmtCode(G.cloud)}</b><br><small>Ayarlar'dan görebilirsin</small>`,3200)})},4000)}setTimeout(acctAuto,6000);if(G.notif&&typeof Notification!=='undefined'&&Notification.permission==='granted')setTimeout(pushSub,3000);if(!G.tut&&G.first)setTimeout(()=>tutShow(0),1200);else setTimeout(awaySummary,1600);SPL=false;document.body.classList.remove('spl');view='pazar';go('home');$('splash').classList.add('go');setTimeout(()=>$('splash').remove(),500);save();
+toast(G.first?`Hoş geldin usta!<br>İlk müşterin geliyor.`:`Tekrar hoş geldin usta!`,2200)};
