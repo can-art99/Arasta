@@ -45,7 +45,7 @@ const sc=new THREE.Group();[0.35,-0.35].forEach(a=>{const b=put(sc,B(0.022,0.006
 const sp=MATS.iplik.mk();sp.scale.setScalar(0.7);sp.position.set(0.38,Y,bz);S.add(sp);
 add(new THREE.SphereGeometry(0.045,8,6),M('#b5533c'),0.54,Y+0.02,bz).scale.y=0.6;[[0.52,0.25],[0.56,-0.25]].forEach(q=>{const n=add(Cy(0.003,0.003,0.07,4),M('#d0d4d8',0.3),q[0],Y+0.06,bz);n.rotation.z=q[1]});
 add(B(0.5,0.008,0.045),M('#e3c98a'),-0.36,Y+0.004,2.26);for(let i=0;i<10;i++)add(B(0.004,0.002,0.02),M('#4a3423'),-0.585+i*0.05,Y+0.009,2.25);
-const ml=new THREE.Group();put(ml,Cy(0.04,0.04,0.1,8),M('#8a5530'),0,0,0).rotation.z=Math.PI/2;put(ml,Cy(0.011,0.011,0.18,6),M('#5a3519'),0,0,0.11).rotation.x=Math.PI/2;ml.position.set(0.4,Y+0.04,2.25);ml.rotation.y=0.6;S.add(ml)}
+const ml=new THREE.Group();put(ml,Cy(0.04,0.04,0.1,8),M('#8a5530'),0,0,0).rotation.z=Math.PI/2;put(ml,Cy(0.011,0.011,0.18,6),M('#5a3519'),0,0,0.11).rotation.x=Math.PI/2;ml.position.set(0.4,Y+0.04,2.25);ml.rotation.y=0.6;S.add(ml);place('m_hammer',{par:ml,swap:1,w:0.3,y:-0.035})}
 add(new THREE.CylinderGeometry(0.01,0.01,0.6,4),M('#222'),0,2.95,0.6);
 const shadeL=add(new THREE.ConeGeometry(0.3,0.25,8,1,true),M('#3b2616'),0,2.55,0.6);shadeL.material.side=THREE.DoubleSide;
 add(new THREE.SphereGeometry(0.08,8,6),glow('#ffdd99'),0,2.45,0.6).castShadow=false;

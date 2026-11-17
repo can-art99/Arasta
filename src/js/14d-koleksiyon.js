@@ -7,7 +7,7 @@ function matSeen(k){return (G.inv[k]||0)>0||PRODS.some(p=>G.cat[p.id]&&p.need&&p
 function matRar(k){const m=MARKET.find(x=>x.k===k);if(m&&m.t)return Math.min(3,m.t);return MATS[k].g==='İşlenmiş'?2:1}
 function cardData(t,id){
  if(t==='p'){const p=PRODS.find(x=>x.id===id),i=PRODS.indexOf(p),c=G.cat[id],u=unlocked(p),st=(p.steps||[]).filter(s=>s.t!=='design');
-  return {t,id,no:i+1,tot:PRODS.length,ad:p.ad,img:ICON[id],r:Math.min(3,p.tier||1),own:u,foil:!!(c&&c.best>=5),done:!!c,
+  return {t,id,gem:!!p.gem,no:i+1,tot:PRODS.length,ad:p.ad,img:ICON[id],r:Math.min(3,p.tier||1),own:u,foil:!!(c&&c.best>=5),done:!!c,
    stars:c?c.best:0,chips:[[CN,p.base],['⚒️',st.length]],sub:u?(c?c.n+' kez üretildi':'Henüz üretilmedi'):reqTxt(p),
    back:cBar('Değer',p.base,200,CN)+cBar('Zorluk',st.length,10,'⚒️')+cBar('Ustalık',c?c.n:0,20,'🏅')+
     `<div class="kgrp">Malzemeler</div><div class="kmat">${Object.entries(p.need||{}).map(([k,n])=>`<span>${ICON[k]?`<img src="${ICON[k]}" alt="">`:'🎨'}${MATS[k]?MATS[k].ad:k}${n>1?' ×'+n:''}</span>`).join('')}</div>`+
@@ -24,7 +24,7 @@ function cardData(t,id){
 function cardFront(d,big){const R=RAR[d.r]||RAR[1],lk=!d.own;
  const art=d.img?`<img src="${d.img}" alt="">`:`<div class="kemo">${d.emo||'❔'}</div>`;
  return `<div class="kc ${R.c}${d.foil?' foil':''}${lk?' lk':''}${big?' big':''}" data-ck="${d.t}:${d.id}"><div class="kci">
-  <div class="ktop"><span>#${String(d.no).padStart(2,'0')}</span><i style="background:${R.gem}" title="${R.ad}"></i></div>
+  <div class="ktop"><span>#${String(d.no).padStart(2,'0')}${d.gem?' 💎':''}</span><i style="background:${R.gem}" title="${R.ad}"></i></div>
   <div class="kart">${art}${lk?'<b class="klock">🔒</b>':''}</div>
   <div class="knm">${lk&&d.t!=='e'?'???':d.ad}</div>
   ${d.stars?`<div class="kst">${'★'.repeat(d.stars)}<span>${'★'.repeat(5-d.stars)}</span></div>`:''}
@@ -40,7 +40,7 @@ function wireColl(){ui.sheet.querySelectorAll('[data-ct]').forEach(b=>b.onclick=
  ui.sheet.querySelectorAll('.cgrid [data-ck]').forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.ck.split(':');openCard(t,id)})}
 function openCard(t,id){const d=cardData(t,id);sfx.swoosh();
  openSheet('card',`<div class="kflip"><div class="kfi">${cardFront(d,true)}<div class="kc kback ${(RAR[d.r]||RAR[1]).c}"><div class="kci"><div class="kbh">${d.own||d.t==='e'?d.ad:'???'}</div>${d.own||d.t==='e'?d.back:`<p class="kd">Bu kart henüz kilitli.<br><br>${d.sub}</p>`}</div></div></div></div>
- <p class="chint" style="text-align:center">Kartı çevirmek için dokun</p><div style="margin-top:8px;text-align:center"><button class="btn l" id="cBack">← Koleksiyon</button> <button class="btn g" data-close>Kapat</button></div>`);
+ <p class="chint" style="text-align:center">Kartı çevirmek için dokun</p>${t==='p'&&PRODS.find(x=>x.id===id).gem&&!(G.gemR&&G.gemR[id])?`<div style="text-align:center;margin-top:8px"><button class="btn g" id="gemU" ${(G.elmas||0)<PRODS.find(x=>x.id===id).gem?'disabled':''}>💎 ${PRODS.find(x=>x.id===id).gem} ile nadir tarifi aç</button></div>`:''}<div style="margin-top:8px;text-align:center"><button class="btn l" id="cBack">← Koleksiyon</button> <button class="btn g" data-close>Kapat</button></div>`);
  wire();const f=ui.sheet.querySelector('.kfi');f.onclick=()=>{f.classList.toggle('fl');sfx.swoosh()};
  const card=ui.sheet.querySelector('.kc.big');ui.sheet.querySelector('.kflip').onpointermove=e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;ui.sheet.querySelector('.kflip').style.setProperty('--rx',(-y*10)+'deg');ui.sheet.querySelector('.kflip').style.setProperty('--ry',(x*12)+'deg');card.style.setProperty('--fx',(x+0.5)*100+'%')};
- $('cBack').onclick=()=>{menuTab='defter';renderMenu()}}
+ $('cBack').onclick=()=>{menuTab='defter';renderMenu()};const gu=$('gemU');if(gu)gu.onclick=e=>{e.stopPropagation();const p=PRODS.find(x=>x.id===id);if((G.elmas||0)<p.gem)return;G.elmas-=p.gem;(G.gemR=G.gemR||{})[id]=1;sfx.fan&&sfx.fan();toast(`💎 ${p.ad} tarifi açıldı!`,1800);hud();save();openCard(t,id)}}
