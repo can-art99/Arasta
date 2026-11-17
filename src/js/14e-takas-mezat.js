@@ -22,7 +22,7 @@ function renderTakas(){const S=tkS();
 function doTakas(id){const S=tkS(),i=S.o.findIndex(o=>String(o.id)===String(id));if(i<0)return;const o=S.o[i],gn=Object.values(o.get).reduce((a,b)=>a+b,0);
  if(o.gp){const it=[...G.stock,...(G.store||[])].find(x=>x.pid===o.gp&&x.stars>=o.gs&&!x.worn);if(!it)return;if(depoFull(gn))return;G.stock=G.stock.filter(x=>x!==it);G.store=(G.store||[]).filter(x=>x!==it);vitrinSync();storeSync()}
  else{if(!Object.entries(o.give).every(([k,n])=>(G.inv[k]||0)>=n))return;const gv=Object.values(o.give).reduce((a,b)=>a+b,0);if(gn>gv&&depoFull(gn-gv))return;Object.entries(o.give).forEach(([k,n])=>G.inv[k]-=n)}
- Object.entries(o.get).forEach(([k,n])=>G.inv[k]=(G.inv[k]||0)+n);S.o.splice(i,1);sfx.cash();toast(`${o.ad} ile takas yapıldı`,1400);save();refresh();renderMarket()}
+ Object.entries(o.get).forEach(([k,n])=>G.inv[k]=(G.inv[k]||0)+n);S.o.splice(i,1);G.st.tks=(G.st.tks||0)+1;sfx.cash();toast(`${o.ad} ile takas yapıldı`,1400);save();refresh();renderMarket()}
 
 /* Mezat: ürünü açık artırmaya çıkar; teklifler süre boyunca yükselir, sonunda en yüksek teklif kazanır */
 const MZD=240;
@@ -36,7 +36,7 @@ function mzStart(src,i){const arr=src==='v'?G.stock:G.store,it=arr&&arr[i];if(!i
 const mzCur=m=>{const el=NOW()-m.s;return m.b.filter(x=>x.t<=el)};
 function mzEnd(m,early){const c=mzCur(m),top=c[c.length-1];G.mz=mzList().filter(x=>x!==m);
  if(!top){(G.store=G.store||[]).push(m.it);storeSync();toast(`${pr(m.it).ad} için teklif gelmedi, depoya döndü`,2000)}
- else{const fee=Math.round(top.v*0.05),net=top.v-fee;G.gold+=net;G.st.earned+=net;G.st.sold++;sfx.cash();toast(`🔨 Satıldı! ${top.ad}<br>+${net} altın <small>(komisyon ${fee})</small>`,2600);notify('Mezat',`${pr(m.it).ad} ${top.v} altına satıldı`)}
+ else{const fee=Math.round(top.v*0.05),net=top.v-fee;G.gold+=net;G.st.earned+=net;G.st.sold++;G.st.mzs=(G.st.mzs||0)+1;sfx.cash();toast(`🔨 Satıldı! ${top.ad}<br>+${net} altın <small>(komisyon ${fee})</small>`,2600);notify('Mezat',`${pr(m.it).ad} ${top.v} altına satıldı`)}
  save();refresh();if(modalMode==='market'&&mTab==='mezat')renderMarket()}
 let mzLT=0;function mzTick(){const L=mzList();L.slice().forEach(m=>{if(NOW()>=m.e)mzEnd(m)});
  if(modalMode==='market'&&mTab==='mezat'&&Date.now()-mzLT>900){mzLT=Date.now();L.forEach((m,i)=>{const el=$('mz'+i);if(el)el.innerHTML=mzLive(m)});mzWire()}}

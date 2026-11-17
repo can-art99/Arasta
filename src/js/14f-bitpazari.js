@@ -18,7 +18,7 @@ function bpBuy(i){const S=bpS(),o=S.o[i];if(!o||G.gold<o.f)return;if((G.store||[
  G.gold-=o.f;(G.store=G.store||[]).push(o.it);S.o.splice(i,1);storeSync();sfx.coin();toast(`${pr(o.it).ad} depoya kondu. Dükkânda «Tamir et» ile onarabilirsin.`,1800);save();refresh();renderMarket()}
 /* Tamir, normal kraft sistemiyle tezgâhta yapılır: ürünün "tamir" sürümü sentetik bir ürün olarak açılır */
 const REPST={cizik:[{t:'rub',k:'zimpara',ad:'Çizikleri zımparala',to3d:'full'},{t:'rub',k:'cila',ad:'Cilala'},{t:'design',ad:'Son kontrol'}],
- kirik:[{t:'rhythm',k:'yapistir',ad:'Kırık yeri tutkalla',to3d:'full'},{t:'hold',ad:'Pres ile sıkıştır'},{t:'rub',k:'zimpara',ad:'Ek yerini zımparala'},{t:'design',ad:'Son kontrol'}],
+ kirik:[{t:'rhythm',k:'yapistir',n:5,ad:'Kırık yeri tutkalla',to3d:'full'},{t:'hold',ad:'Pres ile sıkıştır'},{t:'rub',k:'zimpara',ad:'Ek yerini zımparala'},{t:'design',ad:'Son kontrol'}],
  soluk:[{t:'rub',k:'zimpara',ad:'Kiri ve lekeyi temizle',to3d:'full'},{t:'rub',k:'cila',ad:'Rengini canlandır'},{t:'design',ad:'Son kontrol'}]};
 function RP(p,w){const o=Object.create(p);o.ad=p.ad+' tamiri';o.need=Object.assign({},WORN[w].need);o.steps=REPST[w];o.rep=w;o.styles=null;return o}
 function openRepairList(){if(G.phase!=='idle'){toast('Önce sıradaki müşteriyle ilgilen',1500);return}const wl=(G.store||[]).filter(x=>x.worn);
@@ -31,7 +31,7 @@ function startRepair(id){const it=(G.store||[]).find(x=>String(x.id)===String(id
  show(ui.modal,false);modalMode=null;const run=()=>{G.order={p:P,color:null,style:it.style||null,budget:0,free:true,rep:it.worn,rid:it.id};startCraft()};
  if(view!=='home'){go('home');setTimeout(run,1300)}else run()}
 const openRepair=(id)=>startRepair(id);
-function repFinish(o){const work=K.scores.length?avg(K.scores):0.5,gain=Math.max(1,Math.round(work*3))-(K.skips?1:0);Q.forEach(x=>x.g.visible=true);
+function repFinish(o){const sc=K.scores.filter(Number.isFinite),work=sc.length?avg(sc):0.5,gain=Math.max(1,Math.round(work*3))-(K.skips?1:0);Q.forEach(x=>x.g.visible=true);
  const g=K.model.g,fr=g.position.clone();view='home';G.st.fix=(G.st.fix||0)+1;
  if(o.rid){const it=(G.store||[]).find(x=>String(x.id)===String(o.rid));if(it){it.stars=clamp(it.stars+Math.max(1,gain),1,5);delete it.worn;delete it.paid;it.ref=1;it.price=sugg(it)}K.res={it}}
  else{const pay=Math.max(Math.round(o.budget*0.4),Math.round(o.budget*(0.55+0.45*work))-(K.skips?Math.round(o.budget*0.15):0));K.res={pay,work}}

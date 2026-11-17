@@ -3,7 +3,7 @@ const IR=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffe
 const IS=new THREE.Scene();IS.add(new THREE.HemisphereLight('#fff2dc','#6a5040',0.8));const il=new THREE.DirectionalLight('#ffffff',0.9);il.position.set(1,2,1.5);IS.add(il);
 const IC=new THREE.PerspectiveCamera(28,1,0.01,10);
 function snap(obj){IS.add(obj);const bb=new THREE.Box3().setFromObject(obj),sz=bb.getSize(V(0,0,0)),c=bb.getCenter(V(0,0,0)),r=Math.max(sz.x,sz.y,sz.z);
-IC.position.set(c.x+r*1.2,c.y+r*1.3,c.z+r*1.9);IC.lookAt(c);IR.render(IS,IC);const u=IR.domElement.toDataURL();IS.remove(obj);return u}
+IC.position.set(c.x+r*1.2,c.y+r*1.3,c.z+r*1.9);IC.near=r*0.05;IC.far=r*12;IC.updateProjectionMatrix();IC.lookAt(c);IR.render(IS,IC);const u=IR.domElement.toDataURL();IS.remove(obj);return u}
 const ICON={};Object.keys(MATS).forEach(k=>ICON[k]=snap(MATS[k].mk()));
 {const BAL={"cuzdan":115,"kemer":115,"ayakkabi":170,"canta":190,"atki":90,"kasik":75,"tabure":130,"sirt":200,"sepet":75,"sabun":60,"comlek":75,"vazo":115,"mum":80,"dugme":85,"yastik":110,"tahta":65,"firca":95,"spor":160,"sapka":90,"boks":180,"basket":185,"gozluk":170,"kalemlik":65,"anahtarlik":70,"saksi":60,"tespih":105,"tepsi":115,"mumset":110,"sise":80,"nazar":65,"cezve":135,"btepsi":125,"bicak":150,"nal":95,"esarp":160,"hali":200,"balkav":70,"terlik":110};PRODS.forEach(p=>{if(BAL[p.id])p.base=BAL[p.id]})}
 const icP=p=>{try{ICON[p.id]=snap(p.build(p.sheet,p.styles&&p.styles[0]).g)}catch(e){}};PRODS.forEach(icP);
