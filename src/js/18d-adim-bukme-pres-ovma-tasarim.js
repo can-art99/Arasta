@@ -45,6 +45,7 @@ if(K.p.styles)K.p.styles.forEach(st=>L.push(btn(st,'l'+(K.style===st?' sel':''),
 L.push(btn('Bitir','g',finish,!K.color||(!!K.color.id&&!K.painted)));actions(L);tipStep((G.order.free?'Serbest tasarım':G.order.color||G.order.style?`Sipariş: ${[G.order.color&&G.order.color.ad,G.order.style].filter(Boolean).join(' · ')}`:K.p.wood?'İster boya, ister doğal bırak':'Tasarım')+' · Çevirmek için sürükle')}
 const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 function finish(){if(!K.color||(K.color.id&&!K.painted))return;const o=G.order;if(K.color.id)G.inv['boya_'+K.color.id]--;K.rx=K.ry=0;applySpin();G.step=null;actions([]);tip(null);
+if(o.rep){repFinish(o);return}
 if(o.free){const work=avg(K.scores),stars=clamp(Math.round(work*5)-(K.skips?1:0),1,5),it={id:++G.sid,pid:K.p.id,col:K.color.id||null,style:K.style,stars};it.price=sugg(it);K.res={item:it};
 Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';moveCam(VIEWS.home,1.1,()=>{sway=1;showFree()});tween(1.1,k=>{g.position.lerpVectors(fr,V(2.3,1.6,-1.0),k);g.scale.setScalar(1.6-0.8*k)});return}
 const work=avg(K.scores),colorOk=!o.color||K.color.id===o.color.id,styleOk=!o.style||K.style===o.style,late=K.late,B0=o.budget,L=[];let pay=B0;

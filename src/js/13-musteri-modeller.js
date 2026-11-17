@@ -67,10 +67,12 @@ if(G.first)Object.entries(p.need).forEach(([k,n])=>{const key=k==='boya'?'boya_'
 return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)*(sp.includes(p.id)?1.2:1)/5)*5,hurry:!G.first&&Math.random()<0.15}}
 function spawn(){if(Q.length>=3)return;const c=makeCustomer(),pv=G.stock.filter(x=>x.price>0);
 if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
+else if(!G.first&&Math.random()<0.16){const o=c.order=mkRepOrder();c.acc=c.accMax=75;c.dead=c.deadMax=260;c.wait=170}
 else{const o=c.order=mkOrder(),h=o.hurry;const rgs=(G.reg||[]).filter(r=>c.sex&&regSex(r)===c.sex);if(!G.first&&rgs.length&&Math.random()<0.3){const rg=pick(rgs),fp=PRODS.find(x=>x.id===rg.fav);if(fp&&unlocked(fp)&&fp.id!==o.p.id){o.p=fp;o.color=fp.need.boya?pick(PAINTS):null;o.style=null;o.budget=Math.round(fp.base*(1+Math.random()*0.3)/5)*5}o.reg=rg.ad}c.acc=c.accMax=G.first?9999:h?45:75;c.dead=c.deadMax=G.first?9999:(h?150:280)+o.p.steps.length*20;c.wait=h?100:170}
 c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];hud();seat(c)}
 function seat(c){const i=Q.indexOf(c);if(i<0)return;c.at=false;const to=SLOT[i];walk(c,to,Math.max(0.5,c.g.position.distanceTo(to)/1.5),()=>{c.g.rotation.y=0;c.at=true;if(Q[0]===c&&G.phase==='idle')present(c)})}
 function present(c){const o=G.order=c.order;G.phase='ordering';G.bubOn=true;sfx.bell();if(o.buy){presentBuy(c,o);return}
+if(o.rep){say(`${pick(['Merhaba usta! ','İyi günler! ','Selam usta! '])}${o.p.__proto__.ad.toLowerCase()} ${WVERB[o.rep]}, tamir edebilir misin? ${o.budget} altın verebilirim.`);refresh();if(view==='home')orderActions();else toast('Dükkâna tamir için müşteri geldi',1800);return}
 say(`${o.reg?'<b>'+o.reg+':</b> Yine ben geldim usta! ':''}${o.hurry?'<b>Acelem var!</b> ':o.reg?'':pick(['Merhaba usta! ','İyi günler! ','Selam! '])}${o.color?o.color.ad+' ':''}${o.style?o.style.toLowerCase()+' ':''}${o.p.ad.toLowerCase()} istiyorum. Bütçem ${o.budget} altın${o.hurry?', zamanında biterse %20 fazlasını veririm':''}.`);
 refresh();if(view==='home')orderActions();else toast('Dükkâna müşteri geldi',1800)}
 function leave(c){const i=Q.indexOf(c);if(i<0)return;Q.splice(i,1);cust=Q[0]||null;c.g.visible=G.phase!=='craft';walk(c,DOOR,2,()=>{S.remove(c.g);const j=ALLC.indexOf(c);if(j>=0)ALLC.splice(j,1);if(c.mix)c.mix.stopAllAction()});
@@ -79,7 +81,7 @@ function lose(c,msg,rp){G.st.lost++;G.rep=Math.max(0,G.rep-rp);toast(rp?`${msg}<
 function qSer(){try{return Q.filter(c=>c.order).map(c=>{const o=c.order,so={};for(const k in o){const v=o[k];if(k==='p')so.p=v&&v.id;else if(k==='color')so.color=v&&v.id;else if(v==null||typeof v!=='object')so[k]=v}
  return {o:so,acc:c.acc,accMax:c.accMax,dead:c.dead,deadMax:c.deadMax,wait:c.wait,act:G.order===o&&(G.phase==='active'||G.phase==='craft')}})}catch(e){return []}}
 function qRestore(){const L=G.qsL;G.qsL=null;if(!L)return;const el=Math.max(0,(Date.now()-(G.qsT||Date.now()))/1000);L.slice(0,3).forEach((d,i)=>{const p=PRODS.find(x=>x.id===d.o.p);if(!p)return;
- const o=Object.assign({},d.o,{p,color:d.o.color?PAINTS.find(x=>x.id===d.o.color)||null:null});if(o.buy&&!G.stock.some(x=>x.id===o.buy))return;const c=makeCustomer();c.order=o;
+ const o=Object.assign({},d.o,{p,color:d.o.color?PAINTS.find(x=>x.id===d.o.color)||null:null});if(o.rep&&WORN[o.rep])o.p=RP(p,o.rep);if(o.buy&&!G.stock.some(x=>x.id===o.buy))return;const c=makeCustomer();c.order=o;
  const keep=(v,mx)=>Math.max(el<600?Math.min(mx,25):0,v-el);c.accMax=d.accMax||75;c.deadMax=d.deadMax||300;c.acc=keep(d.acc!=null?d.acc:c.accMax,c.accMax);c.dead=keep(d.dead!=null?d.dead:c.deadMax,c.deadMax);c.wait=keep(d.wait!=null?d.wait:120,120);
  if((d.act?c.dead:c.acc)<=0&&i===0)return;c.g.visible=true;Q.push(c);if(i===0&&d.act&&Q.length===1){G.order=o;G.phase='active';G.bubOn=false}seat(c)});cust=Q[0]||null;hud();refresh()}
 addEventListener('pagehide',()=>{try{save()}catch(e){}});document.addEventListener('visibilitychange',()=>{if(document.hidden)try{save()}catch(e){}});
@@ -99,7 +101,7 @@ const pr=it=>PRODS.find(x=>x.id===it.pid);
 const itemVal=it=>pr(it).base*(0.55+0.12*it.stars);
 const sugg=it=>r5(itemVal(it)*1.05);
 const desc=it=>`${it.col?paintOf(it.col).ad.toLowerCase()+' ':''}${it.style?it.style.toLowerCase()+' ':''}${pr(it).ad.toLowerCase()}`;
-function matchStock(o){if(!o||o.buy||o.free)return null;return G.stock.filter(it=>it.pid===o.p.id&&(!o.color||it.col===o.color.id)&&(!o.style||it.style===o.style)).sort((a,b)=>b.stars-a.stars)[0]||null}
+function matchStock(o){if(!o||o.buy||o.free||o.rep)return null;return G.stock.filter(it=>it.pid===o.p.id&&(!o.color||it.col===o.color.id)&&(!o.style||it.style===o.style)).sort((a,b)=>b.stars-a.stars)[0]||null}
 function orderActions(){const o=G.order;if(!o)return;if(o.buy){buyActions();return}const L=[btn('Siparişi al','g',()=>acceptOrder())];if(!o.haggled)L.push(btn('Pazarlık','',haggleOrder));
 const m=matchStock(o);if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));L.push(btn('Reddet','r',rejectOrder));actions(L)}
 let HG=null;

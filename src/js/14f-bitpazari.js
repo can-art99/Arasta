@@ -15,20 +15,37 @@ function renderBit(){const S=bpS(),wl=(G.store||[]).filter(x=>x.worn);
  h+=`<div class="dsec">♻️ Eskici tezgâhı</div>`+(S.o.length?S.o.map((o,i)=>{const p=pr(o.it);return `<div class="dit r${Math.min(3,p.tier||1)}"><div class="dia wd ${WORN[o.it.worn].ov}"><img src="${ICON[o.it.pid]}" alt=""></div><div class="din"><b>${p.ad}</b>${wornTag(o.it)}<span class="dist">${'★'.repeat(o.it.stars)}<i>${'★'.repeat(5-o.it.stars)}</i></span><small>${o.from} · tamirden sonra ~${o.fix} altın</small></div><button class="dbt" data-bp="${i}" ${G.gold<o.f?'disabled':''}>${o.f} altın</button></div>`}).join(''):'<p class="dem">Tezgâh boşaldı, eskiciler yakında yeni mal getirir.</p>');
  return h}
 function bpBuy(i){const S=bpS(),o=S.o[i];if(!o||G.gold<o.f)return;if((G.store||[]).length>=stoCap()){toast('Depo ürün rafı dolu',1300);return}
- G.gold-=o.f;(G.store=G.store||[]).push(o.it);S.o.splice(i,1);storeSync();sfx.coin();toast(`${pr(o.it).ad} depoya kondu. Tamir etmeyi unutma!`,1800);save();refresh();renderMarket()}
-function openRepair(id,back){const it=(G.store||[]).find(x=>String(x.id)===String(id));if(!it||!it.worn)return;const W=WORN[it.worn],p=pr(it);
- const miss=it.paid?[]:Object.entries(W.need).filter(([k,n])=>(G.inv[k]||0)<n);let si=0,pg=0,done=false;
- const draw=()=>{const tot=W.st.length,f=(si+pg)/tot;
-  openSheet('repair',`<h3>🔧 Tamir · ${p.ad}</h3><div class="rpst ${W.ov}" style="--f:${f}"><img src="${ICON[it.pid]}" alt=""><i></i></div>
-  <div class="rpstp">${W.st.map((s,j)=>`<span class="${j<si?'ok':j===si?'on':''}">${j<si?'✓':j+1}. ${s[0].replace(/^\S+\s/,'')}</span>`).join('')}</div>
-  ${miss.length?`<p class="dem">Gerekli malzeme eksik: <b>${needTxt(W.need)}</b><br>Pazardan alabilirsin.</p>`:done?`<p style="text-align:center;font-weight:800">✨ Yenilendi! ${'★'.repeat(it.stars)}</p>`:
-  `<div class="gauge"><div class="gf" id="rpG" style="width:${pg*100}%"></div></div><div style="text-align:center;margin:10px 0"><button class="btn g rpb" id="rpB">${W.st[si][0]}${W.st[si][1]==='hold'?' (basılı tut)':' (dokun)'}</button></div>`}
-  <div style="text-align:center"><button class="btn l" id="rpX">← Geri</button></div>`);
-  $('rpX').onclick=()=>back?back():(mTab='bit',renderMarket());if(miss.length||done)return;
-  const b=$('rpB'),s=W.st[si];let iv=null;const my=si;const set=v=>{if(si!==my||done)return;pg=Math.min(1,v);$('rpG').style.width=pg*100+'%';ui.sheet.querySelector('.rpst').style.setProperty('--f',(si+pg)/tot);if(pg>=1){clearInterval(iv);b.disabled=true;next()}};
-  if(s[1]==='hold'){const st=()=>{if(iv)return;sf('sand',0.3)||sfx.sand();iv=setInterval(()=>{set(pg+0.05/s[2]);if(Math.random()<0.25)(sf('sand',0.25)||sfx.sand())},50)},sp=()=>{clearInterval(iv);iv=null};b.onpointerdown=st;b.onpointerup=b.onpointerleave=b.onpointercancel=sp}
-  else b.onclick=()=>{sfx.tap();set(pg+1/s[2]);b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')};
-  b.addEventListener('pointerdown',()=>{if(!it.paid){it.paid=1;Object.entries(W.need).forEach(([k,n])=>G.inv[k]-=n);refresh()}},{once:true})};
- const next=()=>{sfx.good();si++;pg=0;if(si>=W.st.length){done=true;it.stars=Math.min(5,it.stars+2);delete it.worn;delete it.paid;it.ref=1;it.price=sugg(it);G.st.fix=(G.st.fix||0)+1;sfx.cash();toast(`♻️ ${p.ad} yenilendi! Değeri ~${it.price} altın`,2200);save();refresh()}setTimeout(draw,250)};
- draw()}
+ G.gold-=o.f;(G.store=G.store||[]).push(o.it);S.o.splice(i,1);storeSync();sfx.coin();toast(`${pr(o.it).ad} depoya kondu. Dükkânda «Tamir et» ile onarabilirsin.`,1800);save();refresh();renderMarket()}
+/* Tamir, normal kraft sistemiyle tezgâhta yapılır: ürünün "tamir" sürümü sentetik bir ürün olarak açılır */
+const REPST={cizik:[{t:'rub',k:'zimpara',ad:'Çizikleri zımparala',to3d:'full'},{t:'rub',k:'cila',ad:'Cilala'},{t:'design',ad:'Son kontrol'}],
+ kirik:[{t:'rhythm',k:'yapistir',ad:'Kırık yeri tutkalla',to3d:'full'},{t:'hold',ad:'Pres ile sıkıştır'},{t:'rub',k:'zimpara',ad:'Ek yerini zımparala'},{t:'design',ad:'Son kontrol'}],
+ soluk:[{t:'rub',k:'zimpara',ad:'Kiri ve lekeyi temizle',to3d:'full'},{t:'rub',k:'cila',ad:'Rengini canlandır'},{t:'design',ad:'Son kontrol'}]};
+function RP(p,w){const o=Object.create(p);o.ad=p.ad+' tamiri';o.need=Object.assign({},WORN[w].need);o.steps=REPST[w];o.rep=w;o.styles=null;return o}
+function openRepairList(){if(G.phase!=='idle'){toast('Önce sıradaki müşteriyle ilgilen',1500);return}const wl=(G.store||[]).filter(x=>x.worn);
+ const h='<h3>🔧 Tamir et</h3><p>Yıpranmış ürünleri tezgâhta onar, yenilenmiş olarak değerinde sat. 2. el ürünleri Pazar → Bit pazarı\'ndan bulabilirsin.</p>'+(wl.length?wl.map(it=>{const p=pr(it),W=WORN[it.worn],miss=Object.entries(W.need).filter(([k,n])=>(G.inv[k]||0)<n);
+  return `<div class="dit r${Math.min(3,p.tier||1)}"><div class="dia wd ${W.ov}"><img src="${ICON[it.pid]}" alt=""></div><div class="din"><b>${p.ad}</b>${wornTag(it)}<small>${miss.length?'<span class="no">Eksik: '+needTxt(W.need)+'</span>':'Gerekli: '+needTxt(W.need)+' · '+REPST[it.worn].length+' adım'}</small></div><button class="dbt ${miss.length?'l':''}" data-rp="${it.id}" ${miss.length?'disabled':''}>Tamir et</button></div>`}).join(''):'<p class="dem">Tamir bekleyen ürün yok. Bit pazarından yıpranmış ürün alabilir ya da müşterilerin getirdiği eşyaları onarabilirsin.</p>')+
+  `<div style="text-align:center;margin-top:8px"><button class="btn l" id="toBit">Bit pazarına git</button></div>`;
+ openSheet('free',h+closeBtn);wire();$('toBit').onclick=()=>{closeSheet();go('pazar');setTimeout(()=>{mTab='bit';renderMarket()},900)};ui.sheet.querySelectorAll('[data-rp]').forEach(b=>b.onclick=()=>startRepair(b.dataset.rp))}
+function startRepair(id){const it=(G.store||[]).find(x=>String(x.id)===String(id));if(!it||!it.worn)return;
+ if(G.phase!=='idle'){toast('Önce sıradaki müşteriyle ilgilen',1500);return}const P=RP(pr(it),it.worn);if(!hasNeed(P)){toast('Eksik: '+needTxt(P.need),1600);return}
+ show(ui.modal,false);modalMode=null;const run=()=>{G.order={p:P,color:null,style:it.style||null,budget:0,free:true,rep:it.worn,rid:it.id};startCraft()};
+ if(view!=='home'){go('home');setTimeout(run,1300)}else run()}
+const openRepair=(id)=>startRepair(id);
+function repFinish(o){const work=K.scores.length?avg(K.scores):0.5,gain=Math.max(1,Math.round(work*3))-(K.skips?1:0);Q.forEach(x=>x.g.visible=true);
+ const g=K.model.g,fr=g.position.clone();view='home';G.st.fix=(G.st.fix||0)+1;
+ if(o.rid){const it=(G.store||[]).find(x=>String(x.id)===String(o.rid));if(it){it.stars=clamp(it.stars+Math.max(1,gain),1,5);delete it.worn;delete it.paid;it.ref=1;it.price=sugg(it)}K.res={it}}
+ else{const pay=Math.max(Math.round(o.budget*0.4),Math.round(o.budget*(0.55+0.45*work))-(K.skips?Math.round(o.budget*0.15):0));K.res={pay,work}}
+ moveCam(VIEWS.home,1.1,()=>{sway=1;repShow(o)});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar(1.6-0.6*k)})}
+function repShow(o){G.phase='result';refresh();sfx.good();const pct=v=>'%'+Math.round(v*100);const br=K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('');
+ if(o.rid){const it=K.res.it;openSheet('result',`<h3>♻️ ${it?pr(it).ad:''} yenilendi</h3>${it?`<div class="stars">${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></div>`:''}<div style="margin-top:8px">${br}</div><div class="tot">Yeni değeri: ${it?it.price:0} altın</div><p>Ürün depo rafında; Depo'dan vitrine koyabilirsin.</p><div style="text-align:center"><button class="btn g" id="repOk">Tamam</button></div>`);
+  $('repOk').onclick=()=>repDone(o)}
+ else{const pay=K.res.pay;openSheet('result',`<h3>🔧 Tamir teslim</h3><div style="margin-top:8px">${br}</div><div class="tot">Ödeme: +${pay} altın</div><p>${K.res.work>0.75?'Müşteri çok memnun, eşyası yeni gibi oldu!':'Müşteri teşekkür etti.'}</p><div style="text-align:center"><button class="btn g" id="repOk">Tamam</button></div>`);
+  $('repOk').onclick=()=>repDone(o)}}
+function repDone(o){show(ui.modal,false);modalMode=null;const w=K.work,g=K.model.g;tween(0.3,k=>g.scale.setScalar(Math.max(0.01,0.8*(1-k))),()=>craft.remove(w));
+ if(o.rid){G.phase='idle';G.order=null;storeSync();save();refresh();if(Q[0]&&Q[0].at)present(Q[0]);return}
+ const c=Q[0],pay=K.res.pay;G.gold+=pay;G.st.earned+=pay;G.rep+=K.res.work>0.75?3:1;sfx.cash();toast(`+${pay} altın · Tamir`,1400);if(c){anim(c,'clap',true);say('Ellerine sağlık usta, yeni gibi olmuş!')}
+ G.phase='leaving';G.order=null;actions([]);save();refresh();setTimeout(()=>{G.bubOn=false;say(null);if(c)leave(c)},1300)}
+/* müşteri tamir siparişi */
+const WVERB={kirik:'kırıldı',cizik:'çizildi',soluk:'soldu'};
+function mkRepOrder(){const P=PRODS.filter(unlocked),p=pick(P),w=pick(Object.keys(WORN));return {p:RP(p,w),color:null,style:null,rep:w,budget:Math.max(15,Math.round(p.base*(0.35+Math.random()*0.15)/5)*5),hurry:false}}
 function wireBit(){ui.sheet.querySelectorAll('[data-bp]').forEach(b=>b.onclick=()=>bpBuy(+b.dataset.bp));ui.sheet.querySelectorAll('[data-rp]').forEach(b=>b.onclick=()=>openRepair(b.dataset.rp))}
