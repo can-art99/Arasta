@@ -65,7 +65,7 @@ function depoFull(n){if(invTotal()+(n||1)>capOf('d')){toast(`Depo dolu (${invTot
 const vitCap=()=>capOf('v'),stoCap=()=>capOf('s');
 function capUp(k){const L=capLv(k),c=CAPS[k].c[L];if(c==null||G.gold<c)return;G.gold-=c;G.cap[k]=L+1;sfx.coin();sfx.fan();toast(`${CAPS[k].ad}: ${capOf(k)}`,1300);save();refresh();vitrinSync();storeSync();openDepo()}
 function toStore(it){if((G.store||[]).length>=stoCap()){toast('Depo ürün rafı dolu',1300);return false}G.store=G.store||[];G.stock=G.stock.filter(x=>x!==it);G.store.push(it);vitrinSync();storeSync();save();refresh();return true}
-function toVit(it){if(G.stock.length>=vitCap()){toast('Vitrin dolu',1300);return false}G.store=G.store.filter(x=>x!==it);G.stock.push(it);vitrinSync();storeSync();save();refresh();return true}
+function toVit(it){if(it&&it.worn){toast('Önce tamir et',1300);return false}if(G.stock.length>=vitCap()){toast('Vitrin dolu',1300);return false}G.store=G.store.filter(x=>x!==it);G.stock.push(it);vitrinSync();storeSync();save();refresh();return true}
 const DSTO=new THREE.Group();S.add(DSTO);
 function storeSync(){DSTO.clear();(G.store||[]).slice(0,6).forEach((it,i)=>{const p=pr(it),m=p.build(it.col?paintOf(it.col).hex:p.sheet,it.style,{cila:true});m.g.scale.setScalar(0.95);m.g.position.set(OD-1.55+i*0.62,DROW[5]+0.01,-2.85);m.g.rotation.y=0.4;m.g.userData.sid=it.id;DSTO.add(m.g)})}
 let DRG=null,DRGJ=false;const DPL=new THREE.Plane(new THREE.Vector3(0,0,1),2.75),DPT=new THREE.Vector3();

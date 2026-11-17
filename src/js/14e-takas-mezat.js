@@ -5,7 +5,7 @@ const matVal=k=>{const m=MARKET.find(x=>x.k===k);if(m)return m.f;const c=CROPS&&
 const usedMats=()=>[...new Set(PRODS.filter(unlocked).flatMap(p=>Object.keys(p.need||{})))].filter(k=>MATS[k]);
 function tkGen(){const used=usedMats(),have=Object.keys(G.inv).filter(k=>MATS[k]&&G.inv[k]>=2),L=[];
  for(let i=0;i<4;i++){const id=Date.now()+i;
-  const prods=[...G.stock,...(G.store||[])];
+  const prods=[...G.stock,...(G.store||[])].filter(x=>!x.worn);
   if(i===3&&prods.length){const it=pick(prods),p=pr(it),V=Math.round(p.base*(0.6+it.stars*0.14)*1.2),gk=pick(used),n=Math.max(2,Math.round(V/matVal(gk))),gk2=pick(used.filter(x=>x!==gk))||gk;
    L.push({id,ad:pick(TKN),gp:it.pid,gs:it.stars,get:{[gk]:Math.ceil(n*0.6),[gk2]:Math.max(1,Math.floor(n*0.5))}});continue}
   const gv=pick(have.length&&Math.random()<0.75?have:used);let gt=pick(used.filter(x=>x!==gv));if(!gt)continue;
@@ -16,11 +16,11 @@ function tkS(){const now=NOW();if(!G.tks||now>G.tks.t){G.tks={t:now+6*3600,o:tkG
 const bundle=o=>Object.entries(o).map(([k,n])=>`<span class="tkm">${img(k)}<b>×${n}</b><small>${MATS[k].ad}</small></span>`).join('');
 function renderTakas(){const S=tkS();
  return `<p class="chint">Gezgin tüccarlar mal karşılığı mal ister. Takaslar her 6 saatte yenilenir · Yeni takas: <b>${fmtT(S.t-NOW())}</b></p>`+(S.o.length?S.o.map(o=>{
-  let ok,give;if(o.gp){const it=[...G.stock,...(G.store||[])].find(x=>x.pid===o.gp&&x.stars>=o.gs);ok=!!it;const p=PRODS.find(x=>x.id===o.gp);give=`<span class="tkm">${ICON[o.gp]?`<img src="${ICON[o.gp]}" alt="">`:''}<b>${'★'.repeat(o.gs)}</b><small>${p?p.ad:''}</small></span>`}
+  let ok,give;if(o.gp){const it=[...G.stock,...(G.store||[])].find(x=>x.pid===o.gp&&x.stars>=o.gs&&!x.worn);ok=!!it;const p=PRODS.find(x=>x.id===o.gp);give=`<span class="tkm">${ICON[o.gp]?`<img src="${ICON[o.gp]}" alt="">`:''}<b>${'★'.repeat(o.gs)}</b><small>${p?p.ad:''}</small></span>`}
   else{ok=Object.entries(o.give).every(([k,n])=>(G.inv[k]||0)>=n);give=bundle(o.give)}
   return `<div class="tkc"><div class="tkh">🧳 ${o.ad}</div><div class="tkb"><div class="tks">${give}</div><div class="tka">⇄</div><div class="tks get">${bundle(o.get)}</div></div><button class="dbt ${ok?'':'l'}" data-tk="${o.id}" ${ok?'':'disabled'}>${ok?'Takas et':'Elinde yok'}</button></div>`}).join(''):'<p class="dem">Bugünlük takas bitti.</p>')}
 function doTakas(id){const S=tkS(),i=S.o.findIndex(o=>String(o.id)===String(id));if(i<0)return;const o=S.o[i],gn=Object.values(o.get).reduce((a,b)=>a+b,0);
- if(o.gp){const it=[...G.stock,...(G.store||[])].find(x=>x.pid===o.gp&&x.stars>=o.gs);if(!it)return;if(depoFull(gn))return;G.stock=G.stock.filter(x=>x!==it);G.store=(G.store||[]).filter(x=>x!==it);vitrinSync();storeSync()}
+ if(o.gp){const it=[...G.stock,...(G.store||[])].find(x=>x.pid===o.gp&&x.stars>=o.gs&&!x.worn);if(!it)return;if(depoFull(gn))return;G.stock=G.stock.filter(x=>x!==it);G.store=(G.store||[]).filter(x=>x!==it);vitrinSync();storeSync()}
  else{if(!Object.entries(o.give).every(([k,n])=>(G.inv[k]||0)>=n))return;const gv=Object.values(o.give).reduce((a,b)=>a+b,0);if(gn>gv&&depoFull(gn-gv))return;Object.entries(o.give).forEach(([k,n])=>G.inv[k]-=n)}
  Object.entries(o.get).forEach(([k,n])=>G.inv[k]=(G.inv[k]||0)+n);S.o.splice(i,1);sfx.cash();toast(`${o.ad} ile takas yapıldı`,1400);save();refresh();renderMarket()}
 
@@ -43,7 +43,7 @@ let mzLT=0;function mzTick(){const L=mzList();L.slice().forEach(m=>{if(NOW()>=m.
 function mzLive(m){const c=mzCur(m),top=c[c.length-1],left=Math.max(0,m.e-NOW()),f=1-left/MZD;
  return `<div class="mzt"><span>⏳ ${fmtT(left)}</span><i><b style="width:${Math.round(f*100)}%"></b></i></div><div class="mzb"><small>En yüksek teklif</small><b>${top?'💰 '+top.v:'—'}</b><small>${top?top.ad:'Teklif bekleniyor…'}</small></div>
  <div class="mzl">${c.slice(-4).reverse().map((x,j)=>`<span class="${j?'':'n'}">${x.ad} · ${x.v}</span>`).join('')}</div>${top?`<button class="dbt" data-mze="${mzList().indexOf(m)}">Hemen sat · ${top.v}</button>`:''}`}
-function renderMezat(){const L=mzList(),items=[...G.stock.map((it,i)=>['v',i,it]),...(G.store||[]).map((it,i)=>['s',i,it])];
+function renderMezat(){const L=mzList(),items=[...G.stock.map((it,i)=>['v',i,it]),...(G.store||[]).map((it,i)=>['s',i,it]).filter(x=>!x[2].worn)];
  let h=`<p class="chint">Ürününü mezata çıkar, koleksiyoncular ${Math.round(MZD/60)} dakika boyunca teklif versin. Sezonun gözde ürünleri daha çok para eder. Komisyon %5.</p>`;
  h+=L.map((m,i)=>{const p=pr(m.it);return `<div class="mzc r${Math.min(3,p.tier||1)}"><div class="mzh"><div class="dia"><img src="${ICON[m.it.pid]}" alt=""></div><div><b>${p.ad}</b><span class="dist">${'★'.repeat(m.it.stars)}<i>${'★'.repeat(5-m.it.stars)}</i></span><small>Taban değer ~${p.base}</small></div><span class="mzlv">🔴 CANLI</span></div><div id="mz${i}">${mzLive(m)}</div></div>`}).join('');
  h+=`<div class="dsec">Mezata çıkarılabilir <em>${L.length}/${mzMax()} mezat</em></div>`;
