@@ -33,7 +33,7 @@ function cardFront(d,big){const R=RAR[d.r]||RAR[1],lk=!d.own;
 function renderColl(){const L=cTab==='p'?PRODS.map(p=>cardData('p',p.id)):cTab==='e'?EQ.map(e=>cardData('e',e.id)):Object.keys(MATS).map(k=>cardData('m',k));
  const own=L.filter(d=>d.done).length,fo=L.filter(d=>d.foil).length;
  return `<div class="ctabs">${[['p','🏺 Ürünler'],['e','🛠️ Ekipman'],['m','🌿 Malzeme']].map(t=>`<button class="${cTab===t[0]?'on':''}" data-ct="${t[0]}">${t[1]}</button>`).join('')}</div>
- <div class="cprog"><div><b>${own}</b>/${L.length} toplandı · <span class="cfo">✦ ${fo} parlak</span></div><i><b style="width:${Math.round(own/L.length*100)}%"></b></i></div>
+ <div class="cprog"><div><span><b>${own}</b>/${L.length} toplandı</span><span class="cfo">✦ ${fo} parlak</span></div><i><b style="width:${Math.round(own/L.length*100)}%"></b></i></div>
  <p class="chint">${cTab==='p'?'5 yıldız alınca kart parlak olur.':cTab==='e'?'Aleti geliştirdikçe kartın çerçevesi yükselir.':'20 tane biriktirince malzeme kartı parlar.'} Kartın detayını görmek için dokun.</p>
  <div class="cgrid">${L.map(d=>cardFront(d)).join('')}</div>`}
 function wireColl(){ui.sheet.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{cTab=b.dataset.ct;sfx.tap();renderMenu()});

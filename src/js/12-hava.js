@@ -1,4 +1,5 @@
 /* ---------- hava durumu ---------- */
+const WXI={acik:'sun',bulut:'cloud',yagmur:'umbrella',kar:'snow',ruzgar:'wind'};
 const WX={acik:{ad:'Açık',ic:'☀'},bulut:{ad:'Bulutlu',ic:'☁'},yagmur:{ad:'Yağmurlu',ic:'☂'},kar:{ad:'Karlı',ic:'❄'},ruzgar:{ad:'Rüzgârlı',ic:'≋'}};
 let wx='acik',wxK=1,wxNext=60,snowAcc=0,wxRainT=0;
 function mkPrec(N,cx,cy,cz,sx,sy,sz,rainCol,ps){const rp=new Float32Array(N*6),sp=new Float32Array(N*3),d=[];for(let i=0;i<N;i++)d.push({x:Math.random(),y:Math.random(),z:Math.random(),s:0.7+Math.random()*0.6,ph:Math.random()*6});

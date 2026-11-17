@@ -56,7 +56,12 @@ function stepTool(s,p){if(s.tool)return s.tool;const k=s.k;if(s.t==='trace')retu
 function eqUse(id){const s=eqS(id),e=EQ.find(x=>x.id===id);if(!s.own||G.owner)return;if(s.dur>0)s.dur--;if(s.dur<=0)toast(`${e.e} ${e.ad} köreldi!<br>Menü › Ekipmanlar'dan yenile`,2200);else if(s.dur<=5)toast(`${e.e} ${e.ad} yıpranıyor · ${s.dur} kullanım kaldı`,1500);eqBadge()}
 function eqBadge(){const b=$('menuB');if(b)b.classList.toggle('warn',EQ.some(e=>{const s=G.eq&&G.eq[e.id];return s&&s.own&&s.dur<=5}))}
 function eqScore(s){const id=K&&K.tool;if(!id||!G.eq||!G.eq[id]||!G.eq[id].own)return s;const st=G.eq[id];if(st.dur<=0)return s*0.6;return s>0?Math.min(1,s+0.06*(st.lv-1)):s}
-function eqIcons(){EQ.forEach(e=>{if(e.m&&!EQICON[e.id])glb(e.m,g=>{try{const o=g.scene.clone();EQICON[e.id]=snap(o)}catch(x){}})})}
+const EQTL={igne:'nd',tutkalf:'gl',zimpara:'blk',cila:'cl',firca:'br'};
+function eqProc(id){if(EQTL[id]&&TL[EQTL[id]]){const o=TL[EQTL[id]].clone();o.visible=true;o.position.set(0,0,0);o.rotation.set(0,0,0);o.traverse(x=>x.visible=true);if(id==='igne'||id==='tutkalf'||id==='firca')o.rotation.z=-0.7;return o}
+ const g=new THREE.Group();if(id==='pres'){const st=M('#8a8f96',0.4);put(g,B(0.05,0.32,0.06),st,-0.12,0.16,0);put(g,B(0.24,0.05,0.06),st,0,0.31,0);put(g,B(0.24,0.05,0.06),st,0,0.025,0);put(g,Cy(0.012,0.012,0.3,8),M('#c8ccd0',0.2),0.06,0.2,0);put(g,B(0.12,0.025,0.025),M('#b5533c'),0.06,0.36,0)}
+ else if(id==='kompresor'){put(g,Cy(0.11,0.11,0.34,16),M('#b5533c',0.5),0,0.12,0).rotation.z=Math.PI/2;put(g,B(0.08,0.1,0.08),M('#4a4a50'),0.04,0.27,0);put(g,Cy(0.035,0.035,0.02,12),M('#e9e2d0'),0.04,0.33,0.0);[-0.12,0.12].forEach(x=>put(g,Cy(0.035,0.035,0.03,10),M('#2a2a2a'),x,0.035,0.1).rotation.x=Math.PI/2)}
+ else return null;return g}
+function eqIcons(){EQ.forEach(e=>{if(EQICON[e.id])return;if(e.m)glb(e.m,g=>{try{const o=g.scene.clone();EQICON[e.id]=snap(o)}catch(x){}});else{try{const o=eqProc(e.id);if(o)EQICON[e.id]=snap(o)}catch(x){}}})}
 function renderEq(){let h='<p style="font-size:12px;margin:0 0 6px;opacity:.8">Aletlerin her kullanımda yıpranır. Körelen alet kötü iş çıkarır, yenile. Geliştirilen alet daha temiz iş çıkarır.</p>';
  EQ.forEach(e=>{const s=eqS(e.id),mx=EQDUR[s.lv],up=EQUP[s.lv+1],ic=EQICON[e.id]?`<img class="ic" src="${EQICON[e.id]}" alt="">`:`<div class="ic" style="display:grid;place-items:center;font-size:24px">${e.e}</div>`;
   if(!s.own){h+=`<div class="row">${ic}<div class="n">${e.ad}<small>${e.d}</small><small>Gerekli: ${e.buy[0]} altın · itibar ${e.buy[1]}</small></div><button class="btn g" data-eb="${e.id}" ${G.gold<e.buy[0]||G.rep<e.buy[1]?'disabled':''}>Satın al</button></div>`;return}
@@ -93,7 +98,7 @@ function giveAll(o,s){Object.entries(o).forEach(([k,n])=>G.inv[k]+=n*(s||1))}
 /* Elmas: nadir para birimi. p olasılıkla 1 elmas verir */
 const GEM_P={topla:0.005,teslim:0.03,bes:0.06};
 function gemRoll(p,msg){if(Math.random()>=p)return false;G.elmas=(G.elmas||0)+1;hud();sfx.fan&&sfx.fan();toast(`💎 ${msg}<br>Elmasın: <b>${G.elmas}</b>`,2400);return true}
-function hud(){{const e=$('elmas');if(e)e.textContent=G.elmas||0}ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;ui.tier.textContent='K'+G.tier+' · '+clockTxt()+' '+WX[wx].ic}
+function hud(){{const e=$('elmas');if(e)e.textContent=G.elmas||0}ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;{const h=`<span class="tk">K${G.tier}</span><span class="tc">${clockTxt()}</span>${ic(WXI[wx]||'sun')}`;if(ui.tier._h!==h){ui.tier._h=h;ui.tier.innerHTML=h}}}
 function clockTxt(){if(G.night)return 'Akşam';const m=480+Math.floor(G.tm),h=Math.floor(m/60);return (h<10?'0':'')+h+':'+String(m%60).padStart(2,'0')}
 function renderCard(){const o=G.order;if(!o||G.phase==='craft'||G.phase==='result'){show(ui.card,false);return}
 if(o.buy){const it=G.stock.find(x=>x.id===o.buy);ui.card.innerHTML=`<h4>Vitrin müşterisi</h4>${it?desc(it)+' · '+it.price+' altın':'Ürün satılmış'}`;show(ui.card,true);return}

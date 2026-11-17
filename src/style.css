@@ -281,3 +281,7 @@ svg.cn{width:1.05em;height:1.05em;vertical-align:-0.17em;flex:none}
 .omode{flex:none}
 .yat .row{background:#fffaf0;border:2px solid var(--ln);border-radius:14px;padding:10px 10px;margin-bottom:9px;box-shadow:0 3px 0 var(--ln);border-bottom-style:solid}
 .yat .row .n{font-weight:800}.yat .row small{font-weight:500}
+/* çizilmiş ikonlar */
+svg.gi{width:1.15em;height:1.15em;vertical-align:-0.22em;flex:none;display:inline-block}
+.kemo svg.gi{width:1.4em;height:1.4em}
+#tierP{flex-shrink:0!important;gap:4px;font-variant-numeric:tabular-nums}#tierP .tk{flex:none}#tierP .tc{display:inline-block;width:3.3em;text-align:center;flex:none}#tierP svg.gi{width:16px;height:16px}

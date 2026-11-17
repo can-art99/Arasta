@@ -42,6 +42,78 @@ function flat(sh,d,hex,bv){const m=mesh(ext(sh,d,bv),typeof hex==='string'?M(hex
 function shapePts(sh,n,c,yo,sc){sc=sc||1;return sh.getSpacedPoints(n).slice(0,n).map(p=>V(c.x+p.x*sc,c.y+(yo||0),c.z-p.y*sc))}
 function lineSeg(par,a,b,hex,th){const d=Math.hypot(b.x-a.x,b.z-a.z),m=mesh(B(th||0.008,th||0.008,d),M(hex));m.position.set((a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2);m.rotation.y=Math.atan2(b.x-a.x,b.z-a.z);par.add(m);return m}
 
+/* ---------- oyun ikonları: emoji yerine çizilmiş SVG ikonlar ---------- */
+const IK='stroke="#4a3423" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"';
+const SVI={
+gem:`<path d="M7 4h10l4 5.5L12 21 3 9.5z" fill="#6fd0e8" ${IK}/><path d="M3 9.5h18M7 4l2.5 5.5L12 21l2.5-11.5L17 4M12 4l-2.5 5.5M12 4l2.5 5.5" fill="none" stroke="#1f5f78" stroke-width="1"/>`,
+star:`<path d="M12 2.5l2.9 6 6.6.8-4.8 4.6 1.2 6.6L12 17.3l-5.9 3.2 1.2-6.6L2.5 9.3l6.6-.8z" fill="#ffcf3a" ${IK}/>`,
+coin:`<circle cx="12" cy="12" r="9" fill="#e8a915" ${IK}/><circle cx="12" cy="12" r="4.5" fill="none" stroke="#7a5408" stroke-width="1.5"/>`,
+lock:`<path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" ${IK}/><rect x="5" y="11" width="14" height="10" rx="2.5" fill="#d9a23a" ${IK}/><circle cx="12" cy="15.5" r="1.4" fill="#4a3423"/>`,
+tag:`<path d="M3 12V4h8l10 10-8 8z" fill="#e9c46a" ${IK}/><circle cx="7.5" cy="8.5" r="1.6" fill="#fff" ${IK}/>`,
+wheat:`<path d="M12 22V6" fill="none" ${IK}/>${[7,11,15].map(y=>`<ellipse cx="9.3" cy="${y}" rx="2" ry="3.2" transform="rotate(-35 9.3 ${y})" fill="#e2b84a" ${IK}/><ellipse cx="14.7" cy="${y}" rx="2" ry="3.2" transform="rotate(35 14.7 ${y})" fill="#e2b84a" ${IK}/>`).join('')}<ellipse cx="12" cy="4" rx="1.8" ry="2.8" fill="#e2b84a" ${IK}/>`,
+wrench:`<path d="M14.5 3.5a5 5 0 0 0-5.3 6.6L3.5 15.8a2 2 0 0 0 2.8 2.8l5.7-5.7a5 5 0 0 0 6.6-5.3l-3 3-2.6-.6-.6-2.6z" fill="#b8bcc0" ${IK}/>`,
+box:`<path d="M12 2.8l8.5 4.4v9.6L12 21.2l-8.5-4.4V7.2z" fill="#c9955a" ${IK}/><path d="M3.5 7.2L12 11.6l8.5-4.4M12 11.6v9.6" fill="none" ${IK}/>`,
+leaf:`<path d="M5 19C4 10 9 4 20 4c0 11-6 16-15 15z" fill="#6aa84f" ${IK}/><path d="M5 19L14 10" fill="none" ${IK}/>`,
+hammer:`<path d="M13 9l-9 9a1.6 1.6 0 0 0 2.2 2.2l9-9" fill="#a0703c" ${IK}/><path d="M10.5 5.5l4-3 7 7-3 4z" fill="#8a8f96" ${IK}/>`,
+sparkle:`<path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z" fill="#ffd24a" ${IK}/>`,
+recycle:`<path d="M7 7.5A7 7 0 0 1 19 10M17 16.5A7 7 0 0 1 5 14" fill="none" stroke="#2f6b5a" stroke-width="2.2" stroke-linecap="round"/><path d="M19.5 5v5h-5M4.5 19v-5h5" fill="none" stroke="#2f6b5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`,
+crack:`<path d="M12 21C6 17 3 13 3 9a4.5 4.5 0 0 1 9-1 4.5 4.5 0 0 1 9 1c0 4-3 8-9 12z" fill="#d0503c" ${IK}/><path d="M12 8l-1.5 3.5 2.5 2-2 3.5" fill="none" stroke="#fff3dc" stroke-width="1.6" stroke-linecap="round"/>`,
+scratch:`<rect x="3" y="4" width="18" height="16" rx="3" fill="#e9dcc0" ${IK}/><path d="M7 15l5-6M10 17l6-8M14 16l3-4" fill="none" stroke="#8a5530" stroke-width="1.5" stroke-linecap="round"/>`,
+fog:`<path d="M3 8c3-2 6 2 9 0s6-2 9 0M3 13c3-2 6 2 9 0s6-2 9 0M3 18c3-2 6 2 9 0s6-2 9 0" fill="none" stroke="#8a9aa4" stroke-width="2" stroke-linecap="round"/>`,
+clock:`<circle cx="12" cy="12" r="9" fill="#fffaf0" ${IK}/><path d="M12 7v5l3.5 2" fill="none" ${IK}/>`,
+live:`<circle cx="12" cy="12" r="6" fill="#d0503c" stroke="#fff" stroke-width="2"/>`,
+bag:`<rect x="3" y="8" width="18" height="12" rx="2.5" fill="#a0703c" ${IK}/><path d="M9 8V5.5h6V8M3 13h18" fill="none" ${IK}/>`,
+sheep:`<path d="M6 16a3 3 0 0 1-.5-5.9A3.5 3.5 0 0 1 11 7a3.5 3.5 0 0 1 6 1.5 3 3 0 0 1 .5 6A3 3 0 0 1 13 17a3 3 0 0 1-7-1z" fill="#fffaf0" ${IK}/><ellipse cx="19" cy="11.5" rx="2.4" ry="2" fill="#4a3423"/><path d="M8.5 17v3.5M14 17v3.5" fill="none" ${IK}/>`,
+medal:`<path d="M8 2.5l4 6 4-6" fill="none" stroke="#b5533c" stroke-width="2.4"/><circle cx="12" cy="15" r="6" fill="#e8a915" ${IK}/><path d="M12 12l1 2 2 .3-1.5 1.4.4 2.1L12 16.8l-1.9 1 .4-2.1L9 14.3l2-.3z" fill="#fff3dc"/>`,
+puzzle:`<path d="M4 8h4a2.2 2.2 0 1 1 4 0h4v4a2.2 2.2 0 1 1 0 4v4H4v-4a2.2 2.2 0 1 0 0-4z" fill="#7fb3d5" ${IK}/>`,
+person:`<circle cx="12" cy="7" r="3.6" fill="#f1c9a0" ${IK}/><path d="M4.5 21a7.5 7.5 0 0 1 15 0z" fill="#2f6b5a" ${IK}/>`,
+farmer:`<circle cx="12" cy="8.5" r="3.4" fill="#f1c9a0" ${IK}/><path d="M5 6.5h14M8 6.5c0-2.5 1.8-4 4-4s4 1.5 4 4" fill="#e2b84a" ${IK}/><path d="M4.5 21a7.5 7.5 0 0 1 15 0z" fill="#6a8a3a" ${IK}/>`,
+apprentice:`<circle cx="12" cy="8.5" r="3.4" fill="#f1c9a0" ${IK}/><path d="M8.2 7a4 4 0 0 1 7.6 0H18" fill="#b5533c" ${IK}/><path d="M4.5 21a7.5 7.5 0 0 1 15 0z" fill="#8a5530" ${IK}/>`,
+sun:`<circle cx="12" cy="12" r="4.6" fill="#ffcf3a" ${IK}/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" fill="none" stroke="#e0a020" stroke-width="2" stroke-linecap="round"/>`,
+cloud:`<path d="M7 18a4 4 0 0 1-.6-8A5.5 5.5 0 0 1 17 8.5a4.8 4.8 0 0 1 .5 9.5z" fill="#eef2f4" ${IK}/>`,
+umbrella:`<path d="M2.5 12a9.5 9.5 0 0 1 19 0c-1.6-1.4-3.2-1.4-4.75 0-1.6-1.4-3.2-1.4-4.75 0-1.6-1.4-3.2-1.4-4.75 0-1.6-1.4-3.2-1.4-4.75 0z" fill="#8a5ac0" ${IK}/><path d="M12 12v6.5a2 2 0 0 1-4 0" fill="none" ${IK}/>`,
+snow:`<path d="M12 2.5v19M3.8 7.2l16.4 9.6M3.8 16.8l16.4-9.6M9.5 4l2.5 2 2.5-2M9.5 20l2.5-2 2.5 2" fill="none" stroke="#5aa9d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
+wind:`<path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h7" fill="none" stroke="#8a9aa4" stroke-width="2" stroke-linecap="round"/>`,
+flower:`${[0,72,144,216,288].map(a=>`<ellipse cx="12" cy="6.8" rx="3" ry="4" transform="rotate(${a} 12 12)" fill="#f2a6c0" ${IK}/>`).join('')}<circle cx="12" cy="12" r="2.8" fill="#ffcf3a" ${IK}/>`,
+autumn:`<path d="M12 2l2 4.5 4-1.5-1 4.5 4.5 1-3.5 3 1.5 3.5-4.5-.5L12 21l-3-4.5-4.5.5L6 13.5l-3.5-3 4.5-1-1-4.5 4 1.5z" fill="#d9772a" ${IK}/><path d="M12 21V11" fill="none" ${IK}/>`,
+fire:`<path d="M12 2.5c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 1.5-4.5 3-6 0 2 1 3 2 3 0-3-1-5 1-8z" fill="#f08a24" ${IK}/><path d="M12 13c1.5 1.5 2.5 2.5 2.5 4a2.5 2.5 0 0 1-5 0c0-1.5 1-2.5 2.5-4z" fill="#ffd24a"/>`,
+wave:`<path d="M2 14c2.5-3 5-3 7.5 0s5 3 7.5 0 4.5-2 5-1.5V21H2z" fill="#5aa9d6" ${IK}/><path d="M2 9c2.5-3 5-3 7.5 0s5 3 7.5 0" fill="none" stroke="#5aa9d6" stroke-width="2" stroke-linecap="round"/>`,
+rock:`<path d="M3 19l2.5-8 5-5 6 2 4.5 6.5L19 19z" fill="#9a968c" ${IK}/><path d="M10.5 6l1 6 5.5-4" fill="none" stroke="#6a665c" stroke-width="1.2"/>`,
+bug:`<ellipse cx="12" cy="13.5" rx="5" ry="6.5" fill="#6a8a3a" ${IK}/><circle cx="12" cy="6" r="2.6" fill="#4a3423"/><path d="M12 7.5v12.5M7 11H3.5M7 15H3M17 11h3.5M17 15h4M10.5 4l-1.5-2M13.5 4l1.5-2" fill="none" ${IK}/>`,
+wilt:`<path d="M12 21V12c0-3 3-4 5-2" fill="none" stroke="#6a8a3a" stroke-width="2" stroke-linecap="round"/><path d="M17 10c1.5-1 3 0 3 2s-2 3.5-3.5 3-2-3.5.5-5z" fill="#b5533c" ${IK}/><path d="M12 15c-3 0-5-2-5-4 2 0 5 1 5 4z" fill="#a0a060" ${IK}/>`,
+sick:`<rect x="9.5" y="2.5" width="5" height="13" rx="2.5" fill="#fffaf0" ${IK}/><circle cx="12" cy="17.5" r="4" fill="#d0503c" ${IK}/><path d="M12 8v9" stroke="#d0503c" stroke-width="2"/>`,
+warn:`<path d="M12 3l9.5 17h-19z" fill="#e0a23a" ${IK}/><path d="M12 9v5" stroke="#4a3423" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="#4a3423"/>`,
+storm:`<path d="M3 5h18M5 9h14M7 13h10M9 17h6M11 21h2" fill="none" stroke="#8a9aa4" stroke-width="2.2" stroke-linecap="round"/>`,
+up:`<path d="M12 4l7 8h-4.5v8h-5v-8H5z" fill="#2f6b5a" ${IK}/>`,
+window:`<rect x="3.5" y="3.5" width="17" height="17" rx="1.5" fill="#bfe3f2" ${IK}/><path d="M12 3.5v17M3.5 12h17" fill="none" stroke="#8a3a2a" stroke-width="2"/>`,
+shelf:`<rect x="3.5" y="3" width="17" height="18" rx="1.5" fill="#c9955a" ${IK}/><path d="M3.5 9h17M3.5 15h17" fill="none" ${IK}/><rect x="6" y="5" width="3" height="4" fill="#b5533c"/><rect x="13" y="11" width="4" height="4" fill="#2f6b5a"/>`,
+bolt:`<path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="#ffcf3a" ${IK}/>`,
+music:`<path d="M9 18V5l11-2v13" fill="none" ${IK}/><circle cx="6.5" cy="18" r="2.8" fill="#2f6b5a" ${IK}/><circle cx="17.5" cy="16" r="2.8" fill="#2f6b5a" ${IK}/>`,
+steam:`<path d="M7 20c-2-3 2-5 0-8s2-5 0-8M12 20c-2-3 2-5 0-8s2-5 0-8M17 20c-2-3 2-5 0-8s2-5 0-8" fill="none" stroke="#8a9aa4" stroke-width="2" stroke-linecap="round"/>`,
+axe:`<path d="M6 21L16 7" fill="none" stroke="#a0703c" stroke-width="2.6" stroke-linecap="round"/><path d="M12.5 4.5c3-2 7-1 8.5 1.5l-4.5 6.5c-2-1-4-3-4-8z" fill="#b8bcc0" ${IK}/>`,
+palette:`<path d="M12 3a9 9 0 0 0 0 18c1.5 0 2-1 1.6-2.2-.5-1.4.4-2.8 1.9-2.8H18a3 3 0 0 0 3-3c0-5.5-4-10-9-10z" fill="#e9c46a" ${IK}/><circle cx="7.5" cy="11" r="1.6" fill="#d0503c"/><circle cx="10" cy="7" r="1.6" fill="#2f6b8a"/><circle cx="15" cy="7.5" r="1.6" fill="#6aa84f"/>`,
+brush:`<path d="M14 3l7 7-6.5 4.5-5-5z" fill="#2f6b8a" ${IK}/><path d="M9.5 9.5l5 5-2 2c-1 3-4 5-9 4 1-4 1.5-7.5 4-9z" fill="#c9955a" ${IK}/>`,
+sponge:`<rect x="3" y="7" width="18" height="11" rx="4" fill="#ffd24a" ${IK}/><circle cx="8" cy="11" r="1" fill="#c99a1a"/><circle cx="13" cy="13.5" r="1.2" fill="#c99a1a"/><circle cx="17" cy="10.5" r=".9" fill="#c99a1a"/>`,
+clamp:`<path d="M6 4h9v4H10v8h5v4H6z" fill="#8a8f96" ${IK}/><path d="M18 2v20M15 12h6" fill="none" stroke="#4a3423" stroke-width="2" stroke-linecap="round"/>`,
+glue:`<path d="M9 9h6v11a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 20z" fill="#efe6c8" ${IK}/><path d="M10 9V6h4v3M11 6V3h2v3" fill="#b5533c" ${IK}/>`,
+log:`<rect x="2.5" y="8" width="19" height="9" rx="4.5" fill="#a0703c" ${IK}/><ellipse cx="19" cy="12.5" rx="2.5" ry="4.5" fill="#e2c08a" ${IK}/>`,
+scissors:`<circle cx="6" cy="17" r="3" fill="none" stroke="#b5533c" stroke-width="2"/><circle cx="6" cy="7" r="3" fill="none" stroke="#b5533c" stroke-width="2"/><path d="M8.5 8.5L21 18M8.5 15.5L21 6" fill="none" stroke="#8a8f96" stroke-width="2" stroke-linecap="round"/>`,
+saw:`<path d="M3 13l14-7 2 4-14 7z" fill="#b8bcc0" ${IK}/><path d="M17 6l4-1 1 5-3 0" fill="#a0703c" ${IK}/>`,
+knife:`<path d="M3 15L15 4c2 2 2 5 0 7L8 16z" fill="#c8ccd0" ${IK}/><path d="M8 16l-3 4a1.5 1.5 0 0 1-2-2l2-3" fill="#5a3519" ${IK}/>`,
+needle:`<path d="M5 19L19 5" stroke="#8a8f96" stroke-width="2" stroke-linecap="round"/><ellipse cx="18" cy="6" rx="1.2" ry="2.2" transform="rotate(45 18 6)" fill="none" stroke="#4a3423" stroke-width="1.2"/><path d="M18 6c-4 2-8-1-10 4" fill="none" stroke="#2f6b8a" stroke-width="1.6"/>`,
+brick:`<rect x="3" y="7" width="18" height="10" rx="1.5" fill="#c9955a" ${IK}/><path d="M3 12h18M9 7v5M15 12v5" fill="none" ${IK}/>`,
+check:`<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#2f6b5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+cards:`<rect x="4" y="5" width="11" height="15" rx="2" fill="#e9c46a" ${IK} transform="rotate(-8 9 12)"/><rect x="9" y="4" width="11" height="15" rx="2" fill="#fffaf0" ${IK}/>`,
+};
+function ic(n,c){const p=SVI[n];return p?`<svg class="gi${c?' '+c:''}" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`:''}
+/* Kalan emojileri her yerde ikonla değiştir */
+const EMO={'🧑‍🌾':'farmer','🧑‍🔧':'apprentice','💎':'gem','🔒':'lock','🏷':'tag','🌾':'wheat','🔧':'wrench','📦':'box','🌿':'leaf','🔨':'hammer','✨':'sparkle','♻':'recycle','💔':'crack','〰':'scratch','🌫':'fog','⏳':'clock','🔴':'live','🧳':'bag','🐑':'sheep','🏅':'medal','🧩':'puzzle','🛠':'wrench','⚒':'hammer','⭐':'star','🏺':'cards','☀':'sun','☁':'cloud','☂':'umbrella','❄':'snow','💨':'wind','🌸':'flower','🍂':'autumn','🔥':'fire','🌊':'wave','🪨':'rock','🐛':'bug','🥀':'wilt','🤒':'sick','⚠':'warn','🌪':'storm','⬆':'up','🪟':'window','🗄':'shelf','⚡':'bolt','🎵':'music','♨':'steam','🪓':'axe','🎨':'palette','🖌':'brush','🧽':'sponge','🗜':'clamp','🧴':'glue','🪵':'log','✂':'scissors','🪚':'saw','🔪':'knife','🪡':'needle','🧱':'brick','❔':'puzzle','✦':'sparkle'};
+const EMORX=new RegExp('('+Object.keys(EMO).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')\\uFE0F?','gu');
+function emoFix(root){const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null),L=[];let n;while(n=tw.nextNode()){if(EMORX.test(n.nodeValue))L.push(n);EMORX.lastIndex=0}
+ L.forEach(t=>{const p=t.parentNode;if(!p||p.closest&&p.closest('svg'))return;const sp=document.createElement('span');sp.innerHTML=t.nodeValue.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(EMORX,(m,k)=>ic(EMO[k]));const f=document.createDocumentFragment();while(sp.firstChild)f.appendChild(sp.firstChild);p.replaceChild(f,t)})}
+function emoWatch(){const mo=new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData'){if(m.target.parentNode)emoFix(m.target.parentNode)}else m.addedNodes.forEach(x=>{if(x.nodeType===1)emoFix(x);else if(x.nodeType===3&&x.parentNode)emoFix(x.parentNode)})}});
+ ['frame'].forEach(id=>{const el=document.getElementById(id);if(el){emoFix(el);mo.observe(el,{childList:true,subtree:true,characterData:true})}})}
+
 /* ---------- malzeme modelleri ---------- */
 function buckle(hex){const g=new THREE.Group(),m=M(hex||'#d4b04a',0.4);put(g,B(0.12,0.016,0.016),m,0,0.008,-0.04);put(g,B(0.12,0.016,0.016),m,0,0.008,0.04);
 put(g,B(0.016,0.016,0.096),m,-0.055,0.008,0);put(g,B(0.016,0.016,0.096),m,0.055,0.008,0);put(g,B(0.01,0.01,0.08),m,0,0.012,0);return g}
@@ -807,7 +879,12 @@ function stepTool(s,p){if(s.tool)return s.tool;const k=s.k;if(s.t==='trace')retu
 function eqUse(id){const s=eqS(id),e=EQ.find(x=>x.id===id);if(!s.own||G.owner)return;if(s.dur>0)s.dur--;if(s.dur<=0)toast(`${e.e} ${e.ad} köreldi!<br>Menü › Ekipmanlar'dan yenile`,2200);else if(s.dur<=5)toast(`${e.e} ${e.ad} yıpranıyor · ${s.dur} kullanım kaldı`,1500);eqBadge()}
 function eqBadge(){const b=$('menuB');if(b)b.classList.toggle('warn',EQ.some(e=>{const s=G.eq&&G.eq[e.id];return s&&s.own&&s.dur<=5}))}
 function eqScore(s){const id=K&&K.tool;if(!id||!G.eq||!G.eq[id]||!G.eq[id].own)return s;const st=G.eq[id];if(st.dur<=0)return s*0.6;return s>0?Math.min(1,s+0.06*(st.lv-1)):s}
-function eqIcons(){EQ.forEach(e=>{if(e.m&&!EQICON[e.id])glb(e.m,g=>{try{const o=g.scene.clone();EQICON[e.id]=snap(o)}catch(x){}})})}
+const EQTL={igne:'nd',tutkalf:'gl',zimpara:'blk',cila:'cl',firca:'br'};
+function eqProc(id){if(EQTL[id]&&TL[EQTL[id]]){const o=TL[EQTL[id]].clone();o.visible=true;o.position.set(0,0,0);o.rotation.set(0,0,0);o.traverse(x=>x.visible=true);if(id==='igne'||id==='tutkalf'||id==='firca')o.rotation.z=-0.7;return o}
+ const g=new THREE.Group();if(id==='pres'){const st=M('#8a8f96',0.4);put(g,B(0.05,0.32,0.06),st,-0.12,0.16,0);put(g,B(0.24,0.05,0.06),st,0,0.31,0);put(g,B(0.24,0.05,0.06),st,0,0.025,0);put(g,Cy(0.012,0.012,0.3,8),M('#c8ccd0',0.2),0.06,0.2,0);put(g,B(0.12,0.025,0.025),M('#b5533c'),0.06,0.36,0)}
+ else if(id==='kompresor'){put(g,Cy(0.11,0.11,0.34,16),M('#b5533c',0.5),0,0.12,0).rotation.z=Math.PI/2;put(g,B(0.08,0.1,0.08),M('#4a4a50'),0.04,0.27,0);put(g,Cy(0.035,0.035,0.02,12),M('#e9e2d0'),0.04,0.33,0.0);[-0.12,0.12].forEach(x=>put(g,Cy(0.035,0.035,0.03,10),M('#2a2a2a'),x,0.035,0.1).rotation.x=Math.PI/2)}
+ else return null;return g}
+function eqIcons(){EQ.forEach(e=>{if(EQICON[e.id])return;if(e.m)glb(e.m,g=>{try{const o=g.scene.clone();EQICON[e.id]=snap(o)}catch(x){}});else{try{const o=eqProc(e.id);if(o)EQICON[e.id]=snap(o)}catch(x){}}})}
 function renderEq(){let h='<p style="font-size:12px;margin:0 0 6px;opacity:.8">Aletlerin her kullanımda yıpranır. Körelen alet kötü iş çıkarır, yenile. Geliştirilen alet daha temiz iş çıkarır.</p>';
  EQ.forEach(e=>{const s=eqS(e.id),mx=EQDUR[s.lv],up=EQUP[s.lv+1],ic=EQICON[e.id]?`<img class="ic" src="${EQICON[e.id]}" alt="">`:`<div class="ic" style="display:grid;place-items:center;font-size:24px">${e.e}</div>`;
   if(!s.own){h+=`<div class="row">${ic}<div class="n">${e.ad}<small>${e.d}</small><small>Gerekli: ${e.buy[0]} altın · itibar ${e.buy[1]}</small></div><button class="btn g" data-eb="${e.id}" ${G.gold<e.buy[0]||G.rep<e.buy[1]?'disabled':''}>Satın al</button></div>`;return}
@@ -844,7 +921,7 @@ function giveAll(o,s){Object.entries(o).forEach(([k,n])=>G.inv[k]+=n*(s||1))}
 /* Elmas: nadir para birimi. p olasılıkla 1 elmas verir */
 const GEM_P={topla:0.005,teslim:0.03,bes:0.06};
 function gemRoll(p,msg){if(Math.random()>=p)return false;G.elmas=(G.elmas||0)+1;hud();sfx.fan&&sfx.fan();toast(`💎 ${msg}<br>Elmasın: <b>${G.elmas}</b>`,2400);return true}
-function hud(){{const e=$('elmas');if(e)e.textContent=G.elmas||0}ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;ui.tier.textContent='K'+G.tier+' · '+clockTxt()+' '+WX[wx].ic}
+function hud(){{const e=$('elmas');if(e)e.textContent=G.elmas||0}ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;{const h=`<span class="tk">K${G.tier}</span><span class="tc">${clockTxt()}</span>${ic(WXI[wx]||'sun')}`;if(ui.tier._h!==h){ui.tier._h=h;ui.tier.innerHTML=h}}}
 function clockTxt(){if(G.night)return 'Akşam';const m=480+Math.floor(G.tm),h=Math.floor(m/60);return (h<10?'0':'')+h+':'+String(m%60).padStart(2,'0')}
 function renderCard(){const o=G.order;if(!o||G.phase==='craft'||G.phase==='result'){show(ui.card,false);return}
 if(o.buy){const it=G.stock.find(x=>x.id===o.buy);ui.card.innerHTML=`<h4>Vitrin müşterisi</h4>${it?desc(it)+' · '+it.price+' altın':'Ürün satılmış'}`;show(ui.card,true);return}
@@ -908,6 +985,7 @@ function playB(n,vol,loop,bus){const s=AC.createBufferSource(),g=AC.createGain()
 function sf(n,v){if(SB[n]&&AC&&G.snd){playB(n,v||0.6);return true}return false}
 Object.keys(sfx).forEach(k=>{const f=sfx[k];sfx[k]=function(){if(SB[k]&&AC&&G.snd){playB(k,0.7);return}return f.apply(this,arguments)}});
 /* ---------- hava durumu ---------- */
+const WXI={acik:'sun',bulut:'cloud',yagmur:'umbrella',kar:'snow',ruzgar:'wind'};
 const WX={acik:{ad:'Açık',ic:'☀'},bulut:{ad:'Bulutlu',ic:'☁'},yagmur:{ad:'Yağmurlu',ic:'☂'},kar:{ad:'Karlı',ic:'❄'},ruzgar:{ad:'Rüzgârlı',ic:'≋'}};
 let wx='acik',wxK=1,wxNext=60,snowAcc=0,wxRainT=0;
 function mkPrec(N,cx,cy,cz,sx,sy,sz,rainCol,ps){const rp=new Float32Array(N*6),sp=new Float32Array(N*3),d=[];for(let i=0;i<N;i++)d.push({x:Math.random(),y:Math.random(),z:Math.random(),s:0.7+Math.random()*0.6,ph:Math.random()*6});
@@ -1440,7 +1518,7 @@ function cardFront(d,big){const R=RAR[d.r]||RAR[1],lk=!d.own;
 function renderColl(){const L=cTab==='p'?PRODS.map(p=>cardData('p',p.id)):cTab==='e'?EQ.map(e=>cardData('e',e.id)):Object.keys(MATS).map(k=>cardData('m',k));
  const own=L.filter(d=>d.done).length,fo=L.filter(d=>d.foil).length;
  return `<div class="ctabs">${[['p','🏺 Ürünler'],['e','🛠️ Ekipman'],['m','🌿 Malzeme']].map(t=>`<button class="${cTab===t[0]?'on':''}" data-ct="${t[0]}">${t[1]}</button>`).join('')}</div>
- <div class="cprog"><div><b>${own}</b>/${L.length} toplandı · <span class="cfo">✦ ${fo} parlak</span></div><i><b style="width:${Math.round(own/L.length*100)}%"></b></i></div>
+ <div class="cprog"><div><span><b>${own}</b>/${L.length} toplandı</span><span class="cfo">✦ ${fo} parlak</span></div><i><b style="width:${Math.round(own/L.length*100)}%"></b></i></div>
  <p class="chint">${cTab==='p'?'5 yıldız alınca kart parlak olur.':cTab==='e'?'Aleti geliştirdikçe kartın çerçevesi yükselir.':'20 tane biriktirince malzeme kartı parlar.'} Kartın detayını görmek için dokun.</p>
  <div class="cgrid">${L.map(d=>cardFront(d)).join('')}</div>`}
 function wireColl(){ui.sheet.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{cTab=b.dataset.ct;sfx.tap();renderMenu()});
@@ -2306,7 +2384,7 @@ cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.
 busy=PT.size>0||tweens.length>0||!!(K&&(K.tick||K.pdn))||!!(K&&(K.drag||K.holding))||switching||(G.phase==='craft'&&['rhythm','hold','pump','rub','trace'].includes(G.step))||ALLC.some(c=>c.walking&&!c.wand&&!c.cirak&&!c.frm);shT+=dt;if((busy&&hotNow)||shT>(G.phase==='craft'?0.1:view==='bahce'||view==='pazar'?0.25:0.4)){shT=0;R.shadowMap.needsUpdate=true}zoneTick();R.render(S,cam);drawFx();drawLabels()}
 glb('backpack',()=>{ICON.sirt=snap(PRODS.find(p=>p.id==='sirt').build('#8a4a26').g);vitrinSync()});
 ['good','bad','punch','coin','thud'].forEach(k=>{const f=sfx[k];if(f)sfx[k]=(...a)=>{f(...a);vib(k==='bad'?[25,40,25]:k==='coin'?12:18)}});
-load();ST.forEach(s=>s.lvl=G.stLv[s.id]||1);try{if(localStorage.getItem('arasta-owner')===OWNER_H)G.owner=true}catch(e){}lockInit();landSync();decoApply();if(!G.cap)G.cap={d:0,s:0,v:G.stock.length>3?(G.stock.length>6?2:1):0};G.store=(G.store||[]).filter(it=>PRODS.some(p=>p.id===it.pid));storeSync();EQ.forEach(e=>eqS(e.id));eqBadge();eqIcons();if(G.cloud){let lts=0;try{lts=JSON.parse(localStorage.getItem(SK)).ts||0}catch(e){}rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(d&&d.ts&&d.ts>lts+3000){d.cloud=G.cloud;if(!G.started){localStorage.setItem(SK,JSON.stringify(d));save=()=>{};location.reload()}else toast('Bulutta daha yeni kayıt var<br>Oyunu yeniden açınca yüklenir',2200)}}).catch(()=>{})}if(!G.ds)G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
+load();ST.forEach(s=>s.lvl=G.stLv[s.id]||1);try{if(localStorage.getItem('arasta-owner')===OWNER_H)G.owner=true}catch(e){}lockInit();landSync();try{emoWatch()}catch(e){}decoApply();if(!G.cap)G.cap={d:0,s:0,v:G.stock.length>3?(G.stock.length>6?2:1):0};G.store=(G.store||[]).filter(it=>PRODS.some(p=>p.id===it.pid));storeSync();EQ.forEach(e=>eqS(e.id));eqBadge();eqIcons();if(G.cloud){let lts=0;try{lts=JSON.parse(localStorage.getItem(SK)).ts||0}catch(e){}rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(d&&d.ts&&d.ts>lts+3000){d.cloud=G.cloud;if(!G.started){localStorage.setItem(SK,JSON.stringify(d));save=()=>{};location.reload()}else toast('Bulutta daha yeni kayıt var<br>Oyunu yeniden açınca yüklenir',2200)}}).catch(()=>{})}if(!G.ds)G.ds={earned:G.st.earned,deliv:G.st.deliv,sold:G.st.sold,lost:G.st.lost};vitrinSync();setOpen(G.open,true);if(G.tier>1)restock();PL.forEach(plotSync);drawSign();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawSign);
 setLights('home');hud();refresh();loop();
 const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.classList.toggle('on',!!G.mus);spS.classList.toggle('on',!!G.snd);$('musB').classList.toggle('off',!G.mus)};spSync();
 spM.onclick=()=>{G.mus=!G.mus;spSync()};spS.onclick=()=>{G.snd=!G.snd;spSync()};
