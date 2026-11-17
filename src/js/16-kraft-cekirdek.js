@@ -66,6 +66,8 @@ if((K.st.k==='dik'||K.st.k==='yapistir')&&K.prev&&(!K.st.pts||(K.st.seam&&K.prev
 toast(s>0.8?'Tam zamanında!':s>0.4?'İyi':s>0?'Erken':'Kaçtı',450);setTimeout(nextDot,280)}
 function bDrag(){const w=K.st.what;let obj,tgt,out;
 if(w==='nozzle'){obj=new THREE.Group();const br=M('#c9a23a',0.25);put(obj,Cy(0.016,0.021,0.05,12),br,0,0.025,0);put(obj,Cy(0.024,0.024,0.012,12),br,0,0.056,0);put(obj,Cy(0.013,0.016,0.03,10),M('#1d1d1f',0.7),0,0.075,0);put(obj,Cy(0.006,0.006,0.04,8),M('#9aa0a8',0.25),0,-0.012,0);tgt=V(BC.x+0.03,K.top+0.03,BC.z);out=circleShape(0.035);obj.position.set(BC.x+0.3,K.top+0.05,BC.z+0.3);mkPump();K.nozObj=obj}
+else if(w==='kristal'){obj=new THREE.Group();const cm=new THREE.MeshStandardMaterial({color:'#7fe0ff',emissive:'#2bb8ff',emissiveIntensity:0.9,roughness:0.15,metalness:0.1,transparent:true,opacity:0.9,flatShading:true});const c=put(obj,new THREE.OctahedronGeometry(0.045,0),cm,0,0.05,0);c.scale.set(0.8,1.6,0.8);tgt=LP([0,0.12]);tgt.y+=0.004;out=circleShape(0.03);obj.position.set(0.42,K.top+0.02,1.9)}
+else if(w==='kabza'){obj=new THREE.Group();const gm=M('#2a2624',0.6),rm=M('#c9ccd0',0.25);const sl=put(obj,Cy(0.046,0.046,0.24,14),gm,0,0.046,0);sl.rotation.x=Math.PI/2;for(let i=0;i<5;i++){const r=put(obj,Cy(0.049,0.049,0.012,14),rm,0,0.046,-0.1+i*0.05);r.rotation.x=Math.PI/2}tgt=LP([0,-0.06]);out=rrect(0.1,0.25,0.02);obj.position.set(-0.47,K.top+0.02,1.95)}
 else if(w==='taban'){obj=flat(soleShape(1),0.03,'#2a221d');tgt=V(BC.x,K.top+0.005,BC.z);out=soleShape(1);obj.position.set(-0.47,K.top+0.02,1.95)}
 else{obj=buckle();tgt=V(BC.x,K.top+0.004,BC.z+(K.p.id==='kemer'?0.3:-0.2));out=rrect(0.12,0.09,0.015);obj.position.set(0.47,K.top+0.02,1.98)}
 K.work.add(obj);K.drag={obj,tgt,outline:shapePts(out,48,tgt,0.004)}}
