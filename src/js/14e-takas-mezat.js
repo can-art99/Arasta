@@ -41,7 +41,7 @@ function mzEnd(m,early){const c=mzCur(m),top=c[c.length-1];G.mz=mzList().filter(
 let mzLT=0;function mzTick(){const L=mzList();L.slice().forEach(m=>{if(NOW()>=m.e)mzEnd(m)});
  if(modalMode==='market'&&mTab==='mezat'&&Date.now()-mzLT>900){mzLT=Date.now();L.forEach((m,i)=>{const el=$('mz'+i);if(el)el.innerHTML=mzLive(m)});mzWire()}}
 function mzLive(m){const c=mzCur(m),top=c[c.length-1],left=Math.max(0,m.e-NOW()),f=1-left/MZD;
- return `<div class="mzt"><span>⏳ ${fmtT(left)}</span><i><b style="width:${Math.round(f*100)}%"></b></i></div><div class="mzb"><small>En yüksek teklif</small><b>${top?'💰 '+top.v:'—'}</b><small>${top?top.ad:'Teklif bekleniyor…'}</small></div>
+ return `<div class="mzt"><span>⏳ ${fmtT(left)}</span><i><b style="width:${Math.round(f*100)}%"></b></i></div><div class="mzb"><small>En yüksek teklif</small><b>${top?CN+' '+top.v:'—'}</b><small>${top?top.ad:'Teklif bekleniyor…'}</small></div>
  <div class="mzl">${c.slice(-4).reverse().map((x,j)=>`<span class="${j?'':'n'}">${x.ad} · ${x.v}</span>`).join('')}</div>${top?`<button class="dbt" data-mze="${mzList().indexOf(m)}">Hemen sat · ${top.v}</button>`:''}`}
 function renderMezat(){const L=mzList(),items=[...G.stock.map((it,i)=>['v',i,it]),...(G.store||[]).map((it,i)=>['s',i,it]).filter(x=>!x[2].worn)];
  let h=`<p class="chint">Ürününü mezata çıkar, koleksiyoncular ${Math.round(MZD/60)} dakika boyunca teklif versin. Sezonun gözde ürünleri daha çok para eder. Komisyon %5.</p>`;

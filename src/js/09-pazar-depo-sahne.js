@@ -2,8 +2,8 @@
 function figure(x,z,col){const g=new THREE.Group();put(g,B(0.44,0.45,0.28),M('#3a2f28'),0,0.22,0);put(g,Cy(0.25,0.32,0.95,8),M(col),0,0.92,0);put(g,new THREE.SphereGeometry(0.22,10,8),M('#e0b088'),0,1.62,0);put(g,Cy(0.24,0.27,0.1,8),M('#8a3a28'),0,1.82,0);g.position.set(x,0,z);S.add(g);return g}
 add(B(18,0.1,18),M('#c4ad82'),OP,-0.05,-1).castShadow=false;
 for(let i=0;i<36;i++)add(B(0.55+(i%3)*0.15,0.012,0.42),M(i%2?'#b59f74':'#d1bc92'),OP-3.6+(i%6)*1.4+(Math.floor(i/6)%2)*0.5,0.004,-3.4+Math.floor(i/6)*1.5).castShadow=false;
-[[-3.5,'#e8d8b8',2.6],[-1.1,'#d9b89a',3.2],[1.3,'#e6cfa8',2.7],[3.6,'#c9d6c0',3]].forEach(([x,c,h])=>{add(B(2.2,h,1.6),M(c),OP+x,h/2,-5.2);const r=add(new THREE.ConeGeometry(1.75,0.9,4),M('#b5533c'),OP+x,h+0.45,-5.2);r.rotation.y=Math.PI/4;
-add(B(0.5,0.95,0.05),M('#6e4122'),OP+x-0.4,0.47,-4.38);add(B(0.5,0.5,0.05),glow('#ffe6a8'),OP+x+0.45,h*0.62,-4.38).castShadow=false});
+[[-3.5,'#e8d8b8',2.6],[-1.1,'#d9b89a',3.2],[1.3,'#e6cfa8',2.7],[3.6,'#c9d6c0',3]].forEach(([x,c,h])=>{add(B(2.2,h,1.6),M(c),OP+x,h/2,-7.4);const r=add(new THREE.ConeGeometry(1.75,0.9,4),M('#b5533c'),OP+x,h+0.45,-7.4);r.rotation.y=Math.PI/4;
+add(B(0.5,0.95,0.05),M('#6e4122'),OP+x-0.4,0.47,-6.58);add(B(0.5,0.5,0.05),glow('#ffe6a8'),OP+x+0.45,h*0.62,-6.58).castShadow=false});
 function stall(x,z,c1,tab,keys){const g=new THREE.Group();put(g,B(1.7,0.75,0.8),M('#8a5530'),0,0.375,0);put(g,B(1.8,0.06,0.9),M('#a8693a'),0,0.78,0);
 [[-0.82,-0.4],[0.82,-0.4],[-0.82,0.4],[0.82,0.4]].forEach(q=>put(g,B(0.07,2.0,0.07),M('#5a3519'),q[0],1.0,q[1]));
 for(let i=0;i<8;i++){const a=put(g,B(0.235,0.04,1.3),M(i%2?'#f0e2c4':c1),-0.82+i*0.235,2.05,0.1);a.rotation.x=0.22}
@@ -14,11 +14,11 @@ const STALLS=[stall(-1.2,-2.1,'#b5533c','pazar',['hamderi','deri','iplik','toka'
 [[-0.5,-0.52],[0.5,-0.52],[-0.5,0.52],[0.5,0.52]].forEach(q=>{put(g,new THREE.TorusGeometry(0.33,0.05,6,16),M('#5a3519'),q[0],0.38,q[1]);const sp=put(g,B(0.6,0.04,0.03),M('#5a3519'),q[0],0.38,q[1]);const sp2=put(g,B(0.04,0.6,0.03),M('#5a3519'),q[0],0.38,q[1])});
 const hd=put(g,B(1.1,0.06,0.06),M('#5a3519'),-1.35,0.5,0);hd.rotation.z=-0.15;
 [[-0.45,'#9b6a3a'],[0.1,'#8b5a2b'],[0.55,'#a8743e']].forEach((q,i)=>put(g,B(0.42,0.38,0.42),M(q[1]),q[0],0.84,(i%2)*0.2-0.1));const sk=put(g,new THREE.SphereGeometry(0.22,8,6),M('#cdbb94'),-0.15,1.2,0);sk.scale.y=0.8;
-const h=new THREE.Mesh(B(2.4,1.8,1.5),HID);h.position.y=0.9;g.add(h);g.position.set(OP-1.15,0,1.3);g.userData.tab='ted';S.add(g);STALLS.push(g)}
-figure(OP-1.2,-2.8,'#3f6fa8');figure(OP+1.2,-2.8,'#4f7a3a');add(B(1.1,0.012,5.2),M('#e2d0a8'),OP,0.007,0.7).castShadow=false;
-plant(OP-2.9,0,-2.6,1.3);plant(OP+2.9,0,-2.6,1.3);const GL=label('pazar',V(OP,0.05,3.35),null,true);GL.el.classList.add('stl');GL.el.onclick=()=>marketTab('gift');
+const h=new THREE.Mesh(B(2.4,1.8,1.5),HID);h.position.y=0.9;g.add(h);g.position.set(OP-1.3,0,0.25);g.userData.tab='ted';S.add(g);STALLS.push(g)}
+figure(OP-1.2,-2.8,'#3f6fa8');figure(OP+1.2,-2.8,'#4f7a3a');add(B(1.1,0.012,8.4),M('#e2d0a8'),OP,0.007,-0.6).castShadow=false;
+plant(OP-2.9,0,-2.6,1.3);plant(OP+2.9,0,-2.6,1.3);const GL=label('pazar',V(OP-1.25,0.05,3.15),null,true);GL.el.classList.add('stl');GL.el.onclick=()=>marketTab('gift');
 {const g=new THREE.Group();put(g,B(0.7,0.4,0.5),M('#8a5530'),0,0.2,0);put(g,B(0.74,0.16,0.54),M('#a8693a'),0,0.48,0);[-0.22,0.22].forEach(x=>put(g,B(0.08,0.6,0.56),M('#d9a23a',0.4),x,0.3,0));put(g,B(0.1,0.13,0.04),M('#e8c05a',0.3),0,0.38,0.27);
-const h=new THREE.Mesh(B(1,1,0.9),HID);h.position.y=0.4;g.add(h);g.position.set(OP,0,3.0);g.userData.tab='gift';S.add(g);STALLS.push(g);place('chest',{par:g,swap:1,h:0.62})}
+const h=new THREE.Mesh(B(1,1,0.9),HID);h.position.y=0.4;g.add(h);g.position.set(OP-1.25,0,2.8);g.userData.tab='gift';S.add(g);STALLS.push(g);place('chest',{par:g,swap:1,h:0.62})}
 /* ---------- dekorcu (dükkân özelleştirme) ---------- */
 const DECO={
  tez:{ad:'Tezgâh',o:[{id:'ceviz',ad:'Ceviz',c:['#8a5530','#a8693a'],f:0},{id:'mese',ad:'Açık meşe',c:['#b58a5a','#d4ad78'],f:150},{id:'abanoz',ad:'Abanoz',c:['#3a2a20','#5a4232'],f:220},{id:'yesil',ad:'Yeşil boyalı',c:['#2f6b5a','#c8a060'],f:180},{id:'cini',ad:'Çini kaplama',c:['#8a5530','#e6ddc8'],f:260}]},
@@ -37,16 +37,21 @@ function openDeco(){if(!G.deco)G.deco={own:{},sel:{}};let h='<h3>Dekorcu</h3><p>
 {const g=new THREE.Group();put(g,B(1.4,0.75,0.7),M('#7a4a2a'),0,0.375,0);put(g,B(1.5,0.06,0.8),M('#a8693a'),0,0.78,0);[[-0.68,-0.35],[0.68,-0.35]].forEach(q=>put(g,B(0.06,1.9,0.06),M('#5a3519'),q[0],0.95,q[1]));
  for(let i=0;i<6;i++){const a=put(g,B(0.25,0.04,1.0),M(i%2?'#f0e2c4':'#3f6fa8'),-0.62+i*0.25,1.9,0.0);a.rotation.x=0.25}
  [['#8a5530',-0.45],['#2f6b5a',0],['#9a4a3a',0.45]].forEach(([c,x])=>put(g,B(0.3,0.2,0.25),M(c),x,0.91,0));
- const h=new THREE.Mesh(B(1.8,2,1.3),HID);h.position.y=1;g.add(h);g.position.set(OP+1.3,0,1.3);g.userData.tab='deko';S.add(g);STALLS.push(g);place('stand2',{par:g,swap:1,w:1.45});
- const l=label('pazar',V(OP+1.3,0.05,1.85),null,true);l.el.innerHTML='Dekorcu<small>Dükkân görünümü</small>';l.el.classList.add('stl');l.el.onclick=()=>marketTab('deko')}
+ const h=new THREE.Mesh(B(1.8,2,1.3),HID);h.position.y=1;g.add(h);g.position.set(OP+1.3,0,2.7);g.userData.tab='deko';S.add(g);STALLS.push(g);place('stand2',{par:g,swap:1,w:1.45});
+ const l=label('pazar',V(OP+1.3,0.05,3.25),null,true);l.el.innerHTML='Dekorcu<small>Dükkân görünümü</small>';l.el.classList.add('stl');l.el.onclick=()=>marketTab('deko')}
 const today=()=>new Date().toDateString();
 function giftTick(){const av=G.daily!==today(),t=av?'Günlük hediye<small>Topla!</small>':'Günlük hediye<small>Yarın yine gel</small>';if(t!==GL.last){GL.el.innerHTML=t;GL.last=t;GL.el.classList.toggle('rdy',av)}}
 function claimDaily(){const td=today();if(G.daily===td){toast('Bugünkü hediyeni aldın<br>Yarın yine gel!',1600);return}
 const y=new Date(Date.now()-864e5).toDateString();G.streak=G.daily===y?Math.min(7,(G.streak||0)+1):1;G.daily=td;const gold=20+G.streak*10,ks=['hamderi','pamuk','kaucuk','kurum','ceviz','yun','recine','tohum_pamuk','tohum_papatya'],got={};
 for(let i=0;i<3;i++){const k=pick(ks);got[k]=(got[k]||0)+1;G.inv[k]++}G.gold+=gold;const gem=G.streak>=7?2:Math.random()<0.2?1:0;if(gem){G.elmas=(G.elmas||0)+gem;hud()}sfx.fan();save();refresh();
 openSheet('gift',`<h3>Günlük hediye</h3><p>${G.streak}. gün · Her gün gelirsen ödül büyür (en çok 7 gün)</p><div class="row"><div class="n"><b>+${gold} altın</b></div></div>${gem?`<div class="row"><div class="n"><b>+${gem} 💎 elmas</b><small>${G.streak>=7?'7 gün üst üste geldin!':'Şanslı günündesin'}</small></div></div>`:''}`+Object.entries(got).map(([k,n])=>`<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${MATS[k].ad}</div><b>+${n}</b></div>`).join('')+closeBtn);wire()}
+/* ---------- arka sıra: Takas, Bit pazarı, Mezat dükkânları ---------- */
+const ZB=-5.1;[['takas','stalls',-1.35,'Takas','Mal karşılığı mal',{w:3.0,ry:0,ly:1.7}],['bit','m_eskici',1.35,'Bit pazarı','2. el · tamir',{w:1.5,z:5.35}],['mezat','building',1.35,'Mezat','Açık artırma',{w:2.0,ly:2.3}]].forEach(([tab,m,x,ad,sub,o])=>{
+ const g=new THREE.Group();const zz=o.z?ZB+o.z:ZB;delete o.z;g.position.set(OP+x,0,zz);S.add(g);const h=new THREE.Mesh(B(1.8,2.4,1.5),HID);h.position.y=1.2;g.add(h);g.userData.tab=tab;STALLS.push(g);
+ put(g,B(1.6,0.9,0.9),M('#8a5530'),0,0.45,0);place(m,Object.assign({par:g,swap:1},o));
+ const ly=o.ly;delete o.ly;const l=label('pazar',ly?V(OP+x,ly,zz):V(OP+x,0.05,zz+0.6),null,!ly);l.el.innerHTML=`${ad}<small>${sub}</small>`;l.el.classList.add('stl');l.el.onclick=()=>marketTab(tab)});
 function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return;if(t==='gift'){claimDaily();return}if(t==='deko'){openDeco();return}mTab=t;renderMarket()}
-[[-1.2,-2.1,'Pazar tezgâhı','Günlük mallar','pazar',0.5],[1.2,-2.1,'Tohumcu','Tohumlar','tohum',0.5],[-1.15,1.3,'Tedarikçi','Toplu sipariş','ted',0.6]].forEach(q=>{const l=label('pazar',V(OP+q[0],0.05,q[1]+q[5]),null,true);l.el.innerHTML=`${q[2]}<small>${q[3]}</small>`;l.el.classList.add('stl');l.el.onclick=()=>marketTab(q[4])});
+[[-1.2,-2.1,'Pazar tezgâhı','Günlük mallar','pazar',0.5],[1.2,-2.1,'Tohumcu','Tohumlar','tohum',0.5],[-1.3,0.25,'Tedarikçi','Toplu sipariş','ted',0.6]].forEach(q=>{const l=label('pazar',V(OP+q[0],0.05,q[1]+q[5]),null,true);l.el.innerHTML=`${q[2]}<small>${q[3]}</small>`;l.el.classList.add('stl');l.el.onclick=()=>marketTab(q[4])});
 
 /* ---------- depo ---------- */
 for(let i=0;i<10;i++)add(B(0.66,0.05,9),M(i%2?'#6a4428':'#5e3b22'),OD-3+i*0.66,0,0);

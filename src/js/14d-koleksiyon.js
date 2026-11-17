@@ -8,8 +8,8 @@ function matRar(k){const m=MARKET.find(x=>x.k===k);if(m&&m.t)return Math.min(3,m
 function cardData(t,id){
  if(t==='p'){const p=PRODS.find(x=>x.id===id),i=PRODS.indexOf(p),c=G.cat[id],u=unlocked(p),st=(p.steps||[]).filter(s=>s.t!=='design');
   return {t,id,no:i+1,tot:PRODS.length,ad:p.ad,img:ICON[id],r:Math.min(3,p.tier||1),own:u,foil:!!(c&&c.best>=5),done:!!c,
-   stars:c?c.best:0,chips:[['💰',p.base],['⚒️',st.length]],sub:u?(c?c.n+' kez üretildi':'Henüz üretilmedi'):reqTxt(p),
-   back:cBar('Değer',p.base,200,'💰')+cBar('Zorluk',st.length,10,'⚒️')+cBar('Ustalık',c?c.n:0,20,'🏅')+
+   stars:c?c.best:0,chips:[[CN,p.base],['⚒️',st.length]],sub:u?(c?c.n+' kez üretildi':'Henüz üretilmedi'):reqTxt(p),
+   back:cBar('Değer',p.base,200,CN)+cBar('Zorluk',st.length,10,'⚒️')+cBar('Ustalık',c?c.n:0,20,'🏅')+
     `<div class="kgrp">Malzemeler</div><div class="kmat">${Object.entries(p.need||{}).map(([k,n])=>`<span>${ICON[k]?`<img src="${ICON[k]}" alt="">`:'🎨'}${MATS[k]?MATS[k].ad:k}${n>1?' ×'+n:''}</span>`).join('')}</div>`+
     `<div class="kgrp">Üretim aşamaları</div><div class="kstp">${st.map((s,j)=>`<span>${j+1}. ${stepName(s)}</span>`).join('')}</div>`}}
  if(t==='e'){const e=EQ.find(x=>x.id===id),i=EQ.indexOf(e),s=eqS(id),mx=EQDUR[s.lv]||20;

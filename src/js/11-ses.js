@@ -1,3 +1,4 @@
+const CN='<svg class="cn" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#e8a915" stroke="#7a5408" stroke-width="1.5"/><circle cx="8" cy="8" r="3.5" fill="none" stroke="#7a5408" stroke-width="1.2"/></svg>';
 /* ---------- ses ---------- */
 let AC=null,NB=null,sT=0;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();if(AC)loadSounds()}
