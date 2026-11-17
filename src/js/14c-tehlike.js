@@ -23,7 +23,7 @@ function hzPick(){const ins=G.sigorta&&G.sigorta>NOW();if(ins)return null;const 
  PL.forEach((o,i)=>{const k='P'+i;if(o.own&&o.seed&&o.w&&o.end>NOW()&&!hzOf(k))P.push([k,Math.random()<0.5?'kurak':'zarar',1.5])});
  if(!P.length)return null;let tot=P.reduce((a,p)=>a+p[2],0),r=Math.random()*tot;for(const p of P){r-=p[2];if(r<=0)return p}return P[P.length-1]}
 function hzStart(k,t,at){G.haz=G.haz||{};G.haz[k]={t,t0:at||NOW()};const T=HZT[t];if(G.started)toast(`⚠️ ${T.ic} ${k[0]==='P'&&k.length<3?'Bostanda bir tarla':k}: ${T.ad.toLowerCase()}!<br><small>Bahçeye git, ${T.fix.toLowerCase()}${T.lim?' · '+fmtT(T.lim)+' içinde':''}</small>`,3400);sfx.bad&&sfx.bad();hzWarn();save()}
-function hzEnd(k,lost){const h=hzOf(k);if(!h)return;delete G.haz[k];if(k[0]==='P'&&k.length<3){const o=PL[+k.slice(1)];if(o){if(lost){o.seed=null;o.w=false}else if(o.w)o.end+=NOW()-h.t0;plotSync(o)}}
+function hzEnd(k,lost){const h=hzOf(k);if(!h)return;delete G.haz[k];if(/^P\d+$/.test(k)){const o=PL[+k.slice(1)];if(o){if(lost){o.seed=null;o.w=false}else if(o.w)o.end+=NOW()-h.t0;plotSync(o)}}
  else if(lost){delete G.gu[k];gSync()}hzWarn();save()}
 function hzTick(){if(!G.started||G.first||(G.st.deliv||0)<5||G.phase==='craft')return;G.haz=G.haz||{};
  Object.entries(G.haz).forEach(([k,h])=>{const T=HZT[h.t];if(T.lim&&NOW()>h.t0+T.lim){const nm=k[0]==='P'&&k.length<3?'Tarladaki ürün':k;hzEnd(k,true);G.st.hzLost=(G.st.hzLost||0)+1;toast(`${T.ic} ${nm} ${T.kayip}.${k[0]!=='P'?'<br><small>Yeniden açmak için bahçede satın al</small>':''}`,3200);sfx.bad&&sfx.bad()}});

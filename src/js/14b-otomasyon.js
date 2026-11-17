@@ -15,7 +15,7 @@ function otoRounds(k,plan){if(G[k+'Last']==null)G[k+'Last']=NOW()-OTO_P;let n=Ma
 /* ---- traktör ---- */
 let TRB=null,trN=0;
 function plotSow(o,k,t){if(!o.own||o.seed||!(G.inv[k]>0))return false;G.inv[k]--;o.seed=k;o.w=true;o.dur=CROPS[k].s;o.end=t+o.dur;plotSync(o);return true}
-function plotHarv(o){const k=o.seed,c=CROPS[k];G.inv[c.out]+=c.n;G.st.harv++;G.st.coll+=c.n;o.last=k;o.seed=null;o.w=false;plotSync(o);return k}
+function plotHarv(o){const k=o.seed,c=CROPS[k],cn=c.n*(o.m||1);G.inv[c.out]+=cn;G.st.harv++;G.st.coll+=cn;o.last=k;o.seed=null;o.w=false;plotSync(o);return k}
 /* Tedarikçi ve tohumcu stoğu: 12 saatte bir yenilenir */
 const STK_P=12*3600,STK_SEED={tohum_pamuk:12,tohum_civit:10,tohum_kokboya:10,tohum_papatya:10,tohum_keten:8},STK_SUP=3;
 function stk(){if(!G.stk||NOW()-(G.stk.t||0)>=STK_P){const t0=G.stk&&G.stk.t?G.stk.t+Math.floor((NOW()-G.stk.t)/STK_P)*STK_P:NOW();G.stk={t:t0,s:{...STK_SEED},p:SUPPLY.map(()=>STK_SUP)}}return G.stk}
