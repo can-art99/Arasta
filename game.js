@@ -1568,12 +1568,13 @@ function cobanNow(){if(!G.coban){toast('Çoban Ticaret menüsünden alınır',15
  if(!L.length){toast('Şu an toplanacak hayvan ürünü yok',1400);return}G.cobanLast=NOW();sfx.tap();if(COB)COB.goal=CBP[0].clone();cobRun(L)}
 /* görünüş: Adventurer (x_coban) modeli varsa o, yoksa çiftçi modeli + elde asa */
 let COB=null,COBL=null;
-function cobStaff(){const g=new THREE.Group(),wd=M('#7a5230');const s=put(g,Cy(0.022,0.028,1.55,7),wd,0,0.78,0);const c=new THREE.Mesh(new THREE.TorusGeometry(0.11,0.024,6,12,Math.PI*1.25),wd);c.position.set(0.1,1.58,0);c.rotation.z=-0.2;g.add(c);return g}
+function cobStaff(){const g=new THREE.Group(),wd=M('#5a3519');const s=put(g,Cy(0.032,0.038,1.6,7),wd,0,0.8,0);const c=new THREE.Mesh(new THREE.TorusGeometry(0.11,0.024,6,12,Math.PI*1.25),wd);c.position.set(0.1,1.58,0);c.rotation.z=-0.2;g.add(c);return g}
 function cobMake(){const src=CHX.x_coban||CHR.find(g=>g.nm==='c_farmer');if(!src)return null;const c=makeCustomer(src);c.cob=true;c.g.position.copy(CBP[4]);anim(c,'idle');
- if(!CHX.x_coban){const st=cobStaff();st.position.set(0.32,0,0.08);c.g.add(st)}c.goal=null;c.w=2;return c}
+ const st=cobStaff();st.position.set(0.32,0,0.08);c.g.add(st);c.staff=st;c.hand=['WristR','Wrist.R','HandR','FistR'].map(n=>c.g.getObjectByName(n)).find(Boolean);c.goal=null;c.w=2;return c}
+const CTV=new THREE.Vector3();function cobHand(c){if(!c.hand||!c.staff)return;c.g.updateMatrixWorld(true);CTV.setFromMatrixPosition(c.hand.matrixWorld);c.g.worldToLocal(CTV);c.staff.position.set(CTV.x,CTV.y-0.92,CTV.z+0.02)}
 function cobLabel(){if(!G.coban||COBL)return;COBL=label('bahce',V(FX,0.02,0),'',true);COBL.el.classList.add('sm');COBL.el.onclick=cobanNow}
 function cobTick(dt){if(!G.coban)return;cobLabel();if(view!=='bahce'){return}if(!COB){COB=cobMake();if(!COB)return}
- const c=COB,g=c.g;COBL.pos.set(g.position.x,0.02,g.position.z+0.35);
+ const c=COB,g=c.g;cobHand(c);COBL.pos.set(g.position.x,0.02,g.position.z+0.35);
  {const m=otoMode('coban'),t=`🐑 Çoban<small>${m==='oto'?'Oto · '+fmtT(Math.max(0,OTO_P-(NOW()-(G.cobanLast||0))))+' · dokun: şimdi':m==='kosul'?'Koşullu · dokun: şimdi':'Pasif · dokun: şimdi'}</small>`;if(t!==COBL.last){COBL.el.innerHTML=t;COBL.last=t}}
  if(!c.goal){c.w-=dt;if(c.w<=0){c.goal=pick(CBP).clone();c.goal.x+=(Math.random()-0.5)*0.6}return}
  const dx=c.goal.x-g.position.x,dz=c.goal.z-g.position.z,d=Math.hypot(dx,dz);
