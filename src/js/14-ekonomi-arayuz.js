@@ -59,7 +59,11 @@ openSheet('free',h+closeBtn);wire();ui.sheet.querySelectorAll('[data-fp]').forEa
 $('vitB').onclick=()=>go('vitrin');
 let mTab='pazar';
 function openMarket(){if(G.phase==='craft'||G.phase==='result')return;renderMarket()}
-function renderMarket(){const tabs=`<div class="tabs"><button class="btn ${mTab==='pazar'?'':'l'}" data-tab="pazar">Pazar</button><button class="btn ${mTab==='ted'?'':'l'}" data-tab="ted">Tedarikçi</button><button class="btn ${mTab==='tohum'?'':'l'}" data-tab="tohum">Tohumcu</button><button class="btn ${mTab==='takas'?'':'l'}" data-tab="takas">Takas</button><button class="btn ${mTab==='bit'?'':'l'}" data-tab="bit">Bit pazarı</button><button class="btn ${mTab==='mezat'?'':'l'}" data-tab="mezat">Mezat${(G.mz||[]).length?' •':''}</button><button class="btn l" data-tab="deco">Dekorcu</button></div>`;let h;
+const BKH='<h3 class="bkh"><button class="bkb" id="mBack" aria-label="Geri">‹</button>';
+const HUB=[['pazar','Pazar tezgâhı','Günlük mallar'],['ted','Tedarikçi','Toplu sipariş'],['tohum','Tohumcu','Tohumlar'],['takas','Takas','Mal karşılığı mal'],['bit','Bit pazarı','2. el · tamir'],['mezat','Mezat','Açık artırma'],['deco','Dekorcu','Dükkân görünümü']];
+function renderHub(){openSheet('market',`<h3>Pazar</h3><p>Altın: <b>${G.gold}</b> · Gitmek istediğin yeri seç</p><div class="hubg">${HUB.map(([t,a,d])=>`<button class="hubb" data-tab="${t}"><b>${a}${t==='mezat'&&(G.mz||[]).length?' •':''}</b><small>${d}</small></button>`).join('')}</div>`+closeBtn);wire();
+ ui.sheet.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{sfx.tap();if(b.dataset.tab==='deco'){openDeco();return}mTab=b.dataset.tab;renderMarket()})}
+function renderMarket(){if(mTab==='hub'){renderHub();return}const tabs='';let h;
 if(mTab==='pazar'){h=`<h3>Pazar</h3><p>Altın: <b>${G.gold}</b> · Yeni mal: <b id="mkT"></b>${G.disc<1?' · %20 indirim':''}</p>${tabs}`+
 `<div style="text-align:right;margin:4px 0"><button class="btn l" id="hag" ${G.haggled?'disabled':''}>Pazarlık yap</button></div>`+
 G.market.map((m,i)=>{const f=Math.round(m.f*G.disc);return `<div class="row"><img class="ic" src="${ICON[m.k]}" alt=""><div class="n">${MATS[m.k].ad}<small>Tezgâhta: ${m.st} · Depoda: ${G.inv[m.k]}</small></div><button class="btn" data-b="${i}" ${G.gold<f||m.st<1?'disabled':''}>${f} altın</button></div>`}).join('')}
@@ -70,7 +74,7 @@ else if(mTab==='tohum'){h=`<h3>Tohumcu</h3><p>Tohumları bahçedeki tarlalara ek
 else{h=`<h3>Tedarikçi</h3><p>Toplu sipariş ucuzdur ama ${DELAY} saniyede at arabasıyla gelir. Altın: <b>${G.gold}</b> · Yeni stok: <b>${stkLeft()}</b></p>${tabs}`+
 SUPPLY.filter(s=>!s.t||G.tier>=s.t).map((s,i)=>{const [k,n]=Object.entries(s.items)[0];return `<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${n} × ${MATS[k].ad}<small>Tanesi ${Math.round(s.f/n)} altın · Kalan: ${stk().p[SUPPLY.indexOf(s)]||0}</small></div><button class="btn" data-s="${SUPPLY.indexOf(s)}" ${G.gold<s.f||!(stk().p[SUPPLY.indexOf(s)]>0)?'disabled':''}>${(stk().p[SUPPLY.indexOf(s)]||0)>0?s.f+' altın':'Tükendi'}</button></div>`}).join('')+
 (G.deliv.length?`<div class="grp">Yoldaki siparişler</div>`+G.deliv.map((d,i)=>{const [k,n]=Object.entries(d.items)[0];return `<div class="row"><img class="ic" src="${ICON[k]}" alt=""><div class="n">${n} × ${MATS[k].ad}<small>Geliyor: <b data-d="${i}"></b></small></div></div>`}).join(''):'')}
-openSheet('market',h+closeBtn);wire();updTimers();if(mTab==='takas'||mTab==='mezat')wireTM();if(mTab==='bit')wireBit();
+h=h.replace('<h3>',BKH);openSheet('market',h+closeBtn);wire();updTimers();$('mBack').onclick=()=>{sfx.tap();mTab='hub';renderMarket()};if(mTab==='takas'||mTab==='mezat')wireTM();if(mTab==='bit')wireBit();
 ui.sheet.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(b.dataset.tab==='deco'){openDeco();return}mTab=b.dataset.tab;renderMarket()});
 ui.sheet.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const m=G.market[+b.dataset.b],f=Math.round(m.f*G.disc);if(G.gold<f||m.st<1||depoFull(1))return;G.gold-=f;m.st--;G.inv[m.k]++;sfx.coin();hud();renderMarket()});
 ui.sheet.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const si=+b.dataset.s,s=SUPPLY[si];if(G.gold<s.f||!(stk().p[si]>0))return;stk().p[si]--;G.gold-=s.f;G.deliv.push({items:s.items,end:NOW()+DELAY});hud();toast('Sipariş verildi',1000);renderMarket()});
