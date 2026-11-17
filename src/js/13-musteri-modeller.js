@@ -42,9 +42,9 @@ function place(n,o){glb(n,g=>{const sk=g.animations.length&&THREE.SkeletonUtils,
  if(o.par&&o.swap)o.par.children.forEach(c=>{if(c!==w&&c.material!==HID)c.visible=false});o.cb&&o.cb(w)})}
 function fitModel(o,h,ax){const bb=new THREE.Box3().setFromObject(o),sz=bb.getSize(V(0,0,0)),sc=h/sz[ax||'y'];o.scale.multiplyScalar(sc);const b2=new THREE.Box3().setFromObject(o);return b2}
 if(THREE.GLTFLoader){const GL=new THREE.GLTFLoader();
-['m_Casual','m_LongSleeve','m_Shirt','m_Suit','f_Casual','f_Alternative','f_Dress','f_TankTop','f_Woman2','m_Worker','c_farmer','c_business','c_punk','c_astro','x_cirak','x_ciftci','x_coban'].forEach(n=>GL.load('models/'+n+'.glb',g=>{g.nm=n;g.sex=n[0]==='f'?'f':n[0]==='m'?'m':'';prepModel(g.scene);const bb=new THREE.Box3().setFromObject(g.scene);g.h=bb.max.y-bb.min.y;g.y0=bb.min.y;if(n[0]==='x')CHX[n]=g;else CHR.push(g)},undefined,()=>{}));
+['m_Casual','m_LongSleeve','m_Shirt','m_Suit','f_Casual','f_Alternative','f_Dress','f_TankTop','f_Woman2','m_Worker','m_Knight','c_farmer','c_business','c_punk','c_astro','x_cirak','x_ciftci','x_coban'].forEach(n=>GL.load('models/'+n+'.glb',g=>{g.nm=n;g.sex=n[0]==='f'?'f':n[0]==='m'?'m':'';prepModel(g.scene);const bb=new THREE.Box3().setFromObject(g.scene);g.h=bb.max.y-bb.min.y;g.y0=bb.min.y;g.cx=(bb.min.x+bb.max.x)/2;g.cz=(bb.min.z+bb.max.z)/2;if(n[0]==='x')CHX[n]=g;else CHR.push(g)},undefined,()=>{}));
 GL.load('models/door.glb',g=>{const d=g.scene;prepModel(d);const b=fitModel(d,2.3);d.position.set(-b.min.x,-b.min.y,-(b.min.z+b.max.z)/2);DOORH=new THREE.Group();DOORH.add(d);DOORH.position.set(-2.02,0,-3.8);DOORH.rotation.y=-1.55;S.add(DOORH)},undefined,()=>{});}
-function anim(c,n,once){if(!c||!c.A||!c.A[n])return;if(c.cur===n&&!once)return;const nx=c.A[n],pv=c.A[c.cur];nx.reset();nx.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat);nx.clampWhenFinished=!!once;nx.play();if(pv&&pv!==nx)pv.crossFadeTo(nx,0.3,false);c.cur=n;
+function anim(c,n,once){if(c&&c.proc){c.cur=n;c.pt0=tt;return}if(!c||!c.A||!c.A[n])return;if(c.cur===n&&!once)return;const nx=c.A[n],pv=c.A[c.cur];nx.reset();nx.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat);nx.clampWhenFinished=!!once;nx.play();if(pv&&pv!==nx)pv.crossFadeTo(nx,0.3,false);c.cur=n;
  if(once){clearTimeout(c.ct);c.ct=setTimeout(()=>{if(c.cur===n)anim(c,c.walking?'walk':'idle')},nx.getClip().duration*1000+200)}}
 const WN=[[-2.5,-0.7],[0,-0.75],[2.5,-0.7],[-2.65,2.25],[0,2.25],[2.65,2.25]],WE=[[1,3],[0,2],[1,5],[0,4],[3,5],[4,2]];
 const WND=[];function mkWand(){if(!CHR.length){setTimeout(mkWand,3000);return}[0,2,4].forEach((n,i)=>{const c=makeCustomer();c.wand=true;c.n=n;c.g.position.set(OP+WN[n][0],0,WN[n][1]);WND.push(c);
@@ -53,8 +53,10 @@ function wandTick(dt){WND.forEach(c=>{if(!c.wt){if(c.fr!=null){let a=c.fr-c.g.ro
   const blk=c.bl<3.5&&WND.some(o=>{if(o===c)return false;const ox=o.g.position.x-p.x,oz=o.g.position.z-p.z,od=Math.hypot(ox,oz);return od<0.6&&(ox*ux+oz*uz)>0.15*od});
   if(blk){c.bl+=dt;if(c.walking){c.walking=false;anim(c,'idle')}return}if(!c.walking){c.walking=true;anim(c,'walk')}if(c.bl>0)c.bl=Math.max(0,c.bl-dt*0.5);const st=Math.min(d,0.8*dt);p.x+=ux*st;p.z+=uz*st;const ry=Math.atan2(ux,uz);let a=ry-c.g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));c.g.rotation.y+=a*Math.min(1,dt*8)})}
 setTimeout(mkWand,6000);
-function makeCustomer(src0){if(src0||CHR.length){const src=src0||pick(CHR),m=THREE.SkeletonUtils.clone(src.scene),w=new THREE.Group(),sc=1.72/src.h;m.scale.multiplyScalar(sc);m.position.y=-src.y0*sc;w.add(m);w.position.copy(DOOR);S.add(w);
- const mix=new THREE.AnimationMixer(m),A={};src.animations.forEach(a=>A[a.name]=mix.clipAction(a));const c={g:w,head:new THREE.Object3D(),tok:0,at:false,mix,A,cur:'idle',sex:src.sex||''};if(A.idle){A.idle.time=Math.random()*3;A.idle.play()}ALLC.push(c);return c}
+function makeCustomer(src0){if(src0||CHR.length){const src=src0||pick(CHR),m=THREE.SkeletonUtils.clone(src.scene),w=new THREE.Group(),sc=1.72/src.h;m.scale.multiplyScalar(sc);m.position.y=-src.y0*sc;if(Math.abs(src.cx||0)>0.3||Math.abs(src.cz||0)>0.3){m.position.x=-src.cx*sc;m.position.z=-src.cz*sc}w.add(m);w.position.copy(DOOR);S.add(w);
+ const mix=new THREE.AnimationMixer(m),A={};src.animations.forEach(a=>A[a.name]=mix.clipAction(a));const c={g:w,head:new THREE.Object3D(),tok:0,at:false,mix,A,cur:'idle',sex:src.sex||''};if(A.idle){A.idle.time=Math.random()*3;A.idle.play()}
+ if(!src.animations.length){const bn=n=>m.getObjectByName(n);const B0={ul:bn('UpperLegL'),ur:bn('UpperLegR'),ll:bn('LowerLegL'),lr:bn('LowerLegR'),al:bn('UpperArmL'),ar:bn('UpperArmR'),fl:bn('LowerArmL'),fr:bn('LowerArmR'),sp:bn('Spine1'),hd:bn('Head')};if(B0.ul&&B0.ur){c.proc=B0;c.rest={};for(const k in B0)if(B0[k])c.rest[k]=B0[k].quaternion.clone();const zq=a=>new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),a);if(c.rest.al)c.rest.al.multiply(zq(-1.2));if(c.rest.ar)c.rest.ar.multiply(zq(1.2));c.pt0=0}}
+ ALLC.push(c);return c}
 const g=new THREE.Group(),head=new THREE.Group();
 put(g,B(0.5,0.5,0.3),M('#3a2f28'),0,0.25,0);put(g,Cy(0.28,0.36,1.05,8),M(pick(['#3f6fa8','#4f7a3a','#8a3a28','#6b4f8a','#c08a2a'])),0,1.0,0);
 head.add(mesh(new THREE.SphereGeometry(0.24,12,10),M(pick(['#e8b58c','#c98d63','#f0c9a4','#9a6a48']))));
@@ -144,3 +146,8 @@ G.phase='leaving';G.order=null;actions([]);refresh();save();setTimeout(()=>{G.bu
 function acceptOrder(msg){if(G.phase!=='ordering')return;G.phase='active';say(msg||'Harika, bekliyorum!');setTimeout(()=>{if(G.phase==='active'){G.bubOn=false;say(null)}},1800);refresh();
 if(G.first)setTimeout(()=>toast('Kartta neyin eksik olduğu yazıyor.<br>Eksikleri bahçeden topla, atölyede işle.',3200),600)}
 function rejectOrder(){if(G.phase!=='ordering')return;leave(Q[0])}
+var PQ=new THREE.Quaternion(),PE=new THREE.Euler();function pRot(c,k,x,y,z){const b=c.proc[k];if(!b)return;PE.set(x,y,z);PQ.setFromEuler(PE);b.quaternion.copy(c.rest[k]).multiply(PQ)}
+function procAnim(c){const t=tt*1.0,s=c.cur;if(s==='walk'){const a=Math.sin(t*8)*0.5;pRot(c,'ul',a,0,0);pRot(c,'ur',-a,0,0);pRot(c,'ll',Math.max(0,-a)*0.8,0,0);pRot(c,'lr',Math.max(0,a)*0.8,0,0);pRot(c,'al',-a*0.6,0,0);pRot(c,'ar',a*0.6,0,0);pRot(c,'sp',0,Math.sin(t*8)*0.06,0)}
+ else if(s==='clap'||s==='wave'){const a=Math.abs(Math.sin(t*10))*0.4;pRot(c,'ul',0,0,0);pRot(c,'ur',0,0,0);pRot(c,'ll',0,0,0);pRot(c,'lr',0,0,0);pRot(c,'al',-1.1-a,0,0);pRot(c,'ar',-1.1-a,0,0);pRot(c,'fl',-0.6,0,0);pRot(c,'fr',-0.6,0,0)}
+ else if(s==='work'){const a=Math.sin(t*6);pRot(c,'ar',-0.8+a*0.6,0,0);pRot(c,'fr',-0.5,0,0);pRot(c,'al',-0.3,0,0)}
+ else{const a=Math.sin(t*1.6);['ul','ur','ll','lr','fl','fr'].forEach(k=>pRot(c,k,0,0,0));pRot(c,'al',a*0.04,0,0);pRot(c,'ar',-a*0.04,0,0);pRot(c,'sp',a*0.025,0,0);pRot(c,'hd',0,Math.sin(t*0.5)*0.15,0)}}
