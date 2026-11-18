@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Arasta · Yönetim</title><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Baloo+2:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2a1e;--cr:#f4ead5;--cr2:#e9dcc0;--ln:#4a3423;--tl:#2f6b5a;--tr:#b5533c;--gd:#d9a23a}
+*{box-sizing:border-box}body{margin:0;background:#1f4a3e;font-family:'Baloo 2',sans-serif;color:var(--ink);min-height:100vh}
+.wrap{max-width:560px;margin:0 auto;padding:14px 12px 90px}
+h1{font-family:'DM Serif Display',serif;color:#f4ead5;font-weight:400;margin:6px 4px 12px;font-size:28px;display:flex;align-items:center;justify-content:space-between}
+h1 small{font-family:'Baloo 2';font-size:12px;opacity:.7}
+.card{background:var(--cr);border:2px solid var(--ln);border-radius:18px;box-shadow:0 3px 0 var(--ln);padding:12px;margin-bottom:12px}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.sum div{background:var(--cr);border:2px solid var(--ln);border-radius:14px;padding:8px 6px;text-align:center;font-size:11.5px;line-height:1.15}.sum b{display:block;font-size:22px}
+.tabs{display:flex;gap:4px;background:#ffffff18;border-radius:14px;padding:4px;margin-bottom:12px;position:sticky;top:6px;z-index:5;backdrop-filter:blur(6px)}
+.tabs button{flex:1;border:0;border-radius:11px;padding:9px 2px;font:inherit;font-weight:700;font-size:13.5px;background:transparent;color:#f4ead5}.tabs button.on{background:var(--cr);color:var(--ink)}
+.row{border-bottom:1.5px dashed #4a342340;padding:9px 2px;display:flex;gap:10px;align-items:flex-start}.row:last-child{border:0}
+.row .m{flex:1;min-width:0}.row b{display:block;font-size:14px;line-height:1.25;word-break:break-word}.row small{display:block;font-size:11.5px;opacity:.7}
+.pill{font-size:11px;font-weight:800;border-radius:8px;padding:1px 7px;background:#b5533c22;color:#8a3a2a;white-space:nowrap}.pill.ok{background:#2f6b5a22;color:#2f6b5a}.pill.n{background:#d9a23a33;color:#7a5408}
+button.b{border:2px solid var(--ln);border-radius:12px;background:#fffaf0;box-shadow:0 2px 0 var(--ln);font:inherit;font-weight:700;font-size:13px;padding:6px 11px;color:var(--ink);cursor:pointer}
+button.b.g{background:var(--tl);color:#fff}button.b.r{background:var(--tr);color:#fff}button.b:active{transform:translateY(2px);box-shadow:none}
+input,textarea{width:100%;border:2px solid var(--ln);border-radius:12px;padding:9px 10px;font:inherit;background:#fffaf0;color:var(--ink)}
+pre{white-space:pre-wrap;word-break:break-word;background:#fffaf0;border-radius:10px;padding:8px;font-size:11px;max-height:260px;overflow:auto;margin:6px 0}
+.flt{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}.flt button{font-size:12px;padding:4px 10px}
+.sw{display:flex;align-items:center;justify-content:space-between;padding:8px 2px;border-bottom:1.5px dashed #4a342340;font-weight:700}
+.sw i{width:44px;height:25px;border-radius:13px;background:var(--tl);position:relative;flex:none}.sw i::after{content:'';position:absolute;right:3px;top:3px;width:19px;height:19px;border-radius:50%;background:#fff}.sw i.off{background:#b5533c}.sw i.off::after{right:auto;left:3px}
+.det{background:#fffaf0;border-radius:12px;padding:8px;margin-top:6px;font-size:12px}
+.err{color:#b5533c;font-size:13px;min-height:1em}.muted{opacity:.6;font-size:12.5px;text-align:center;padding:12px}
+</style></head><body><div class="wrap">
+<h1>Arasta yönetim <small id="who"></small></h1>
+<div id="app"></div></div>
+<script>
+const U='https://rytrhkpmsfskiyoujyyb.supabase.co/rest/v1/rpc/',A='sb_publishable_I_rw47M8KquQV6XTLm2LYg_KEckXVj7';
+let KEY=localStorage.getItem('arasta-admin')||'',TAB='err',SHOWRES=false,SHOWDONE=false;
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ago=t=>{const s=Date.now()/1000-t;return s<90?'az önce':s<3600?Math.round(s/60)+' dk önce':s<86400?Math.round(s/3600)+' sa önce':Math.round(s/86400)+' gün önce'};
+const dt=s=>new Date(s).getTime()/1000;
+function rpc(op,arg){return fetch(U+'arasta_admin',{method:'POST',headers:{apikey:A,'Content-Type':'application/json'},body:JSON.stringify({p_key:KEY,p_op:op,p_arg:arg||{}})}).then(r=>r.json()).then(d=>{if(d&&d.err==='key'){logout('Anahtar geçersiz');throw 'key'}return d})}
+function logout(m){KEY='';localStorage.removeItem('arasta-admin');login(m)}
+function login(m){$('#who').textContent='';app.innerHTML=`<div class="card"><b>Yönetici anahtarı</b><p style="font-size:13px;margin:4px 0 8px">Bu cihazda bir kez gir, hatırlanır.</p><input id="k" type="password" autocomplete="off" placeholder="Anahtar"><p class="err" id="e">${esc(m||'')}</p><button class="b g" id="go">Giriş</button></div>`;
+ $('#go').onclick=()=>{const v=$('#k').value.trim();if(!v){$('#e').textContent='Anahtarı yaz';return}KEY=v;rpc('summary').then(()=>{localStorage.setItem('arasta-admin',KEY);main()}).catch(()=>{})}}
+let SUM={};
+function main(){$('#who').innerHTML='<button class="b" id="lo" style="font-size:11px;padding:2px 8px">Çıkış</button>';$('#lo').onclick=()=>logout('');
+ rpc('summary').then(s=>{SUM=s;draw()})}
+function draw(){const T=[['err','Hatalar',SUM.errors],['rep','Bildirimler',SUM.reports],['ply','Oyuncular'],['cfg','Ayarlar']];
+ app.innerHTML=`<div class="sum"><div><b>${SUM.errors}</b>açık hata</div><div><b>${SUM.errors24}</b>son 24 sa hata</div><div><b>${SUM.active24}/${SUM.saves}</b>aktif dükkân</div></div>
+ <div class="tabs">${T.map(t=>`<button data-t="${t[0]}" class="${TAB===t[0]?'on':''}">${t[1]}${t[2]?' ('+t[2]+')':''}</button>`).join('')}</div><div id="pane"><p class="muted">Yükleniyor…</p></div>`;
+ document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{TAB=b.dataset.t;draw()});({err:pErr,rep:pRep,ply:pPly,cfg:pCfg})[TAB]()}
+function pErr(){rpc('errors').then(L=>{const V=L.filter(e=>SHOWRES||!e.resolved);
+ $('#pane').innerHTML=`<div class="flt"><button class="b" id="tr">${SHOWRES?'Çözülenleri gizle':'Çözülenleri de göster'}</button><button class="b" id="rf">Yenile</button></div><div class="card">${V.length?V.map(e=>`<div class="row"><div class="m"><b>${esc(e.msg)}</b><small>${e.kind==='nan'?'Bozuk sayı':e.kind} · ${e.cnt} kez · ${(e.codes||[]).length} dükkân · son ${ago(dt(e.last_at))} · sürüm ${esc(e.ver)}</small><div id="d${e.id}"></div></div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">${e.resolved?'<span class="pill ok">Çözüldü</span>':'<span class="pill">Açık</span>'}<button class="b" data-d="${e.id}">Ayrıntı</button><button class="b ${e.resolved?'':'g'}" data-r="${e.id}" data-v="${!e.resolved}">${e.resolved?'Yeniden aç':'Çözüldü'}</button></div></div>`).join(''):'<p class="muted">Açık hata yok</p>'}</div>`;
+ $('#tr').onclick=()=>{SHOWRES=!SHOWRES;pErr()};$('#rf').onclick=main;
+ document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>rpc('resolve',{id:+b.dataset.r,v:b.dataset.v==='true'}).then(main));
+ document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const box=$('#d'+b.dataset.d);if(box.innerHTML){box.innerHTML='';return}rpc('error',{id:+b.dataset.d}).then(e=>{const c=e.ctx||{};box.innerHTML=`<div class="det">Ekran: <b style="display:inline">${esc(c.view)}</b> · aşama ${esc(c.phase)} ${c.pid?'· ürün '+esc(c.pid)+' · adım '+esc(c.step):''}<br>Altın ${esc(c.gold)} · kademe ${esc(c.tier)} · gün ${esc(c.day)} · ekran ${esc(c.w)}<br>İlk görülme: ${new Date(e.first_at).toLocaleString('tr-TR')}<pre>${esc((c.trail||[]).join('\n'))}</pre><pre>${esc(e.stack||'')}</pre><small>${esc(c.ua)}</small><br><small>Dükkânlar: ${esc((e.codes||[]).join(', '))}</small></div>`})})})}
+function pRep(){rpc('reports').then(L=>{const V=L.filter(r=>SHOWDONE||!r.done);
+ $('#pane').innerHTML=`<div class="flt"><button class="b" id="tr">${SHOWDONE?'Kapananları gizle':'Kapananları da göster'}</button></div><div class="card">${V.length?V.map(r=>{const c=r.ctx||{};return `<div class="row"><div class="m"><b>${esc(r.msg)}</b><small>${ago(dt(r.at))} · ${esc(r.code||'bulut kaydı yok')} · ${esc(c.view)} · ${c.pid?esc(c.pid)+' / '+esc(c.step)+' · ':''}altın ${esc(c.gold)} · sürüm ${esc(c.v)}</small>${(c.trail||[]).length?`<pre>${esc(c.trail.join('\n'))}</pre>`:''}</div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">${r.done?'<span class="pill ok">Kapandı</span>':'<span class="pill n">Yeni</span>'}<button class="b ${r.done?'':'g'}" data-x="${r.id}" data-v="${!r.done}">${r.done?'Yeniden aç':'Kapat'}</button></div></div>`}).join(''):'<p class="muted">Yeni bildirim yok</p>'}</div>`;
+ $('#tr').onclick=()=>{SHOWDONE=!SHOWDONE;pRep()};document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>rpc('report_done',{id:+b.dataset.x,v:b.dataset.v==='true'}).then(main))})}
+function pPly(){rpc('saves').then(L=>{$('#pane').innerHTML=`<input id="q" placeholder="Dükkân adı, kullanıcı ya da kod ara" style="margin-bottom:10px"><div class="card" id="pl"></div>`;
+ const f=()=>{const q=$('#q').value.toLowerCase().trim();$('#pl').innerHTML=L.filter(s=>!q||[s.ad,s.user,s.code].join(' ').toLowerCase().includes(q)).map(s=>`<div class="row"><div class="m"><b>${esc(s.ad||'(adsız)')}${s.user?' · @'+esc(s.user):''}</b><small>${esc(s.code)} · K${esc(s.tier)} · ${esc(s.day)}. gün · ${esc(s.gold)} altın · ${esc(s.elmas||0)} elmas · ${ago(s.ts)}</small><div id="p${s.code}"></div></div><button class="b" data-p="${s.code}">Aç</button></div>`).join('')||'<p class="muted">Sonuç yok</p>';
+  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>plOpen(b.dataset.p))};$('#q').oninput=f;f()})}
+function plOpen(code){const box=$('#p'+code);if(box.innerHTML){box.innerHTML='';return}rpc('hist',{code}).then(H=>{
+ box.innerHTML=`<div class="det"><b style="display:inline">Tazmin et</b><div style="display:flex;gap:6px;margin:6px 0"><input id="gg${code}" type="number" placeholder="Altın" min="0"><input id="ge${code}" type="number" placeholder="Elmas" min="0"><button class="b g" id="gb${code}">Ver</button></div><p class="err" id="ger${code}"></p>
+ <b style="display:inline">Kayıt yedekleri</b>${H.length?H.map(h=>`<div class="row"><div class="m"><small style="opacity:1">${new Date(h.at*1000).toLocaleString('tr-TR')} · ${ago(h.at)}</small><small>K${esc(h.tier)} · ${esc(h.day)}. gün · ${esc(h.gold)} altın · ${esc(h.elmas||0)} elmas</small></div><button class="b r" data-h="${h.id}">Geri yükle</button></div>`).join(''):'<p class="muted">Henüz yedek yok. Dükkân kaydı değiştikçe birikir.</p>'}</div>`;
+ $('#gb'+code).onclick=()=>{const g=+$('#gg'+code).value||0,e=+$('#ge'+code).value||0;if(g<0||e<0||(!g&&!e)){$('#ger'+code).textContent='Altın ya da elmas miktarı gir';return}if(!confirm(code+' dükkânına '+g+' altın, '+e+' elmas verilsin mi?'))return;rpc('grant',{code,gold:g,elmas:e}).then(ok=>{$('#ger'+code).textContent=ok?'Verildi. Oyuncu oyuna girince görecek.':'Olmadı';$('#ger'+code).style.color=ok?'#2f6b5a':''})};
+ box.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{if(!confirm('Dükkân bu yedeğe geri döndürülsün mü? Sonraki ilerleme silinir.'))return;rpc('restore',{code,id:+b.dataset.h}).then(ok=>{alert(ok?'Geri yüklendi. Oyuncu oyuna girince güncel hali yüklenecek.':'Olmadı');main()})})})}
+const FEAT=[['mezat','Mezat'],['takas','Takas'],['bit','Bit pazarı'],['tamir','Tamir ve müşteri tamirleri'],['usta','Usta müşteri çağırma'],['coban','Çoban'],['tarla','Yeni Tarla tapusu'],['dekor','Dekorcu']];
+function pCfg(){rpc('flags').then(F=>{const off=Array.isArray(F.off)?F.off:[],n=F.notice||{};
+ $('#pane').innerHTML=`<div class="card"><b>Özellikler</b><p style="font-size:12.5px;margin:2px 0 6px">Sorunlu bir özelliği yeni sürüm yayınlamadan kapat. Oyuncular 10 dakika içinde görür.</p>${FEAT.map(f=>`<div class="sw" data-f="${f[0]}"><span>${f[1]}</span><i class="${off.includes(f[0])?'off':''}"></i></div>`).join('')}</div>
+ <div class="card"><b>Duyuru</b><p style="font-size:12.5px;margin:2px 0 6px">Oyuncular oyuna girince bir kez görür.</p><input id="nt" placeholder="Başlık" value="${esc(n.title||'')}" style="margin-bottom:6px"><textarea id="nx" rows="4" placeholder="Duyuru metni">${esc(n.text||'')}</textarea><div style="display:flex;gap:6px;margin-top:8px"><button class="b g" id="ns">Yayınla</button><button class="b" id="nd">Kaldır</button></div><p class="err" id="ne"></p></div>`;
+ document.querySelectorAll('[data-f]').forEach(r=>r.onclick=()=>{const k=r.dataset.f,o=off.includes(k)?off.filter(x=>x!==k):off.concat(k);rpc('flag_set',{k:'off',v:o}).then(pCfg)});
+ $('#ns').onclick=()=>{const t=$('#nt').value.trim(),x=$('#nx').value.trim();if(!x){$('#ne').textContent='Duyuru metnini yaz';return}rpc('flag_set',{k:'notice',v:{id:Date.now(),title:t||'Duyuru',text:x}}).then(()=>{$('#ne').style.color='#2f6b5a';$('#ne').textContent='Yayınlandı'})};
+ $('#nd').onclick=()=>rpc('flag_set',{k:'notice',v:null}).then(pCfg)})}
+KEY?main():login('');
+</script></body></html>

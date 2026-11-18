@@ -69,10 +69,10 @@ if(G.first)Object.entries(p.need).forEach(([k,n])=>{const key=k==='boya'?'boya_'
 return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)*(sp.includes(p.id)?1.2:1)/5)*5,hurry:!G.first&&Math.random()<0.15}}
 function spawn(){if(Q.length>=3)return;const c=makeCustomer(),pv=G.stock.filter(x=>x.price>0);
 if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
-else if(!G.first&&Math.random()<0.16){const o=c.order=mkRepOrder();c.acc=c.accMax=75;c.dead=c.deadMax=260;c.wait=170}
+else if(!G.first&&!fOff('tamir',true)&&Math.random()<0.16){const o=c.order=mkRepOrder();c.acc=c.accMax=75;c.dead=c.deadMax=260;c.wait=170}
 else{const o=c.order=mkOrder(),h=o.hurry;const rgs=(G.reg||[]).filter(r=>c.sex&&regSex(r)===c.sex);if(!G.first&&rgs.length&&Math.random()<0.3){const rg=pick(rgs),fp=PRODS.find(x=>x.id===rg.fav);if(fp&&unlocked(fp)&&fp.id!==o.p.id){o.p=fp;o.color=fp.need.boya?pick(PAINTS):null;o.style=null;o.budget=Math.round(fp.base*(1+Math.random()*0.3)/5)*5}o.reg=rg.ad}c.acc=c.accMax=G.first?9999:h?45:75;c.dead=c.deadMax=G.first?9999:(h?150:280)+o.p.steps.length*20;c.wait=h?100:170}
 c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];hud();seat(c)}
-function callMaster(){if(!G.open||G.night){toast('Dükkân kapalıyken müşteri gelmez',1500);return}if(Q.length>=3){toast('Sıra dolu, önce bekleyenlerle ilgilen',1500);return}if((G.elmas||0)<3){toast('3 💎 gerekli',1300);return}
+function callMaster(){if(fOff('usta'))return;if(!G.open||G.night){toast('Dükkân kapalıyken müşteri gelmez',1500);return}if(Q.length>=3){toast('Sıra dolu, önce bekleyenlerle ilgilen',1500);return}if((G.elmas||0)<3){toast('3 💎 gerekli',1300);return}
  G.elmas-=3;hud();const c=makeCustomer(),o=c.order=mkOrder();o.budget=Math.round(o.budget*1.8/5)*5;o.vip=1;o.hurry=false;c.acc=c.accMax=150;c.dead=c.deadMax=420+o.p.steps.length*20;c.wait=260;c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];sfx.bell();toast('Usta müşteri yolda! Bütçesi yüksek',1600);save();seat(c)}
 function seat(c){const i=Q.indexOf(c);if(i<0)return;c.at=false;const to=SLOT[i];walk(c,to,Math.max(0.5,c.g.position.distanceTo(to)/1.5),()=>{c.g.rotation.y=0;c.at=true;if(Q[0]===c&&G.phase==='idle')present(c)})}
 function present(c){const o=G.order=c.order;G.phase='ordering';G.bubOn=true;sfx.bell();if(o.buy){presentBuy(c,o);return}

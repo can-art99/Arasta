@@ -9,10 +9,10 @@ function cobPlan(){const m=otoMode('coban');if(m==='pasif')return [];let L=farmC
  if(m==='kosul'){const r=otoNeeds().raw;L=L.filter(o=>r[o.userData.coll.mat]>0)}return L}
 function cobRun(L,quiet){const got={};L.forEach(o=>{const n=cobCollect(o);if(n)got[o.userData.coll.mat]=(got[o.userData.coll.mat]||0)+n});
  const ks=Object.keys(got);if(ks.length){if(!quiet)toast('🐑 Çoban topladı: '+ks.map(k=>MATS[k].ad+' +'+got[k]).join(', '),2200);save();refresh()}return ks.length}
-function cobanTick(){if(!G.coban)return;if(G.cobanLast==null)G.cobanLast=NOW()-OTO_P;const m=otoMode('coban');if(m==='pasif')return;
+function cobanTick(){if(!G.coban||fOff('coban',true))return;if(G.cobanLast==null)G.cobanLast=NOW()-OTO_P;const m=otoMode('coban');if(m==='pasif')return;
  if(m==='kosul'){const L=cobPlan();if(L.length&&NOW()-(G.cobK||0)>60){G.cobK=NOW();cobRun(L)}return}
  const n=Math.floor((NOW()-G.cobanLast)/OTO_P);if(n<=0)return;G.cobanLast=NOW();cobRun(cobPlan(),view!=='bahce')}
-function cobanNow(){if(!G.coban){toast('Çoban Ticaret menüsünden alınır',1500);return}const L=farmColl().filter(o=>o.userData.coll.alive);
+function cobanNow(){if(fOff('coban'))return;if(!G.coban){toast('Çoban Ticaret menüsünden alınır',1500);return}const L=farmColl().filter(o=>o.userData.coll.alive);
  if(!L.length){toast('Şu an toplanacak hayvan ürünü yok',1400);return}G.cobanLast=NOW();sfx.tap();if(COB)COB.goal=CBP[0].clone();cobRun(L)}
 /* görünüş: Adventurer (x_coban) modeli varsa o, yoksa çiftçi modeli + elde asa */
 let COB=null,COBL=null;

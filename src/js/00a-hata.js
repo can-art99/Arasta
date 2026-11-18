@@ -11,3 +11,16 @@ function errFlush(){if(!ERRQ.length)return;let ok=false;try{ok=typeof rpc==='fun
  while(ERRQ.length){const e=ERRQ.shift();rpc('arasta_err',{p_sig:e.sig,p_kind:e.kind,p_msg:e.msg,p_stack:e.stack,p_ctx:e.ctx,p_ver:VER,p_code:code}).catch(()=>{})}}
 addEventListener('error',e=>{if(e&&e.message)errRep('js',e.message,e.error&&e.error.stack||(e.filename+':'+e.lineno))});
 addEventListener('unhandledrejection',e=>{const r=e&&e.reason;if(r==null||typeof r==='number'||typeof r==='string')return;errRep('promise',r.message||String(r),r.stack)});
+/* ---------- uzaktan ayar: yönetici panelinden kapatılan özellikler ve duyuru ---------- */
+let FLG={off:[],notice:null};
+const FNAME={mezat:'Mezat',takas:'Takas',bit:'Bit pazarı',tamir:'Tamir',usta:'Usta müşteri',coban:'Çoban',tarla:'Yeni Tarla',kervan:'Kervan',dekor:'Dekorcu'};
+function fOff(k,quiet){if(!(FLG.off||[]).includes(k))return false;if(!quiet)try{toast(`${FNAME[k]||k} şu an bakımda, kısa süre sonra açılacak`,2000)}catch(e){}return true}
+function flagsPull(){try{rpc('arasta_flags_get',{}).then(f=>{if(!f)return;FLG=Object.assign({off:[],notice:null},f);if(!Array.isArray(FLG.off))FLG.off=[];noticeShow()}).catch(()=>{})}catch(e){}}
+function noticeShow(){const n=FLG.notice;if(!n||!n.id||!n.text)return;let seen=null;try{seen=localStorage.getItem('arasta-notice')}catch(e){}if(seen===String(n.id))return;
+ const go=()=>{if(typeof G==='undefined'||G.phase==='craft'||G.phase==='result'||modalMode){setTimeout(go,4000);return}try{localStorage.setItem('arasta-notice',String(n.id))}catch(e){}
+  openSheet('notice',`<h3>${esc(n.title||'Duyuru')}</h3><p style="white-space:pre-line">${esc(n.text)}</p><div style="text-align:center"><button class="btn g" data-close>Tamam</button></div>`);wire()};setTimeout(go,2500)}
+/* ---------- oyuncunun sorun bildirmesi ---------- */
+function openReport(){openSheet('report',`<h3 class="bkh"><button class="bkb" id="rpBack" aria-label="Geri">‹</button>Sorun bildir</h3><p>Ne oldu? Kısaca yaz; oyun, o anki durumunu (ekran, adım, altın) kendisi ekler.</p><textarea id="rpT" maxlength="1200" rows="5" style="width:100%;box-sizing:border-box;border:2px solid var(--ln);border-radius:12px;padding:10px;font:inherit;background:#fffaf0;color:var(--ink)" placeholder="Örn: Tamir bitince ödeme yanlış göründü"></textarea><p class="chint" id="rpE" style="color:#b5533c;min-height:1em"></p><div style="text-align:center"><button class="btn g" id="rpS">Gönder</button></div>`+closeBtn);wire();
+ $('rpBack').onclick=()=>{menuTab='ayar';renderMenu()};const t=$('rpT');t.oninput=()=>{$('rpE').textContent=''};
+ $('rpS').onclick=()=>{const m=t.value.trim();if(m.length<5){$('rpE').textContent='Biraz daha ayrıntı yaz (en az 5 harf)';return}const b=$('rpS');b.disabled=true;b.textContent='Gönderiliyor…';
+  const ctx=errCtx();ctx.errs=[...ERRS].slice(-5);rpc('arasta_report',{p_code:G.cloud||null,p_msg:m,p_ctx:ctx}).then(ok=>{if(ok){closeSheet();toast('Teşekkürler, bildirimin ulaştı',1800)}else{b.disabled=false;b.textContent='Gönder';$('rpE').textContent='Çok sık bildirim gönderdin, biraz sonra tekrar dene'}}).catch(()=>{b.disabled=false;b.textContent='Gönder';$('rpE').textContent='Bağlantı yok, tekrar dene'})}}

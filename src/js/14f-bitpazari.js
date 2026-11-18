@@ -21,12 +21,12 @@ const REPST={cizik:[{t:'rub',k:'zimpara',ad:'Çizikleri zımparala',to3d:'full'}
  kirik:[{t:'rhythm',k:'yapistir',n:5,ad:'Kırık yeri tutkalla',to3d:'full'},{t:'hold',ad:'Pres ile sıkıştır'},{t:'rub',k:'zimpara',ad:'Ek yerini zımparala'},{t:'design',ad:'Son kontrol'}],
  soluk:[{t:'rub',k:'zimpara',ad:'Kiri ve lekeyi temizle',to3d:'full'},{t:'rub',k:'cila',ad:'Rengini canlandır'},{t:'design',ad:'Son kontrol'}]};
 function RP(p,w){const o=Object.create(p);o.ad=p.ad+' tamiri';o.need=Object.assign({},WORN[w].need);o.steps=REPST[w];o.rep=w;o.styles=null;return o}
-function openRepairList(){if(G.phase!=='idle'){toast('Önce sıradaki müşteriyle ilgilen',1500);return}const wl=(G.store||[]).filter(x=>x.worn);
+function openRepairList(){if(fOff('tamir'))return;if(G.phase!=='idle'){toast('Önce sıradaki müşteriyle ilgilen',1500);return}const wl=(G.store||[]).filter(x=>x.worn);
  const h='<h3>🔧 Tamir et</h3><p>Yıpranmış ürünleri tezgâhta onar, yenilenmiş olarak değerinde sat. 2. el ürünleri Pazar → Bit pazarı\'ndan bulabilirsin.</p>'+(wl.length?wl.map(it=>{const p=pr(it),W=WORN[it.worn],miss=Object.entries(W.need).filter(([k,n])=>(G.inv[k]||0)<n);
   return `<div class="dit r${Math.min(3,p.tier||1)}"><div class="dia wd ${W.ov}"><img src="${ICON[it.pid]}" alt=""></div><div class="din"><b>${p.ad}</b>${wornTag(it)}<small>${miss.length?'<span class="no">Eksik: '+needTxt(W.need)+'</span>':'Gerekli: '+needTxt(W.need)+' · '+REPST[it.worn].length+' adım'}</small></div><button class="dbt ${miss.length?'l':''}" data-rp="${it.id}" ${miss.length?'disabled':''}>Tamir et</button></div>`}).join(''):'<p class="dem">Tamir bekleyen ürün yok. Bit pazarından yıpranmış ürün alabilir ya da müşterilerin getirdiği eşyaları onarabilirsin.</p>')+
   `<div style="text-align:center;margin-top:8px"><button class="btn l" id="toBit">Bit pazarına git</button></div>`;
  openSheet('free',h+closeBtn);wire();$('toBit').onclick=()=>{closeSheet();go('pazar');setTimeout(()=>{mTab='bit';renderMarket()},900)};ui.sheet.querySelectorAll('[data-rp]').forEach(b=>b.onclick=()=>startRepair(b.dataset.rp))}
-function startRepair(id){const it=(G.store||[]).find(x=>String(x.id)===String(id));if(!it||!it.worn)return;
+function startRepair(id){if(fOff('tamir'))return;const it=(G.store||[]).find(x=>String(x.id)===String(id));if(!it||!it.worn)return;
  if(G.phase!=='idle'){toast('Önce sıradaki müşteriyle ilgilen',1500);return}const P=RP(pr(it),it.worn);if(!hasNeed(P)){toast('Eksik: '+needTxt(P.need),1600);return}
  show(ui.modal,false);modalMode=null;const run=()=>{G.order={p:P,color:null,style:it.style||null,budget:0,free:true,rep:it.worn,rid:it.id};startCraft()};
  if(view!=='home'){go('home');setTimeout(run,1300)}else run()}
