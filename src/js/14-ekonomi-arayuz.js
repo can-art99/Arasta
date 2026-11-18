@@ -1,6 +1,6 @@
 /* ---------- pazar, tedarikçi, depo ---------- */
 let modalMode=null;
-function openSheet(mode,html){if(modalMode!==mode)ui.sheet.scrollTop=0;modalMode=mode;ui.sheet.innerHTML=html;ui.modal.classList.toggle('thru',mode==='result');if(mode==='result'&&RZ.t===1)RZ.t=1.9;{let h=$('zhint');if(mode==='result'){if(!h){h=document.createElement('div');h.id='zhint';ui.modal.parentNode.appendChild(h)}h.textContent='İki parmakla yakınlaştır · tek parmakla çevir';show(h,true)}else if(h)show(h,false)}show(ui.modal,true)}
+function openSheet(mode,html){crumb('pencere '+mode);if(modalMode!==mode)ui.sheet.scrollTop=0;modalMode=mode;ui.sheet.innerHTML=html;ui.modal.classList.toggle('thru',mode==='result');if(mode==='result'&&RZ.t===1)RZ.t=1.9;{let h=$('zhint');if(mode==='result'){if(!h){h=document.createElement('div');h.id='zhint';ui.modal.parentNode.appendChild(h)}h.textContent='İki parmakla yakınlaştır · tek parmakla çevir';show(h,true)}else if(h)show(h,false)}show(ui.modal,true)}
 function closeSheet(){show(ui.modal,false);modalMode=null;refresh()}
 ui.modal.addEventListener('click',e=>{if(e.target!==ui.modal||modalMode==='result')return;if(modalMode==='haggle')hBack();else closeSheet()});
 const closeBtn='<div style="margin-top:12px;text-align:center"><button class="btn g" data-close>Kapat</button></div>';
