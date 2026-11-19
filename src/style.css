@@ -285,3 +285,23 @@ svg.cn{width:1.05em;height:1.05em;vertical-align:-0.17em;flex:none}
 svg.gi{width:1.15em;height:1.15em;vertical-align:-0.22em;flex:none;display:inline-block}
 .kemo svg.gi{width:1.4em;height:1.4em}
 #tierP{flex-shrink:0!important;gap:4px;font-variant-numeric:tabular-nums}#tierP .tk{flex:none}#tierP .tc{display:inline-block;width:3.3em;text-align:center;flex:none}#tierP svg.gi{width:16px;height:16px}
+/* ==== GENİŞ EKRAN (yatay, PC): sahne tam ekran, menü solda, sayfalar sağda ==== */
+@media (min-aspect-ratio:23/20) and (min-width:820px) and (min-height:560px){
+#frame{width:100vw!important;height:100dvh!important;margin:0!important;border:0!important;border-radius:0!important}
+#top{left:16px;right:16px;top:14px}
+#nav{left:16px;right:auto;top:50%;bottom:auto;transform:translateY(-50%);flex-direction:column;width:96px;gap:8px}
+#nav button{flex:none;min-height:76px;font-size:13.5px;border-radius:18px}#nav button svg{width:26px;height:26px}
+#card,#dtabs{left:16px}#card{top:58px}
+#actions{left:50%;right:auto;transform:translateX(-50%);bottom:28px;width:min(760px,70vw)}
+#actions .btn{font-size:17px;padding:11px 24px}
+#zones{bottom:28px}
+#openB,#zoom{right:16px}#vitB{right:16px}
+#bubble{right:auto;left:58%;max-width:min(420px,36vw);font-size:16px}
+#toast{font-size:18px;max-width:min(560px,50vw)}
+#tip{font-size:16px}
+#modal{justify-content:flex-end;align-items:stretch;background:#1a100855}
+#modal.thru{background:transparent}
+.sheet{width:min(480px,42vw);max-height:none;height:100%;border-top:0;border-left:3px solid var(--ln);border-radius:24px 0 0 24px;padding:18px 18px 22px;box-shadow:-8px 0 30px #0005;animation:wsl .28s cubic-bezier(.2,.9,.3,1)}
+@keyframes wsl{from{transform:translateX(30%);opacity:.3}}
+#splash .spc{max-width:520px;margin:0 auto}
+}
