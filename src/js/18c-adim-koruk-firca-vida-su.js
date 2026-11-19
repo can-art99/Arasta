@@ -1,7 +1,8 @@
 let purT=0;setInterval(()=>{if(purT&&performance.now()-purT>220){purT=0;loopSet('purmuz',0)}},100);
 /* Daldırma, vidalama (yerleştir + tornavida) */
 /* Körük + ocak */
-function bForge(){const obj=(K.is3d&&K.m3)?K.m3.g:K.piece;const bp=V(BC.x+0.3,Y,BC.z-0.12),fg=new THREE.Group();fg.position.copy(bp);K.work.add(fg);
+function mkBand(){if(K.band)return K.band;const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:'#5b5f66',roughness:0.55,metalness:0.6,emissive:'#000000'});const b=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.012,0.46),m);b.position.y=0.006;b.castShadow=true;g.add(b);g.position.set(BC.x-0.36,Y,BC.z+0.02);K.work.add(g);K.band=g;g.scale.setScalar(0.01);tween(0.35,k=>g.scale.setScalar(Math.max(0.01,k)));return g}
+function bForge(){const obj=K.st.band?mkBand():(K.is3d&&K.m3)?K.m3.g:K.piece;const bp=V(BC.x+0.3,Y,BC.z-0.12),fg=new THREE.Group();fg.position.copy(bp);K.work.add(fg);
  put(fg,B(0.3,0.07,0.6),M('#3a3430',0.9),0,0.035,0);put(fg,B(0.24,0.012,0.54),M('#1c1614'),0,0.071,0);
  const cm=new THREE.MeshStandardMaterial({color:'#2a1a12',emissive:'#ff4a10',emissiveIntensity:0.15,roughness:0.9}),coals=[];for(let i=0;i<34;i++){const c=put(fg,new THREE.DodecahedronGeometry(0.018+Math.random()*0.01,0),cm,(Math.random()-0.5)*0.22,0.078+Math.random()*0.01,(Math.random()-0.5)*0.5);c.rotation.set(Math.random()*3,Math.random()*3,0);coals.push(c)}
  const fm=new THREE.MeshBasicMaterial({color:'#ffb030',transparent:true,opacity:0.0,depthWrite:false}),fl=[];for(let i=0;i<9;i++){const f=put(fg,new THREE.ConeGeometry(0.025,0.08,6),fm,(Math.random()-0.5)*0.16,0.12,-0.22+i*0.055);fl.push(f)}
@@ -23,6 +24,22 @@ function bForge(){const obj=(K.is3d&&K.m3)?K.m3.g:K.piece;const bp=V(BC.x+0.3,Y,
   mats.forEach((m,i)=>{m.color.copy(c0[i]).lerp(hot,heat);m.emissive.set('#b82200');m.emissiveIntensity=heat*0.8});const g=$('gf');if(g)g.style.width=(heat*100)+'%';if(Math.random()<heat*0.15)puff(V(bp.x+(Math.random()-0.5)*0.2,Y+0.14,bp.z+(Math.random()-0.5)*0.4),1,'#ff9a30')};
  K.pd=p=>{if(Math.hypot(p.x-bw.position.x,p.z-bw.position.z)<0.22)pump()};
  K.skipFn=()=>{done=true;K.tick=null;K.work.remove(bw);K.work.remove(fg);if(obj){obj.position.copy(p0);obj.rotation.copy(r0)}};tipStep('Körüğe ritimle bas, ateşi harla · Isı %0')}
+/* Fıçı: dövülmüş şeridi çember yap ve fıçıya geçir */
+function bHoop(){const band=mkBand(),pc=(K.is3d&&K.m3)?K.m3.g:K.piece;let bb=null;try{pc.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(pc)}catch(e){}
+ const cw=bb?K.work.worldToLocal(bb.getCenter(new THREE.Vector3())):V(BC.x,Y,BC.z),sz=bb?bb.getSize(new THREE.Vector3()):V(0.4,0.3,0.4),R=Math.max(0.12,Math.min(sz.x,sz.z)/2+0.01);
+ const mat=band.children[0].material;let ring=null,k=0,sc=[],lp=-1,done=false;const N=6;
+ const mkRing=a=>{const g=new THREE.TorusGeometry(R,0.008,4,48,Math.max(0.05,a));const m=new THREE.Mesh(g,mat);m.rotation.x=Math.PI/2;m.scale.z=2.2;return m};
+ const hm=mkTool('hammer');
+ const hit=()=>{if(done)return;const dt=lp<0?0.8:tt-lp;if(dt<0.25){toast('Çok hızlı',500);return}lp=tt;sc.push(clamp(1-Math.abs(dt-0.7)/0.7,0.3,1));k++;
+  const p=band.position;hm.visible=true;hm.position.set(p.x+0.06,Y+0.03,p.z);const P2=hm.userData.p;if(P2)strike(a=>P2.rotation.z=a,{own:hm,rest:-0.6,top:-1.4,hit:0,wind:0.08,fall:0.1,pow:2.6,reb:0.2,settle:0.24,onHit:()=>{sf('cekic',0.55)||sfx.punch();puff(V(p.x,Y+0.03,p.z),3,'#ffb050')}});else{sf('cekic',0.55)||sfx.punch()}
+  if(ring)band.remove(ring);band.children[0].visible=false;ring=mkRing(Math.PI*2*k/N);ring.position.set(0,0.008,0);ring.rotation.z=-Math.PI*k/N;band.add(ring);
+  tipStep(`Bükülen: ${k}/${N}`);if(k>=N)finish()};
+ const finish=()=>{done=true;const a=band.position.clone(),b=V(cw.x,Y,cw.z),y1=bb?K.work.worldToLocal(bb.max.clone()).y-Y-0.04:0.12;
+  tween(0.7,u=>{band.position.lerpVectors(a,b,u);band.position.y=Y+Math.sin(u*Math.PI)*0.2+y1*u},()=>{K.work.remove(hm);fin(clamp(avg(sc),0.3,1),'Çember fıçıya oturdu!')})};
+ const b=btn('Vur ve bük','g',hit);b.style.minWidth='60%';ui.act.appendChild(b);
+ K.pd=p=>{if(Math.hypot(p.x-band.position.x,p.z-band.position.z)<0.3)hit()};
+ K.skipFn=()=>{done=true;K.work.remove(hm);if(ring)band.remove(ring);ring=mkRing(Math.PI*2);band.add(ring);band.children[0].visible=false;band.position.set(cw.x,Y+(bb?K.work.worldToLocal(bb.max.clone()).y-Y-0.04:0.12),cw.z)};
+ tipStep('Şeride ritimle vur, çember şekline gelsin')}
 /* Fırça: kılları deliklere dök + uçları kırp */
 function bTuft(){const st=K.st,P=st.pts.map(LP),top=K.top,hc='#3b2a1e',hm=M(hc,0.95),hm2=M('#5a4030',0.95);let phase='put',cur=null,miss=0,t0=tt;K.hy=top+0.04;
  const pile=new THREE.Group();pile.position.set(BC.x+0.4,Y,BC.z+0.1);K.work.add(pile);put(pile,Cy(0.11,0.12,0.015,18),M('#8a6a44',0.8),0,0.008,0);for(let i=0;i<70;i++){const h=put(pile,B(0.0035,0.0035,0.12+Math.random()*0.06),i%3?hm:hm2,(Math.random()-0.5)*0.12,0.018+Math.random()*0.03,(Math.random()-0.5)*0.1);h.rotation.set((Math.random()-0.5)*0.4,Math.random()*Math.PI,(Math.random()-0.5)*0.3)}

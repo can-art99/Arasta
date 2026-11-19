@@ -72,8 +72,13 @@ if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id
 else if(!G.first&&!fOff('tamir',true)&&Math.random()<0.16){const o=c.order=mkRepOrder();c.acc=c.accMax=75;c.dead=c.deadMax=260;c.wait=170}
 else{const o=c.order=mkOrder(),h=o.hurry;const rgs=(G.reg||[]).filter(r=>c.sex&&regSex(r)===c.sex);if(!G.first&&rgs.length&&Math.random()<0.3){const rg=pick(rgs),fp=PRODS.find(x=>x.id===rg.fav);if(fp&&unlocked(fp)&&fp.id!==o.p.id){o.p=fp;o.color=fp.need.boya?pick(PAINTS):null;o.style=null;o.budget=Math.round(fp.base*(1+Math.random()*0.3)/5)*5}o.reg=rg.ad}c.acc=c.accMax=G.first?9999:h?45:75;c.dead=c.deadMax=G.first?9999:(h?150:280)+o.p.steps.length*20;c.wait=h?100:170}
 c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];hud();seat(c)}
-function callMaster(){if(fOff('usta'))return;if(!G.open||G.night){toast('Dükkân kapalıyken müşteri gelmez',1500);return}if(Q.length>=3){toast('Sıra dolu, önce bekleyenlerle ilgilen',1500);return}if((G.elmas||0)<3){toast('3 💎 gerekli',1300);return}
- G.elmas-=3;hud();const c=makeCustomer(),o=c.order=mkOrder();o.budget=Math.round(o.budget*1.8/5)*5;o.vip=1;o.hurry=false;c.acc=c.accMax=150;c.dead=c.deadMax=420+o.p.steps.length*20;c.wait=260;c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];sfx.bell();toast('Usta müşteri yolda! Bütçesi yüksek',1600);save();seat(c)}
+function canMake(p){return Object.entries(p.need).every(([k,n])=>k==='boya'?PAINTS.some(c=>(G.inv['boya_'+c.id]||0)>=n):(G.inv[k]||0)>=n)}
+function callMaster(){if(fOff('usta'))return;if(!G.open||G.night){toast('Dükkân kapalıyken müşteri gelmez',1500);return}if(Q.length>=3){toast('Sıra dolu, önce bekleyenlerle ilgilen',1500);return}if((G.elmas||0)<3){toast('3 elmas gerekli',1300);return}
+ sfx.tap();openSheet('usta',`<h3>Usta müşteri çağır</h3><p style="margin:4px 0 10px;line-height:1.45">Ünlü bir usta dükkânına gelir. <b>4.000–6.000 altın</b> bütçeyle sipariş verir, iyi iş çıkarırsan <b>+100 itibara</b> kadar kazanırsın. Elindeki malzemeyle yapabileceğin bir ürün ister.</p><p class="chint" style="margin:0 0 12px">Ödeme ve itibar ürünün kalitesine göre değişir.</p><div class="pk" style="justify-content:center"><button class="btn g" id="msOk">Çağır · 3 ${typeof ic==='function'?ic('gem'):'elmas'}</button><button class="btn l" id="msNo">Vazgeç</button></div>`);
+ $('msNo').onclick=()=>{sfx.tap();closeSheet()};$('msOk').onclick=()=>{closeSheet();callMasterGo()}}
+function callMasterGo(){if((G.elmas||0)<3||Q.length>=3)return;
+ G.elmas-=3;hud();const c=makeCustomer(),o=c.order=mkOrder();{const pool=PRODS.filter(p=>unlocked(p)&&canMake(p));if(pool.length){const p=pick(pool);o.p=p;const pc=p.need.boya?PAINTS.filter(c=>(G.inv['boya_'+c.id]||0)>=p.need.boya):[];o.color=p.need.boya?pick(pc.length?pc:PAINTS):null;o.style=p.styles&&Math.random()<0.6?pick(p.styles):null}}
+ o.budget=Math.round((4000+Math.random()*2000)/50)*50;o.noHaggle=1;o.vip=1;o.hurry=false;c.acc=c.accMax=150;c.dead=c.deadMax=420+o.p.steps.length*20;c.wait=260;c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];sfx.bell();toast('Usta müşteri yolda! Bütçesi yüksek',1600);save();seat(c)}
 function seat(c){const i=Q.indexOf(c);if(i<0)return;c.at=false;const to=SLOT[i];walk(c,to,Math.max(0.5,c.g.position.distanceTo(to)/1.5),()=>{c.g.rotation.y=0;c.at=true;if(Q[0]===c&&G.phase==='idle')present(c)})}
 function present(c){const o=G.order=c.order;G.phase='ordering';G.bubOn=true;sfx.bell();if(o.buy){presentBuy(c,o);return}
 if(o.rep){say(`${pick(['Merhaba usta! ','İyi günler! ','Selam usta! '])}${o.p.__proto__.ad.toLowerCase()} ${WVERB[o.rep]}, tamir edebilir misin? ${o.budget} altın verebilirim.`);refresh();if(view==='home')orderActions();else toast('Dükkâna tamir için müşteri geldi',1800);return}
@@ -106,7 +111,7 @@ const itemVal=it=>pr(it).base*(0.55+0.12*it.stars);
 const sugg=it=>r5(itemVal(it)*1.05);
 const desc=it=>`${it.col?paintOf(it.col).ad.toLowerCase()+' ':''}${it.style?it.style.toLowerCase()+' ':''}${pr(it).ad.toLowerCase()}`;
 function matchStock(o){if(!o||o.buy||o.free||o.rep)return null;return G.stock.filter(it=>it.pid===o.p.id&&(!o.color||it.col===o.color.id)&&(!o.style||it.style===o.style)).sort((a,b)=>b.stars-a.stars)[0]||null}
-function orderActions(){const o=G.order;if(!o)return;if(o.buy){buyActions();return}const L=[btn('Siparişi al','g',()=>acceptOrder())];if(!o.haggled)L.push(btn('Pazarlık','',haggleOrder));
+function orderActions(){const o=G.order;if(!o)return;if(o.buy){buyActions();return}const L=[btn('Siparişi al','g',()=>acceptOrder())];if(!o.haggled&&!o.noHaggle)L.push(btn('Pazarlık','',haggleOrder));
 const m=matchStock(o);if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));L.push(btn('Reddet','r',rejectOrder));actions(L)}
 let HG=null;
 function haggle(o){HG=Object.assign({round:1},o);renderH()}

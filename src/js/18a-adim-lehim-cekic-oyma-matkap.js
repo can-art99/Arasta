@@ -25,7 +25,7 @@ function bPath(){const st=K.st,tool=mkTool('havya'),N=36,P=[];(st.paths||[]).for
  K.pd=mv;K.pm=mv;K.pu=()=>{tool.visible=false};K.skipFn=()=>{K.work.remove(gh);K.work.remove(tool)};tipStep('Havyanın ucunu çizgide gezdir')}
 
 /* Çekiçle zımba / perçin */
-function bHammer(){const st=K.st,hits=st.hits||2,riv=st.kind==='rivet',P=st.pts.map(LP),hm=mkTool('hammer');let i=0,h=0,sc=[],miss=0;
+function bHammer(){const st=K.st,hits=st.hits||2,riv=st.kind==='rivet',P=st.at==='band'&&K.band?st.pts.map(([x,z])=>V(K.band.position.x+x,Y+0.012,K.band.position.z+z)):st.pts.map(LP),hm=mkTool('hammer');let i=0,h=0,sc=[],miss=0;
  const mk=new THREE.Mesh(new THREE.TorusGeometry(riv?0.03:0.022,riv?0.005:0.003,5,20),new THREE.MeshBasicMaterial({color:'#ffd23a'}));mk.rotation.x=Math.PI/2;K.work.add(mk);
  const TY=P.map(v=>surfY(v.x,v.z,v.y,[hm,mk]));
  const ghost=P.map((v,k)=>{const m=put(K.work,Cy(riv?0.016:0.012,riv?0.016:0.012,0.002,10),new THREE.MeshBasicMaterial({color:'#fff6d8',transparent:true,opacity:riv?0.85:0.5}),v.x,TY[k]+0.002,v.z);m.castShadow=false;return m});
@@ -35,7 +35,7 @@ function bHammer(){const st=K.st,hits=st.hits||2,riv=st.kind==='rivet',P=st.pts.
   strike(a=>P2.rotation.z=a,{own:hm,rest:-0.6,top:-1.42,hit:0,wind:0.08,fall:0.1,pow:2.8,reb:0.22,settle:0.26,onHit:()=>{if(ok){sf('cekic',0.55)||sfx.punch();puff(hv,3,'#c9a37a');impactFx(1,pc)}else impactFx(0.4)},done:()=>{const id=hm.sid;tween(0.16,k=>{if(hm.sid===id)P2.rotation.z=-0.9*k},()=>{if(hm.sid===id)hm.visible=false})}});
   if(!ok){miss++;sfx.bad();toast('Iskaladın',400);return}sc.push(clamp(1-d/0.07,0.3,1));h++;
   if(st.kind==='dent'){}else if(riv){cur.position.y=TY[i]+0.006-0.005*h/hits;cur.scale.set(1+0.25*h/hits,1,1+0.25*h/hits)}else cur.scale.set(1+h*0.6,1,1+h*0.6);
-  if(h>=hits){h=0;ghost[i].visible=false;i++;if(i>=P.length){K.work.remove(mk);fin(clamp(avg(sc)-miss*0.05,0.2,1),st.kind==='dent'?'İyi dövüldü!':riv?'Perçinler sağlam!':'Delikler açıldı!');return}place()}};
+  if(h>=hits){h=0;ghost[i].visible=false;i++;if(i>=P.length){K.work.remove(mk);if(st.at==='band'&&K.band)K.band.scale.set(1.25,0.8,1.08);if(riv&&K.band&&!st.at){const bd=K.band;K.band=null;setTimeout(()=>K.work.remove(bd),600)}fin(clamp(avg(sc)-miss*0.05,0.2,1),st.kind==='dent'?'İyi dövüldü!':riv?'Perçinler sağlam!':'Delikler açıldı!');return}place()}};
  K.skipFn=()=>{K.work.remove(mk);K.work.remove(hm);ghost.forEach(g=>K.work.remove(g))}}
 
 /* Cüzdan: katlama */
