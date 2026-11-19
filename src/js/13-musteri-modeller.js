@@ -66,7 +66,7 @@ head.position.y=1.78;g.add(head);g.position.copy(DOOR);S.add(g);const c={g,head,
 function walk(c,to,dur,done){const id=++c.tok,fr=c.g.position.clone();{const dd=fr.distanceTo(to);if(dd>0.05){const r0=c.g.rotation.y,td=Math.min(0.3,Math.max(dur,0.01)),t0=tt;let da=Math.atan2(to.x-fr.x,to.z-fr.z)-r0;da=Math.atan2(Math.sin(da),Math.cos(da));tween(td,()=>{if(id===c.tok)c.g.rotation.y=r0+da*Math.min(1,(tt-t0)/td)})}if(c.A&&c.A.walk)c.A.walk.timeScale=clamp(dd/Math.max(dur,0.01)/0.85,0.75,1.5)}c.walking=true;anim(c,'walk');tween(dur,k=>{if(id===c.tok)c.g.position.lerpVectors(fr,to,k)},()=>{if(id!==c.tok)return;c.walking=false;anim(c,'idle');done&&done()})}
 function mkOrder(){const pool0=PRODS.filter(unlocked),sp=SEAS[season()].p,pool=pool0.concat(pool0.filter(x=>sp.includes(x.id)),pool0.filter(x=>sp.includes(x.id))),p=pick(pool),color=p.need.boya?pick(PAINTS):null,style=p.styles&&Math.random()<0.6?pick(p.styles):null;
 if(G.first)Object.entries(p.need).forEach(([k,n])=>{const key=k==='boya'?'boya_'+color.id:k;G.inv[key]=Math.max(G.inv[key],n)});
-return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)*(sp.includes(p.id)?1.2:1)/5)*5,hurry:!G.first&&Math.random()<0.15}}
+return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)*(sp.includes(p.id)?1.2:1)*balM('sell')*prodM(p.id)/5)*5,hurry:!G.first&&Math.random()<0.15}}
 function spawn(){if(Q.length>=3)return;const c=makeCustomer(),pv=G.stock.filter(x=>x.price>0);
 if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
 else if(!G.first&&!fOff('tamir',true)&&Math.random()<0.16){const o=c.order=mkRepOrder();c.acc=c.accMax=75;c.dead=c.deadMax=260;c.wait=170}
