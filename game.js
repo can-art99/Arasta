@@ -1,7 +1,7 @@
 
 (()=>{
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261119.2011';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261119.2033';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -995,7 +995,7 @@ function load(){try{const d=JSON.parse(localStorage.getItem(SK));if(!d)return;G.
 (d.plots||[]).forEach((q,i)=>{const o=PL[i];if(!o)return;o.own=!!q.own||(!o.cost&&!o.gem);o.seed=CROPS[q.seed]?q.seed:null;o.w=!!q.w;if(o.seed){o.dur=CROPS[o.seed].s;o.end=q.end||(NOW()+(q.rem||0))}})}catch(e){}}
 const tierOf=r=>r>=TIERS[3]?3:r>=TIERS[2]?2:1;
 const MARKET=[{k:'hamderi',f:18},{k:'deri',f:28},{k:'iplik',f:14},{k:'taban',f:16},{k:'toka',f:14},{k:'kaucuk',f:12},{k:'kurum',f:6},{k:'tutkal',f:5},
-{k:'pirinc',f:18,t:2},{k:'bakir',f:22,t:2},{k:'koza',f:18,t:2},{k:'demir',f:26,t:3},{k:'kumas',f:30,t:2},{k:'kutuk',f:12,t:3},{k:'balmumu',f:8,t:3}];
+{k:'pirinc',f:18,t:2},{k:'bakir',f:22,t:2},{k:'koza',f:18,t:2},{k:'demir',f:26,t:3},{k:'kumas',f:30,t:2},{k:'kutuk',f:12,t:3},{k:'balmumu',f:8,t:3},{k:'cehri',f:7,t:2},{k:'palamut',f:7,t:2}];
 const SUPPLY=[{items:{hamderi:5},f:70},{items:{kaucuk:5},f:50},{items:{pirinc:3},f:45,t:2},{items:{kutuk:5},f:45,t:3}];
 const DELAY=40;
 let tt=0;const NOW=()=>Date.now()/1000;
