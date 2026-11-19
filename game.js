@@ -1,7 +1,7 @@
 
 (()=>{
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261119.2151';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261119.2156';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -2254,7 +2254,7 @@ function bForge(){const obj=(K.is3d&&K.m3)?K.m3.g:K.piece;const bp=V(BC.x+0.3,Y,
  const bw=new THREE.Group();bw.position.set(bp.x+0.02,Y,bp.z+0.56);K.work.add(bw);const bi=new THREE.Group();bi.rotation.y=Math.PI;bw.add(bi);
  {const w=fitM('m_bellow',{h:0.26});if(w){bi.add(w)}else{put(bi,B(0.14,0.05,0.2),M('#7a4a2a'),0,0.03,0);put(bi,Cy(0.012,0.018,0.1,8),M('#5a5a60',0.4),0,0.03,-0.14).rotation.x=Math.PI/2}}
  const p0=obj?obj.position.clone():null,r0=obj?obj.rotation.clone():null,mats=[];if(obj)obj.traverse(o=>{if(o.isMesh&&o.material&&o.material.emissive){o.material=o.material.clone();mats.push(o.material)}});const c0=mats.map(m=>m.color.clone()),hot=new THREE.Color('#e0481a');
- if(obj){const a=obj.position.clone(),b=V(bp.x,Y+0.085,bp.z);tween(0.5,k=>{obj.position.lerpVectors(a,b,k);obj.position.y+=Math.sin(k*Math.PI)*0.15})}
+ if(obj){const a=obj.position.clone(),b=V(bp.x,Y+0.085,bp.z);try{obj.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(obj),cc=bb.getCenter(new THREE.Vector3());K.work.worldToLocal(cc);b.x-=cc.x-a.x;b.z-=cc.z-a.z;b.y+=Math.max(0,a.y-(K.work.worldToLocal(bb.min.clone()).y));const sz=bb.getSize(new THREE.Vector3()),kx=Math.max(1,(sz.x+0.05)/0.24),kz=Math.max(1,(sz.z+0.05)/0.54);fg.scale.set(kx,1,kz);bw.position.z+=0.27*(kz-1)}catch(e){}tween(0.5,k=>{obj.position.lerpVectors(a,b,k);obj.position.y+=Math.sin(k*Math.PI)*0.15})}
  let heat=0,lp=-1,sc=[],done=false,t0=tt,flr=0;
  ui.act.innerHTML='<div class="gauge"><div class="gf" id="gf" style="width:0%;background:linear-gradient(90deg,#f2b33a,#e0501c)"></div></div>';const b=btn('💨 Körükle','g',()=>pump());b.style.minWidth='60%';b.classList.add('beat');ui.act.appendChild(b);
  const pump=()=>{if(done)return;const dt=lp<0?0.9:tt-lp;if(dt<0.3){toast('Çok hızlı! Körük dolmadı',600);return}lp=tt;const q=clamp(1-Math.abs(dt-0.85)/0.8,0.25,1);sc.push(q);heat=Math.min(1,heat+0.08+0.07*q);
