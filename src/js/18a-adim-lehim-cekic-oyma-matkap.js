@@ -47,7 +47,7 @@ function bFold(){const bb=shapeBB(),w=bb.w,l=bb.l,th=K.p.wood?0.03:0.012,col=K.p
  K.skipFn=()=>{pv.rotation.x=Math.PI;K.top=Y+th*2+0.001};tipStep('Üst yarıyı tutup aşağı katla')}
 
 /* Bağcık geçirme */
-function bLace(){const P=K.st.pts.map(LP);let i=1,miss=0;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(0.01,0.003,5,12),M('#c9c9c9',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
+function bLace(){const P=K.st.pts.map(LP);P.forEach(v=>v.y=surfY(v.x,v.z,v.y,[]));let i=1,miss=0;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(0.01,0.003,5,12),M('#c9c9c9',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
  let live=null;const lm='#f4f0e6',seg=(a,b)=>{const g=lineSeg(K.work,a,b,lm,0.008);g.position.y=Math.max(a.y,b.y)+0.006;return g};
  const mv=p=>{const a=P[i-1],q=V(p.x,a.y,p.z);if(live)K.work.remove(live);live=seg(a,q);toolAt(V(p.x,0,p.z),'nd',a.y+0.01);const b=P[i];if(Math.hypot(p.x-b.x,p.z-b.z)<0.035){K.work.remove(live);live=null;seg(a,b);sfx.stitch();i++;tipStep(`Bağcık ${i-1}/${P.length-1}`);if(i>=P.length){fin(clamp(1-miss*0.08,0.3,1),'Bağcık geçti!')}}};
  K.pd=mv;K.pm=mv;K.pu=()=>{if(live){K.work.remove(live);live=null;miss++}};K.skipFn=()=>{if(live)K.work.remove(live)};tipStep('Bağcığı sıradaki deliğe sürükle')}

@@ -1,7 +1,7 @@
 
 (()=>{
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261120.1303';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261120.2331';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1969,7 +1969,7 @@ else if(w==='taban'){obj=flat(soleShape(1),0.03,'#2a221d');tgt=V(BC.x,K.top+0.00
 else{obj=buckle();tgt=V(BC.x,K.top+0.004,BC.z+(K.p.id==='kemer'?0.3:-0.2));out=rrect(0.12,0.09,0.015);obj.position.set(0.47,K.top+0.02,1.98)}
 K.work.add(obj);K.drag={obj,tgt,outline:shapePts(out,48,tgt,0.004)}}
 function eDrag(){sfx.drop();const D=K.drag,d=Math.hypot(D.obj.position.x-D.tgt.x,D.obj.position.z-D.tgt.z),s=clamp(1-d/(K.st.what==='taban'?0.16:0.1),0,1);
-const fr=D.obj.position.clone(),ob=D.obj,tg=D.tgt.clone();if(K.st.what==='nozzle'){K.nozzle=ob;K.nozObj=ob}tween(0.22,k=>{ob.position.lerpVectors(fr,tg,k);ob.position.y=tg.y+0.08*Math.sin(k*Math.PI)},()=>{puff(tg,8);tween(0.18,k=>ob.scale.set(1+0.08*Math.sin(k*Math.PI),1-0.25*Math.sin(k*Math.PI),1+0.08*Math.sin(k*Math.PI)))});K.drag=null;stepDone(s,s>0.85?'Tam yerinde!':null)}
+const fr=D.obj.position.clone(),ob=D.obj,tg=D.tgt.clone();if(K.st.what==='nozzle'){K.nozzle=ob;K.nozObj=ob}const und=K.st.what==='taban';if(und){tg.y=Y+0.001}tween(0.22,k=>{ob.position.lerpVectors(fr,tg,k);ob.position.y=tg.y+0.08*Math.sin(k*Math.PI)},()=>{puff(tg,8);if(und){const lift=0.032;K.work.children.forEach(c=>{if(c!==ob)c.position.y+=lift});K.top+=lift;if(ob.geometry)ob.geometry.scale(1.3,1,1.16)}tween(0.18,k=>ob.scale.set(1+0.08*Math.sin(k*Math.PI),1-0.25*Math.sin(k*Math.PI),1+0.08*Math.sin(k*Math.PI)))});K.drag=null;stepDone(s,s>0.85?'Tam yerinde!':null)}
 function to3D(defl){K.is3d=true;const st=K.p.styles?(G.order.style||K.p.styles[0]):null,m=K.p.build(K.p.sheet,st,K);K.work.children.forEach(c=>c.visible=false);m.g.position.copy(BC);m.g.scale.setScalar(1.6);K.work.add(m.g);m.g.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(m.g);K.top=bb.max.y+0.002;K.piece={material:m.um,scale:{set z(v){m.g.scale.y=1.6*v;if(K.st&&K.st.tool==='kompresor'){m.g.scale.x=m.g.scale.z=1.6*v}},get z(){return m.g.scale.y/1.6}}};K.m3=m;const g=m.g;if(defl){g.scale.set(1.6*0.62,1.6*0.14,1.6*0.62);g.updateMatrixWorld(true);K.top=new THREE.Box3().setFromObject(g).max.y+0.002;K.defl=true;return}g.scale.set(1.6,0.06,1.6);sfx.drop();puff&&puff(V(BC.x,Y+0.05,BC.z),8,'#e8dcc0');tween(0.5,k=>g.scale.set(1.6,0.06+1.54*k,1.6));toast('Ürün şekillendi',900)}
 function mkPump(){if(K.pDev&&K.pDev.parent)return K.pDev;const d=new THREE.Group();d.position.set(BC.x+0.4,Y,BC.z-0.26);d.rotation.y=-0.35;K.work.add(d);K.pDev=d;
  const red=M('#b8322a',0.35),dk=M('#1d1d1f',0.7),st=M('#b8bcc0',0.25),br=M('#c9a23a',0.25);
@@ -2146,7 +2146,7 @@ function bFold(){const bb=shapeBB(),w=bb.w,l=bb.l,th=K.p.wood?0.03:0.012,col=K.p
  K.skipFn=()=>{pv.rotation.x=Math.PI;K.top=Y+th*2+0.001};tipStep('Üst yarıyı tutup aşağı katla')}
 
 /* Bağcık geçirme */
-function bLace(){const P=K.st.pts.map(LP);let i=1,miss=0;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(0.01,0.003,5,12),M('#c9c9c9',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
+function bLace(){const P=K.st.pts.map(LP);P.forEach(v=>v.y=surfY(v.x,v.z,v.y,[]));let i=1,miss=0;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(0.01,0.003,5,12),M('#c9c9c9',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
  let live=null;const lm='#f4f0e6',seg=(a,b)=>{const g=lineSeg(K.work,a,b,lm,0.008);g.position.y=Math.max(a.y,b.y)+0.006;return g};
  const mv=p=>{const a=P[i-1],q=V(p.x,a.y,p.z);if(live)K.work.remove(live);live=seg(a,q);toolAt(V(p.x,0,p.z),'nd',a.y+0.01);const b=P[i];if(Math.hypot(p.x-b.x,p.z-b.z)<0.035){K.work.remove(live);live=null;seg(a,b);sfx.stitch();i++;tipStep(`Bağcık ${i-1}/${P.length-1}`);if(i>=P.length){fin(clamp(1-miss*0.08,0.3,1),'Bağcık geçti!')}}};
  K.pd=mv;K.pm=mv;K.pu=()=>{if(live){K.work.remove(live);live=null;miss++}};K.skipFn=()=>{if(live)K.work.remove(live)};tipStep('Bağcığı sıradaki deliğe sürükle')}
