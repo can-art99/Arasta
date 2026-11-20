@@ -6,8 +6,8 @@ tl('sc',(i,g)=>{i.position.set(0,0.02,0.11);i.rotation.x=-0.3;[1,-1].forEach(sg=
 function brushT(n,tip){tl(n,(i,g)=>{i.rotation.x=0.55;const t=put(i,new THREE.ConeGeometry(0.016,0.05,8),M(tip,0.9),0,0.025,0);t.rotation.x=Math.PI;g.userData.tip=t;put(i,Cy(0.013,0.013,0.035,8),M('#b8bcc0',0.35),0,0.065,0);put(i,Cy(0.009,0.012,0.2,8),M('#a0703c'),0,0.18,0)})}
 brushT('br','#6e3d1f');brushT('gl','#efe6c8');
 /* fırçaların gerçek modeli yüklenince el aletini değiştir: uç aşağıda, sap yukarıda */
-setTimeout(()=>[['br','m_brushP',0.24],['gl','m_brushL',0.2]].forEach(([n,m,L])=>glb(m,g=>{try{const i=TL[n].children[0],o=g.scene.clone(true);const bb=new THREE.Box3().setFromObject(o),h=bb.max.y-bb.min.y;o.scale.setScalar(L/h);o.position.y=-bb.min.y*L/h;
- let tip=null;o.traverse(x=>{if(x.isMesh){x.castShadow=true;x.material=x.material.clone();const nm=x.material.name;if(n==='br'&&nm==='039BE5')tip=x;if(n==='gl'&&nm==='Material.001')tip=x}});
+setTimeout(()=>[['br','m_brushP',0.24],['gl','m_glue',0.2]].forEach(([n,m,L])=>glb(m,g=>{try{const i=TL[n].children[0];let o=g.scene.clone(true);if(n==='gl'){const w=new THREE.Group();o.rotation.x=Math.PI;w.add(o);o.updateMatrixWorld(true);o=w}const bb=new THREE.Box3().setFromObject(o),h=bb.max.y-bb.min.y;o.scale.setScalar(L/h);o.position.y=-bb.min.y*L/h;
+ let tip=null;o.traverse(x=>{if(x.isMesh){x.castShadow=true;x.material=x.material.clone();const nm=x.material.name;if(n==='br'&&nm==='039BE5')tip=x;if(n==='gl'&&/cap/i.test(x.name))tip=x}});
  i.children.slice().forEach(c=>i.remove(c));i.add(o);if(tip)TL[n].userData.tip=tip}catch(e){}})),0);
 tl('sw',(i)=>{i.rotation.x=-0.25;i.position.set(0,0.03,0.08);const b=put(i,B(0.05,0.003,0.2),steel,0,0,-0.06);for(let j=0;j<10;j++)put(i,B(0.008,0.003,0.008),steel,-0.027,0,-0.15+j*0.019).rotation.y=0.78;put(i,B(0.04,0.05,0.08),M('#8a3a20'),0,0.012,0.08)});
 tl('ax',(i)=>{i.rotation.x=0.75;put(i,Cy(0.008,0.009,0.24,8),M('#6b4528'),0,0.14,0.03).rotation.x=0.15;put(i,B(0.012,0.06,0.07),steel,0,0.03,0)});

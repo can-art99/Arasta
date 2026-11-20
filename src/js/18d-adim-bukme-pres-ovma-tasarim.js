@@ -1,10 +1,33 @@
 /* At nalı: bükme */
-function bBend(){if(K.piece&&K.piece.visible!==undefined)K.piece.visible=false;const L=0.5,AM=1.35*Math.PI,y=Y+0.02,mat=M('#8a8e94',0.35);mat.emissive=new THREE.Color('#ff4a10');mat.emissiveIntensity=0.45;let b=0,mesh=null,la=null,tot=0;
- const build=()=>{const A=Math.max(0.001,b*AM),R=L/A,pts=[];for(let i=0;i<=24;i++){const f=i/24;if(b<0.01)pts.push(V(BC.x+(f-0.5)*L,y,BC.z));else{const t=(f-0.5)*A;pts.push(V(BC.x+R*Math.sin(t),y,BC.z-R*Math.cos(t)+R*0.35))}}const g=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),40,0.018,8,false);if(mesh){mesh.geometry.dispose();mesh.geometry=g}else{mesh=new THREE.Mesh(g,mat);mesh.castShadow=true;K.work.add(mesh)}};build();
- const ring=dashRing(0.16,Y+0.004,26);K.hy=Y;
- const mv=p=>{toolAt(V(p.x,0,p.z),'cl',Y+0.05);const a=angAt(p);if(la!=null){const d=Math.abs(wrapA(a-la));if(d<0.8)tot+=d}la=a;b=Math.min(1,tot/(Math.PI*1.6));build();if(Math.random()<0.25)sfx.thud&&noise(0.05,0.02,500,0.5,0,200);tipStep(`Bük · %${Math.round(b*100)}`);if(b>=1)end()};
- const end=()=>{K.work.remove(ring);tween(1,q=>mat.emissiveIntensity=0.45*(1-q));sfx.punch();fin(1,'Nal büküldü!')};
- K.pd=p=>{la=null;mv(p)};K.pm=mv;K.skipFn=()=>{b=1;build();K.work.remove(ring)};tipStep('Çubuğun etrafında daire çizerek bük')}
+function fiStage(){if(K.barrel)return;K.hid=[];K.work.children.slice().forEach(c=>{if(c.isMesh&&c.visible&&c!==K.band){c.visible=false;K.hid.push(c)}});if(K.band)K.band.visible=false;
+ const H=0.3,Rb=0.148,pts=[];for(let k=0;k<=12;k++){const y=k/12*H;pts.push(new THREE.Vector2(Rb*(0.86+0.14*Math.sin(Math.PI*y/H)),y))}
+ const g=new THREE.Group(),wm=new THREE.MeshStandardMaterial({color:'#a8743f',roughness:0.85,flatShading:true});const body=new THREE.Mesh(new THREE.LatheGeometry(pts,14),wm);body.castShadow=true;g.add(body);
+ const lid=new THREE.Mesh(new THREE.CircleGeometry(Rb*0.86,14),new THREE.MeshStandardMaterial({color:'#c08a52',roughness:0.9}));lid.rotation.x=-Math.PI/2;lid.position.y=H-0.004;g.add(lid);
+ for(let k=0;k<14;k++){const a=k/14*Math.PI*2;const ln=put(g,B(0.003,0.002,Rb*0.84),M('#7a5230'),Math.cos(a)*0.001,H-0.002,0);ln.rotation.y=a;ln.position.set(Math.sin(a)*Rb*0.42,H-0.002,Math.cos(a)*Rb*0.42);ln.castShadow=false}
+ g.position.set(BC.x+0.53,Y,BC.z+0.08);g.scale.setScalar(0.7);K.work.add(g);K.barrel=g;K.barrelH=H;K.hoops=[]}
+function bBend(){const st=K.st,full=!!st.full,N=st.n||1;if(full)fiStage();else if(K.piece&&K.piece.visible!==undefined)K.piece.visible=false;
+ const R=0.15,L=full?2*Math.PI*R:0.5,AM=full?2*Math.PI:1.35*Math.PI,y=Y+0.02,TR=full?0.011:0.018;let mat,b=0,mesh=null,la=null,tot=0,made=0;
+ const heat=()=>{mat=M('#8a8e94',0.35);mat.emissive=new THREE.Color('#ff4a10');mat.emissiveIntensity=0.45};heat();
+ const build=()=>{const A=Math.max(0.001,b*AM),Rr=L/A,pts=[];for(let i=0;i<=40;i++){const f=i/40;if(b<0.01)pts.push(V(BC.x+(f-0.5)*L,y,BC.z));else{const t=(f-0.5)*A;pts.push(V(BC.x+Rr*Math.sin(t),y,BC.z-Rr*Math.cos(t)+(full?Rr:Rr*0.35)))}}const g=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,full&&b>=1),64,TR,6,full&&b>=1);if(mesh){mesh.geometry.dispose();mesh.geometry=g}else{mesh=new THREE.Mesh(g,mat);mesh.castShadow=true;K.work.add(mesh)}};build();
+ const ring=dashRing(0.16,Y+0.004,26);K.hy=Y;const ctr=m=>{m.geometry.translate(-BC.x,-y,-(BC.z+R));m.position.set(BC.x,y,BC.z+R)};
+ const lbl=()=>tipStep(full?`${N>1?(made+1)+'. çember · ':''}Bük · %${Math.round(b*100)}`:`Bük · %${Math.round(b*100)}`);
+ const mv=p=>{toolAt(V(p.x,0,p.z),'cl',Y+0.05);const a=angAt(p);if(la!=null){const d=Math.abs(wrapA(a-la));if(d<0.8)tot+=d}la=a;b=Math.min(1,tot/(Math.PI*(full?2.2:1.6)));build();if(Math.random()<0.25)noise(0.05,0.02,500,0.5,0,200);lbl();if(b>=1)end()};
+ const end=()=>{const m=mesh,mm=mat;tween(1,q=>mm.emissiveIntensity=0.45*(1-q));sf('cekic',0.5)||sfx.punch();
+  if(full){ctr(m);K.hoops.push(m);made++;const a=m.position.clone(),to=V(BC.x-0.4,y+(made-1)*0.03,BC.z+0.05);tween(0.45,q=>{m.position.lerpVectors(a,to,q);m.scale.setScalar(1-0.45*q)});
+   if(made<N){mesh=null;b=0;tot=0;la=null;heat();build();toast('Bir çember hazır, ikincisini bük',1300);lbl();return}}
+  K.work.remove(ring);K.pd=K.pm=null;fin(1,full?'Çemberler hazır!':'Nal büküldü!')};
+ K.pd=p=>{la=null;mv(p)};K.pm=mv;
+ K.skipFn=()=>{K.work.remove(ring);if(full){while(made<N){b=1;build();const m=mesh;m.material.emissiveIntensity=0;ctr(m);K.hoops.push(m);made++;m.position.set(BC.x-0.4,y+(made-1)*0.03,BC.z+0.05);m.scale.setScalar(0.55);mesh=null;b=0;heat()}}else{b=1;build()}};lbl();tipStep(full?'Çubuğun etrafında daire çizerek tam çember yap':'Çubuğun etrafında daire çizerek bük')}
+function bMount(){fiStage();const bar=K.barrel,H=K.barrelH,hs=K.hoops||[],lv=[H*0.8,H*0.22];let i=0,cur=null,off=null,sc=[];
+ const a=bar.position.clone(),to=V(BC.x,Y,BC.z),s0=bar.scale.x;tween(0.5,q=>{bar.position.lerpVectors(a,to,q);bar.scale.setScalar(s0+(1-s0)*q)});
+ hs.forEach(m=>{m.userData.home=m.position.clone();m.userData.hsc=m.scale.x});K.hy=Y+H;
+ const tip=()=>tipStep(`Çember ${i+1}/${hs.length} · fıçının üstüne sürükle`);tip();
+ K.pd=p=>{const m=hs[i];if(!m)return;if(Math.hypot(m.position.x-p.x,m.position.z-p.z)<0.22){cur=m;off=V(m.position.x-p.x,0,m.position.z-p.z);m.scale.setScalar(0.95);sfx.pick()}};
+ K.pm=p=>{if(!cur)return;cur.position.set(p.x+off.x,Y+H+0.05,p.z+off.z)};
+ K.pu=()=>{if(!cur)return;const m=cur;cur=null;const d=Math.hypot(m.position.x-BC.x,m.position.z-BC.z);
+  if(d<0.1){sc.push(clamp(1-d/0.1,0.4,1));const fr=m.position.clone(),tg=V(BC.x,Y+lv[i],BC.z);tween(0.35,q=>m.position.lerpVectors(fr,tg,q));sf('cekic',0.4)||sfx.drop();puff(V(BC.x,Y+H,BC.z),4,'#c9a37a');i++;if(i>=hs.length){K.pd=K.pm=K.pu=null;setTimeout(()=>fin(avg(sc),'Çemberler fıçıya geçti!'),450)}else tip()}
+  else{const fr=m.position.clone();tween(0.25,q=>m.position.lerpVectors(fr,m.userData.home,q));m.scale.setScalar(m.userData.hsc);toast('Fıçının tam üstüne bırak',800)}};
+ K.skipFn=()=>{bar.position.copy(to);bar.scale.setScalar(1);hs.forEach((m,k)=>{m.scale.setScalar(0.95);m.position.set(BC.x,Y+(lv[k]||lv[0]),BC.z)})}}
 /* Nazar: cam katmanları */
 function bLayer(){const L=[{r:0.112,c:'#ffffff',ad:'Beyaz'},{r:0.072,c:'#7fc8f0',ad:'Açık mavi'},{r:0.036,c:'#151313',ad:'Siyah'}];let i=0,cur=null,off=null,sc=[];const top=K.top;K.hy=top+0.02;
  const D=L.map((l,k)=>{const m=put(K.work,Cy(l.r,l.r,0.008,24),M(l.c,0.15),BC.x+0.42,top+0.01,BC.z-0.18+k*0.17);m.userData.home=m.position.clone();return m});
