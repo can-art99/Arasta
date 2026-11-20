@@ -1,7 +1,7 @@
 
 (()=>{
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261121.0035';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261121.0043';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -946,13 +946,14 @@ setInterval(()=>{if(clDirty)cloudPush(true)},25000);document.addEventListener('v
 function newCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint32Array(12));let c='';r.forEach(x=>c+=A[x%A.length]);return c}
 const fmtCode=c=>c.replace(/(.{4})(?=.)/g,'$1-'),normCode=c=>(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
 /* yönetici sunucuda kaydı geri yüklediyse ya da tazminat verdiyse, yerel kaydı sunucudakiyle değiştir */
+function reloadGo(go){try{if(go)sessionStorage.setItem('arasta-go','1')}catch(e){}location.reload()}
 /* başka cihaz buluta daha yeni ilerleme yazdıysa onu al */
 let clPulling=false;
-function cloudNewer(){if(clPulling||!G.cloud)return;clPulling=true;rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(!d){clPulling=false;return}d.cloud=G.cloud;localStorage.setItem(SK,JSON.stringify(d));save=()=>{};try{toast('Başka cihazdaki daha yeni ilerlemen yükleniyor…',2200)}catch(e){}setTimeout(()=>location.reload(),1500)}).catch(()=>{clPulling=false})}
+function cloudNewer(){if(clPulling||!G.cloud)return;clPulling=true;rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(!d){clPulling=false;return}d.cloud=G.cloud;localStorage.setItem(SK,JSON.stringify(d));save=()=>{};try{toast('Başka cihazdaki daha yeni ilerlemen yükleniyor…',2200)}catch(e){}setTimeout(()=>reloadGo(G.started),1500)}).catch(()=>{clPulling=false})}
 function cloudCheck(){if(!G.cloud||clPulling)return;rpc('arasta_rev',{p_code:G.cloud}).then(r=>{if(typeof r==='number'&&r>(G.rev||0))cloudNewer()}).catch(()=>{})}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)cloudCheck()});
-function admPull(a){rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(!d)return;d.cloud=G.cloud;clPulling=true;d.adm=a;localStorage.setItem(SK,JSON.stringify(d));save=()=>{};try{toast('Dükkânın güncellendi, yeniden yükleniyor…',2000)}catch(e){}setTimeout(()=>location.reload(),1500)}).catch(()=>{})}
-function cloudLoadInto(code){code=normCode(code);if(code.length!==12)return Promise.resolve('bad');return rpc('arasta_get',{p_code:code}).then(d=>{if(!d)return 'none';d.cloud=code;let tgt=SSLOT;const cur=slotInfo(SSLOT);let curCode=null;try{curCode=JSON.parse(localStorage.getItem(SK)).cloud}catch(e){}if(cur&&curCode!==code){tgt=['1','2','3'].find(n=>!slotInfo(n));if(!tgt)return 'full'}localStorage.setItem(SKOF(tgt),JSON.stringify(d));localStorage.setItem('arasta-slot',tgt);save=()=>{};location.reload();return 'ok'}).catch(()=>'net')}
+function admPull(a){rpc('arasta_get',{p_code:G.cloud}).then(d=>{if(!d)return;d.cloud=G.cloud;clPulling=true;d.adm=a;localStorage.setItem(SK,JSON.stringify(d));save=()=>{};try{toast('Dükkânın güncellendi, yeniden yükleniyor…',2000)}catch(e){}setTimeout(()=>reloadGo(G.started),1500)}).catch(()=>{})}
+function cloudLoadInto(code){code=normCode(code);if(code.length!==12)return Promise.resolve('bad');return rpc('arasta_get',{p_code:code}).then(d=>{if(!d)return 'none';d.cloud=code;let tgt=SSLOT;const cur=slotInfo(SSLOT);let curCode=null;try{curCode=JSON.parse(localStorage.getItem(SK)).cloud}catch(e){}if(cur&&curCode!==code){tgt=['1','2','3'].find(n=>!slotInfo(n));if(!tgt)return 'full'}localStorage.setItem(SKOF(tgt),JSON.stringify(d));localStorage.setItem('arasta-slot',tgt);save=()=>{};reloadGo(true);return 'ok'}).catch(()=>'net')}
 const STC={pres:80,cark:60,dokuma:90,ors:160,testere:240};
 const GLK={'Ceviz ağacı':[1,20],'Böğürtlen':[1,30],'Kök boya':[1,35],'Lavanta':[1,40],'Arı kovanı':[2,95],'Koyun':[1,45],'Tavuk':[1,35],'Domuz':[1,30],'Paşa':[1,20],'İnek':[2,120],'Keçi':[2,95],'Tavşan':[2,80],'İpek böceği':[2,120],'At':[2,160],'Taş ocağı':[1,35],'Kil çukuru':[1,30],'Söğüt':[1,35],'Kum':[2,65],'Geyik':[3,200],'Oduncu kulübesi':[3,120],'Kömür ocağı':[2,70],'Balık gölü':[2,80],'Hindistan cevizi':[2,95]};
 var TRACT;let buyArm=null,buyT=0;
@@ -2615,5 +2616,6 @@ $('startB').onclick=()=>{ac();musSet(G.mus);sfx.bell();G.started=true;if(!G.clou
 toast(G.first?`Hoş geldin usta!<br>İlk müşterin geliyor.`:`Tekrar hoş geldin usta!`,2200)};
 /* giriş ekranı: uçuşan ışık tanecikleri + ilk dokunuşta müzik */
 {const sp=$('splash'),f=document.createElement('div');f.className='spfx';for(let i=0;i<14;i++){const e=document.createElement('i'),w=4+Math.random()*5;e.style.cssText=`left:${5+Math.random()*90}%;--dx:${(Math.random()*70-35)|0}px;width:${w}px;height:${w}px;animation-duration:${7+Math.random()*7}s;animation-delay:${-Math.random()*12}s`;f.appendChild(e)}sp.insertBefore(f,sp.firstChild);sp.addEventListener('pointerdown',()=>{ac();if(G.mus&&!G.started)musSet(true)},true)}
+try{if(sessionStorage.getItem('arasta-go')){sessionStorage.removeItem('arasta-go');setTimeout(()=>{const b=document.getElementById('startB');if(b&&document.getElementById('splash')&&!G.started)b.click()},700)}}catch(e){}
 
 })();

@@ -129,3 +129,4 @@ $('startB').onclick=()=>{ac();musSet(G.mus);sfx.bell();G.started=true;if(!G.clou
 toast(G.first?`Hoş geldin usta!<br>İlk müşterin geliyor.`:`Tekrar hoş geldin usta!`,2200)};
 /* giriş ekranı: uçuşan ışık tanecikleri + ilk dokunuşta müzik */
 {const sp=$('splash'),f=document.createElement('div');f.className='spfx';for(let i=0;i<14;i++){const e=document.createElement('i'),w=4+Math.random()*5;e.style.cssText=`left:${5+Math.random()*90}%;--dx:${(Math.random()*70-35)|0}px;width:${w}px;height:${w}px;animation-duration:${7+Math.random()*7}s;animation-delay:${-Math.random()*12}s`;f.appendChild(e)}sp.insertBefore(f,sp.firstChild);sp.addEventListener('pointerdown',()=>{ac();if(G.mus&&!G.started)musSet(true)},true)}
+try{if(sessionStorage.getItem('arasta-go')){sessionStorage.removeItem('arasta-go');setTimeout(()=>{const b=document.getElementById('startB');if(b&&document.getElementById('splash')&&!G.started)b.click()},700)}}catch(e){}
