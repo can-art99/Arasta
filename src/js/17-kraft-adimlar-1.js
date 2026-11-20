@@ -1,6 +1,6 @@
 /* ---------- ürüne özel mekanikler ---------- */
 function ellShape(rx,ry){const s=new THREE.Shape(),N=36;for(let i=0;i<=N;i++){const t=i/N*Math.PI*2;i?s.lineTo(Math.cos(t)*rx,Math.sin(t)*ry):s.moveTo(rx,0)}return s}
-function grow3D(f0){K.is3d=true;const st=K.p.styles?(G.order.style||K.p.styles[0]):null,m=K.p.build(K.p.sheet,st,K);K.work.children.forEach(c=>c.visible=false);m.g.position.copy(BC);K.work.add(m.g);K.m3=m;
+function grow3D(f0){K.is3d=true;const st=K.p.styles?(G.order.style||K.p.styles[0]):null,m=(K.p.craft||K.p.build)(K.p.sheet,st,K);K.work.children.forEach(c=>c.visible=false);m.g.position.copy(BC);K.work.add(m.g);K.m3=m;
  K.piece={material:m.um,scale:{set z(v){m.g.scale.y=1.6*v},get z(){return m.g.scale.y/1.6}}};m.g.scale.setScalar(1.6);m.g.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(m.g);K.fullBB=bb;gF(f0||0.04);return m}
 function gF(f){const g=K.m3.g;g.scale.set(1.6,1.6*Math.max(0.02,f),1.6);g.updateMatrixWorld(true);K.top=new THREE.Box3().setFromObject(g).max.y+0.002};
 const angAt=p=>Math.atan2(p.z-BC.z,p.x-BC.x),wrapA=a=>{while(a>Math.PI)a-=Math.PI*2;while(a<-Math.PI)a+=Math.PI*2;return a};
