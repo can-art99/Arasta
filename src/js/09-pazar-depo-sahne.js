@@ -97,9 +97,6 @@ function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return
 /* ---------- depo ---------- */
 for(let i=0;i<10;i++)add(B(0.66,0.05,9),M(i%2?'#6a4428':'#5e3b22'),OD-3+i*0.66,0,0);
 add(B(40,0.05,40),M('#4a3424'),OD,-0.04,0).castShadow=false;
-{[[-4.4,-1.8],[4.4,-2.2],[-4.6,2.6],[4.5,2.8]].forEach(([x,z],i)=>place(i%2?'barrel':'chest',{x:OD+x,z,h:i%2?0.9:0.6,ry:i}));
- [[-4.2,0.4],[4.3,0.6]].forEach(([x,z])=>{for(let k=0;k<3;k++)add(B(0.6,0.5,0.6),M(['#8a5a34','#7a4a2a','#9a6a3a'][k]),OD+x+(k%2)*0.35,0.25+(k>1?0.5:0),z+(k===1?0.62:0)).rotation.y=k*0.3});
- [-3.8,3.8].forEach(x=>place('post_lantern',{x:OD+x,z:-3.0,h:1.5}))}
 add(B(6.6,4.4,0.15),M('#7a5636'),OD,2.2,-3.25);add(B(0.15,4.4,9),M('#6e4a30'),OD-3.2,2.2,0);add(B(0.15,4.4,9),M('#6e4a30'),OD+3.2,2.2,0);
 const GORD=['Ham madde','İşlenmiş','Yardımcı','Tohum'],DEP=[],DROW=[2.95,2.35,1.75,1.15,0.55],DCX=[-1.12,-0.56,0,0.56,1.12];
 const RFA=M('#8a5a34'),RFB=M('#5a3519');const RFM=[];[3.45,2.83,2.21,1.59,0.97,0.35].forEach(y=>RFM.push(add(B(4.0,0.06,0.55),RFA,OD,y-0.03,-2.9)));[-2.0,2.0].forEach(x=>RFM.push(add(B(0.1,3.9,0.55),RFB,OD+x,1.95,-2.9)));
@@ -107,7 +104,7 @@ RFM.forEach(m=>m.visible=false);DROW.forEach(y=>place('wall_shelf',{x:OD,y:y-0.3
 place('lounge_chair',{x:OD-2.45,z:-0.45,h:0.75,ry:-2.0});place('box_a',{x:OD+2.5,z:0.2,h:0.5,ry:0.4});place('box_a',{x:OD+2.75,z:-0.35,h:0.4,ry:-0.3});place('trash_can',{x:OD+2.6,z:-1.55,h:0.55});
 Object.keys(MATS).sort((a,b)=>GORD.indexOf(MATS[a].g)-GORD.indexOf(MATS[b].g)).forEach((k,i)=>{const [x,y]=slotXY(i%40),o=MATS[k].mk();o.scale.setScalar(1.4);o.position.set(x,y,-2.9);o.visible=false;S.add(o);
 const l=label('depo',V(x,y+0.02,-2.62),'',true);l.el.classList.add('dn');l.off=true;const hb=new THREE.Mesh(new THREE.SphereGeometry(0.19,6,5),HID);hb.position.y=0.08;o.add(hb);const dd={k,o,l,n:-1};DEP.push(dd)});
-place('round_rug',{x:OD,y:0.03,z:0.4,w:2.4});place('m_rug2',{x:OI,y:0.012,z:3.4,w:2.2});place('wall_art',{x:-0.12,y:1.3,z:-3.9,h:0.95,ry:Math.PI});const DHIT=new THREE.Mesh(B(6.2,3.0,0.7),HID);DHIT.position.set(OD,1.75,-2.9);S.add(DHIT);
+place('round_rug',{x:OD,y:0.03,z:0.4,w:2.4});place('wall_art',{x:-0.12,y:1.3,z:-3.9,h:0.95,ry:Math.PI});const DHIT=new THREE.Mesh(B(6.2,3.0,0.7),HID);DHIT.position.set(OD,1.75,-2.9);S.add(DHIT);
 
 /* ---------- depo/vitrin kapasite ve düzen ---------- */
 const CAPS={d:{ad:'Malzeme deposu',v:[100,150,250,400],c:[150,300,600]},s:{ad:'Depo ürün rafı',v:[2,4,6],c:[100,250]},v:{ad:'Vitrin',v:[3,6,9],c:[150,300]}};

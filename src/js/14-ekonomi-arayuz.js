@@ -57,7 +57,7 @@ if($('owO'))$('owO').onclick=()=>{G.owner=false;try{localStorage.removeItem('ara
 const rb=$('rstB');if(rb)rb.onclick=()=>{if(!rstArm){rstArm=true;renderMenu();return}G.cloud=null;try{localStorage.removeItem(SK)}catch(e){}save=()=>{};location.reload()}}
  {const rc=$('rstC');if(rc)rc.onclick=async()=>{rc.disabled=true;rc.textContent='Siliniyor…';let r;try{r=await rpc('arasta_save_del',{p_code:G.cloud})}catch(e){r='net'}if(r!=='ok'){toast('Buluttan silinemedi, bağlantını kontrol et',2200);rc.disabled=false;rc.textContent='Buluttan da sil';return}G.cloud=null;try{localStorage.removeItem(SK)}catch(e){}save=()=>{};location.reload()}}
  {const rx=$('rstX');if(rx)rx.onclick=()=>{rstArm=false;renderMenu()}}
-$('menuB').onclick=()=>{if(G.phase!=='craft'&&G.phase!=='result'){menuTab='hub';renderMenu()}};$('setB').onclick=()=>{if(G.phase!=='craft'&&G.phase!=='result'){menuTab='ayar';renderMenu()}};
+const mOK=()=>G.phase!=='result'&&!(G.phase==='craft'&&modalMode);$('menuB').onclick=()=>{if(mOK()){menuTab='hub';renderMenu()}};$('setB').onclick=()=>{if(mOK()){menuTab='ayar';renderMenu()}};
 const VL=VSL.map((p,i)=>{const l=label('vitrin',V(p.x,p.y-0.03,p.z),'',true);l.el.classList.add('stl');l.off=true;l.el.onclick=()=>{const it=G.stock[i];if(it)openItem(it)};return l});
 function vitLabels(){VL.forEach((l,i)=>{const it=G.stock[i];l.off=!it;if(it){l.el.classList.add('vtag');l.el.innerHTML=`<b>${CN}${it.price}</b><small>${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></small>`}})}
 function vitrinSync(){VIT.clear();G.stock.slice(0,9).forEach((it,i)=>{const p=pr(it),m=p.build(it.col?paintOf(it.col).hex:p.sheet,it.style,{cila:true});m.g.scale.setScalar(1.05);m.g.position.copy(VSL[i]);m.g.rotation.y=-Math.PI/2+0.35;m.g.userData.sid=it.id;
