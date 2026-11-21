@@ -48,7 +48,8 @@ function ZONES(){
   const d=animal('husky',{x:x+0.35,z:z,h:0.62,ry:-0.7,anim:'idle'},g=>quad(g,'#9aa0a8','#4a4f55',0.55));const hh=new THREE.Mesh(new THREE.SphereGeometry(0.4,6,5),HID);hh.position.y=0.3;d.add(hh);PETS.push(d);patch('Paşa',x,z+0.2)}
  /* ---- Orman ---- */
  const clr=(x,z,gc)=>{add(B(1.76,0.05,1.44),M('#7a5a3a'),x,0.025,z).castShadow=false;add(B(1.62,0.06,1.3),M(gc),x,0.03,z).castShadow=false};const OZ=[-1.6,1.0];
- [[-3.2,-4.6,1.4],[-2,-5.1,1.6],[-0.6,-5.4,1.3],[0.9,-5.2,1.5],[2.3,-5.0,1.4],[3.4,-4.3,1.2],[-3.6,-2.6,1.1],[3.6,-2.4,1.0],[-3.7,0.4,1.0],[3.7,0.6,1.1]].forEach(q=>pine(FO+q[0],q[1],q[2]));
+ [[-3.2,-4.6,1.4],[-2,-5.1,1.6],[-0.6,-5.4,1.3],[0.9,-5.2,1.5],[2.3,-5.0,1.4],[3.4,-4.3,1.2],[-3.6,-2.6,1.1],[3.6,-2.4,1.0],[-3.7,0.4,1.0],[3.7,0.6,1.1]].forEach((q,i)=>pine(FO+q[0],q[1],q[2],[4,undefined,5][i%3]));
+ [[-4.3,-1.0,1.0,5],[4.3,-1.2,1.0,4],[-4.2,3.2,0.95,4],[4.2,3.4,1.0,5],[-1.4,-5.9,1.2,5],[1.6,-6.0,1.2,4]].forEach(q=>pine(FO+q[0],q[1],q[2],q[3]));
  place('hut',{x:FO-2.5,z:-3.4,w:2.0,ry:0.4});place('logs',{x:FO-1.2,z:-3.0,w:1.1,ry:1.4});place('m_mine',{x:FO+0.2,z:-3.5,h:1.25,ry:0.3});
  [[1.3,-3.6,0.55,'#8d8a84'],[2.0,-3.3,0.7,'#7d7a74'],[2.8,-3.6,0.6,'#85827c']].forEach(q=>{const r=add(new THREE.DodecahedronGeometry(q[2],0),M(q[3]),FO+q[0],q[2]*0.55,q[1]);r.rotation.set(q[0],q[1],0)});
  // 1. sıra: oduncu · taş ocağı · kum
@@ -91,6 +92,8 @@ function pine(x,z,k,v){const g=new THREE.Group();g.position.set(x,0,z);S.add(g);
  if(v===0){put(g,Cy(0.1*k,0.14*k,0.7*k,6),M('#5a3b22'),0,0.35*k,0);['#3f5f30','#4a6c36','#587a3e'].forEach((c,i)=>{const t=put(g,new THREE.ConeGeometry((0.75-i*0.17)*k,0.9*k,7),M(c),0,(0.95+i*0.5)*k,0);t.rotation.y=i});place('m_pine2',{par:g,swap:1,h:(2.3+hs*0.8)*k,ry,cb:w=>{if(hs>0.2)tint(w)}})}
  else if(v===1){put(g,Cy(0.1*k,0.14*k,0.7*k,6),M('#5a3b22'),0,0.35*k,0);put(g,new THREE.ConeGeometry(0.7*k,1.8*k,7),M(lc),0,1.4*k,0);place('pine',{par:g,swap:1,h:(1.9+hs*0.6)*k,ry})}
  else if(v===2){put(g,Cy(0.1*k,0.15*k,0.9*k,6),M('#6b4a2e'),0,0.45*k,0);put(g,new THREE.IcosahedronGeometry(0.75*k,0),M(lc),0,1.4*k,0);place('m_mulberry',{par:g,swap:1,h:(1.8+hs*0.7)*k,ry,cb:w=>tint(w)})}
+ else if(v===4){glb('birch',gg=>{const ns=[];gg.scene.traverse(o=>{if(/^BirchTree_\d+$/.test(o.name))ns.push(o)});if(!ns.length)return;const src=ns[Math.floor(hs*977)%ns.length],t=src.clone(),w=new THREE.Group();t.position.set(0,0,0);w.add(t);w.updateMatrixWorld(true);let bb=new THREE.Box3().setFromObject(w),sz=bb.getSize(V(0,0,0));t.scale.multiplyScalar((2.6+hs*0.9)*k/sz.y);w.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(w);t.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);w.rotation.y=ry;g.add(w)})}
+ else if(v===5)place('twisted',{par:g,h:(2.4+hs*0.8)*k,ry});
  else{const tr=put(g,Cy(0.07*k,0.11*k,1.1*k,6),M(hs>0.9?'#e8e2d4':'#6b4a2e'),0,0.55*k,0);[[0,1.45,0,0.55],[0.3,1.15,0.15,0.4],[-0.28,1.2,-0.1,0.42]].forEach((q,i)=>{const b=put(g,new THREE.IcosahedronGeometry(q[3]*k,0),M(TPAL[(Math.floor(hs*31)+i)%TPAL.length]),q[0]*k,q[1]*k,q[2]*k);b.rotation.y=i})}}
 for(let i=0;i<13;i++)pine(OB-6.6+i*1.1,-5.6-(i%3)*0.8,1.1+(i%4)*0.25);
 for(let i=0;i<6;i++){pine(OB-4.7-(i%2)*0.9,-4+i*1.5,1+(i%3)*0.2);pine(OB+4.7+(i%2)*0.9,-4+i*1.5,1+((i+1)%3)*0.2)}
