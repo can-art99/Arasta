@@ -76,7 +76,7 @@ const BKH='<h3 class="bkh"><button class="bkb" id="mBack" aria-label="Geri">‹<
 const HUB=[['pazar','Pazar tezgâhı','Günlük mallar'],['ted','Tedarikçi','Toplu sipariş'],['tohum','Tohumcu','Tohumlar'],['takas','Takas','Mal karşılığı mal'],['bit','Bit pazarı','2. el · tamir'],['mezat','Mezat','Açık artırma'],['deco','Dekorcu','Dükkân görünümü']];
 function renderHub(){openSheet('market',`<h3>Pazar</h3><p>Altın: <b>${G.gold}</b> · Gitmek istediğin yeri seç</p><div class="hubg">${HUB.filter(h=>!fOff(h[0],true)&&!(h[0]==='deco'&&fOff('dekor',true))).map(([t,a,d])=>`<button class="hubb" data-tab="${t}"><b>${a}${t==='mezat'&&(G.mz||[]).length?' •':''}</b><small>${d}</small></button>`).join('')}</div>`+closeBtn);wire();
  ui.sheet.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{sfx.tap();if(b.dataset.tab==='deco'){openDeco();return}mTab=b.dataset.tab;renderMarket()})}
-function renderMarket(){if(mTab==='hub'||fOff(mTab,true)){if(mTab!=='hub')fOff(mTab);mTab='hub';renderHub();return}const tabs='';let h;
+function renderMarket(){try{mktNeed()}catch(e){}if(mTab==='hub'||fOff(mTab,true)){if(mTab!=='hub')fOff(mTab);mTab='hub';renderHub();return}const tabs='';let h;
 if(mTab==='pazar'){h=`<h3>Pazar</h3><p>Altın: <b>${G.gold}</b> · Yeni mal: <b id="mkT"></b>${G.disc<1?' · %20 indirim':''}</p>${tabs}`+
 `<div style="text-align:right;margin:4px 0"><button class="btn l" id="hag" ${G.haggled?'disabled':''}>Pazarlık yap</button></div>`+
 G.market.map((m,i)=>{const f=Math.round(m.f*G.disc);return `<div class="row"><img class="ic" src="${ICON[m.k]}" alt=""><div class="n">${MATS[m.k].ad}<small>Tezgâhta: ${m.st} · Depoda: ${G.inv[m.k]}</small></div><button class="btn" data-b="${i}" ${G.gold<f||m.st<1?'disabled':''}>${f} altın</button></div>`}).join('')}

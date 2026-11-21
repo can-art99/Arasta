@@ -102,7 +102,11 @@ const MARKET=[{k:'hamderi',f:18},{k:'deri',f:28},{k:'iplik',f:14},{k:'taban',f:1
 const SUPPLY=[{items:{hamderi:5},f:70},{items:{kaucuk:5},f:50},{items:{pirinc:3},f:45,t:2},{items:{kutuk:5},f:45,t:3}];
 const DELAY=40;
 let tt=0;const NOW=()=>Date.now()/1000;
-function restock(){G.market=MARKET.filter(m=>!m.t||G.tier>=m.t).map(m=>({k:m.k,f:Math.max(2,Math.round(m.f*(0.85+Math.random()*0.35))),st:1+Math.floor(Math.random()*5)}));G.mktT=tt+90;G.disc=1;G.haggled=false}
+function restock(){G.market=MARKET.filter(m=>!m.t||G.tier>=m.t).map(m=>({k:m.k,f:Math.max(2,Math.round(m.f*(0.85+Math.random()*0.35))),st:1+Math.floor(Math.random()*5)}));G.mktT=tt+90;G.disc=1;G.haggled=false;mktNeed()}
+/* siparişin eksik malzemesi başka yoldan bulunamıyorsa pazar tezgâhında her zaman olsun */
+function mktMiss(){const o=G.order;if(!o||!o.p||o.buy)return [];return Object.entries(o.p.need).filter(([k,n])=>k!=='boya'&&(G.inv[k]||0)<n)}
+function mktPrice(k){const m=MARKET.find(x=>x.k===k);if(m)return m.f;for(const s of ST)for(const r of s.rec)if(r.out[k]){let c=0;for(const [a,n] of Object.entries(r.in))c+=n*mktPrice(a);return Math.max(6,Math.round(c*1.3/(r.out[k]||1)))}return 20}
+function mktNeed(){if(!G.market)return;mktMiss().forEach(([k,n])=>{const inM=MARKET.some(m=>m.k===k),e=G.market.find(x=>x.k===k);if(!inM&&typeof easyM==='function'&&easyM(k))return;const need=n-(G.inv[k]||0);if(e){if(e.st<need)e.st=need}else G.market.push({k,f:Math.max(2,Math.round(mktPrice(k))),st:Math.max(need,2),sp:1})})}
 restock();
 
 const ui={gold:$('gold'),rep:$('rep'),tier:$('tierP'),card:$('card'),tip:$('tip'),bub:$('bubble'),act:$('actions'),modal:$('modal'),sheet:$('sheet'),toast:$('toast'),fade:$('fade')};
@@ -123,7 +127,7 @@ function gemRoll(p,msg){if(Math.random()>=p*balM('gem'))return false;G.elmas=(G.
 function hud(){{const e=$('elmas');if(e)e.textContent=G.elmas||0}ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;{const h=`<span class="tk">K${G.tier}</span><span class="tc">${clockTxt()}</span>${ic(WXI[wx]||'sun')}`;if(ui.tier._h!==h){ui.tier._h=h;ui.tier.innerHTML=h}}}
 function clockTxt(){if(G.night)return 'Akşam';const m=480+Math.floor(G.tm),h=Math.floor(m/60);return (h<10?'0':'')+h+':'+String(m%60).padStart(2,'0')}
 const SRCM={yun:'Bahçe › Çiftlik: koyun',sut:'Bahçe › Çiftlik: inek / keçi',tuy:'Bahçe › Çiftlik: tavuk',atkili:'Bahçe › Çiftlik: at',yag:'Bahçe › Çiftlik: domuz',bal:'Bahçe › Bostan: arı kovanı',lavanta:'Bahçe › Bostan: lavanta',ceviz:'Bahçe › Bostan: ceviz ağacı',bogurtlen:'Bahçe › Bostan: böğürtlen',boynuz:'Bahçe › Orman: geyik',tas:'Bahçe › Orman: taş ocağı',kil:'Bahçe › Orman: kil çukuru',kum:'Bahçe › Orman: kum',sogut:'Bahçe › Orman: söğüt',recine:'Bahçe › Orman: çam ağacı'};
-function srcHint(k,d){if(SRCM[k])return SRCM[k];if(MARKET.some(m=>m.k===k))return 'Pazar › Pazar tezgâhı';const c=Object.entries(CROPS).find(([s,v])=>v.out===k);if(c)return 'Pazar › Tohumcu: '+MATS[c[0]].ad+', sonra Bahçe › Bostan';
+function srcHint(k,d){if(SRCM[k])return SRCM[k];if(MARKET.some(m=>m.k===k)||(typeof easyM==='function'&&!easyM(k)))return 'Pazar › Pazar tezgâhı';const c=Object.entries(CROPS).find(([s,v])=>v.out===k);if(c)return 'Pazar › Tohumcu: '+MATS[c[0]].ad+', sonra Bahçe › Bostan';
  for(const s of ST)for(const r of s.rec)if(r.out[k]){const ins=Object.entries(r.in).map(([a,n])=>(n>1?n+' ':'')+MATS[a].ad).join(' + ');return 'Atölye › '+s.ad+' ('+ins+')'+(d?'':'<br>'+Object.keys(r.in).filter(a=>(G.inv[a]||0)<r.in[a]).map(a=>'&nbsp;&nbsp;↳ '+MATS[a].ad+': '+srcHint(a,1)).join('<br>'))}
  return ''}
 const hintOn=()=>G.tier<=1&&(G.rep||0)<200&&!fOff('ipucu',true);
