@@ -39,7 +39,7 @@ function trakTick(){if(!G.trak)return;const m=otoMode('trak');if(TRACT){const t=
  if(G.started&&view==='bahce'&&!document.hidden&&TRACT&&TRACT.tg)trakDrive(A);else{A.forEach(a=>a.fn());if(G.started)save()}}
 
 /* ---- çırak ---- */
-let CIR=null,CIB=null,ciN=0;const CIR_REST=()=>V(OI,0,1.9);
+let CIR=null,CIB=null,ciN=0;const CIR_REST=()=>V(OI,0,1.1);
 function stFinish(s,t){const dn=s.jobs.filter(j=>t>=j.end);if(!dn.length)return;s.jobs=s.jobs.filter(j=>t<j.end);s.ready=s.ready||{};dn.forEach(j=>Object.entries(j.r.out).forEach(([k,n])=>s.ready[k]=(s.ready[k]||0)+n))}
 function stCollect(s){if(!s.ready)return;const tot=Object.values(s.ready).reduce((a,b)=>a+b,0);if(invTotal()+tot>capOf('d'))return;giveAll(s.ready);G.st.proc++;s.ready=null}
 function stStart(s,r,t){if(s.ready||s.jobs.length>=(s.lvl||1)||!hasAll(r.in))return false;giveAll(r.in,-1);s.jobs.push({r,end:t+r.s*spdOf(s)});return true}

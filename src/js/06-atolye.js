@@ -9,10 +9,20 @@ add(B(44,0.05,44),M('#4a3424'),OI,-0.04,1).castShadow=false;
  place('drafting_table',{x:OI-4.6,z:6.2,w:1.2,ry:Math.PI/2})}
 add(B(6.5,3.6,0.15),M('#6e4a30'),OI,1.8,-4);add(B(0.15,3.6,12),M('#6e4a30'),OI-3.2,1.8,1);add(B(0.15,3.6,12),M('#6e4a30'),OI+3.2,1.8,1);
 ['deri','iplik','kumas','kereste','boya_kahve','balmumu'].forEach((k,i)=>{const o=MATS[k].mk();o.scale.setScalar(1.4);o.position.set(OI-2.4+i*0.95,2.22,-3.82);S.add(o)});
-place('barrel',{x:OI-2.85,z:5.2,h:0.85});place('barrel',{x:OI-2.75,z:-2.0,h:0.7,ry:1});place('handsaw',{x:OI+2.72,y:0.82,z:-1.6,w:0.45,ry:0.4});place('desk',{x:OI+2.72,z:-1.75,w:1.15,ry:-Math.PI/2});add(Cy(0.3,0.26,0.7,10),M('#8a5530'),OI+2.75,0.35,5.3);
-{const sk=add(new THREE.SphereGeometry(0.32,8,6),M('#cdbb94'),OI+2.75,0.26,-3.3);sk.scale.set(1,0.85,1)}
+place('barrel',{x:OI-2.85,z:5.6,h:0.85});add(Cy(0.3,0.26,0.7,10),M('#8a5530'),OI+2.75,0.35,5.6);
 add(B(1.3,0.9,0.06),glow('#ffe6a8'),OI+1.6,2.9,-3.9).castShadow=false;
-{const r=add(new THREE.PlaneGeometry(1.5,5.6),rugM,OI,0.035,-0.6);r.rotation.x=-Math.PI/2;r.rotation.z=Math.PI/2*0;r.castShadow=false;const t=add(new THREE.PlaneGeometry(6.2,0.42),ciniM,OI,0.75,-3.915);t.castShadow=false}
+/* bölümlü salon: ısı · ahşap ve toprak · tekstil */
+{const fl=(w,d,c,x,z,y)=>{const m=add(B(w,0.014,d),M(c),OI+x,y||0.032,z);m.castShadow=false;return m};
+ fl(3.05,4.5,'#7a3e2c',-1.6,-1.7);for(let i=1;i<8;i++)fl(3.05,0.02,'#5e2e20',-1.6,-3.95+i*0.56,0.041);for(let i=1;i<5;i++)fl(0.02,4.5,'#5e2e20',-3.1+i*0.6,-1.7,0.041);
+ fl(3.05,4.5,'#b08a5a',1.6,-1.7);for(let i=1;i<8;i++)fl(0.02,4.5,'#8e6a40',0.08+i*0.38,-1.7,0.041);
+ for(let i=0;i<9;i++)fl(0.66,0.9,i%2?'#a8a296':'#8e887c',-2.75+i*0.69,1.1,0.04);
+ add(B(0.12,0.55,4.4),M('#7a5636'),OI,0.27,-1.8);add(B(0.18,0.06,4.46),M('#a8743e'),OI,0.57,-1.8);
+ [[-3.12,0.62,2.5],[0.62,0.62,2.5]].forEach(([x,z,w])=>{add(B(w,0.36,0.1),M('#7a5636'),OI+x+w/2,0.18,z);add(B(w+0.04,0.05,0.16),M('#a8743e'),OI+x+w/2,0.38,z)});
+ const r=add(new THREE.PlaneGeometry(5.8,5.0),rugM,OI,0.035,4.15);r.rotation.x=-Math.PI/2;r.castShadow=false;
+ [[-2.6,6.0,'#c8a06a'],[-2.15,6.25,'#8a6aa8'],[2.55,6.0,'#3f6fa8'],[2.1,6.3,'#b5533c']].forEach(([x,z,c])=>{add(Cy(0.2,0.16,0.26,10),M('#9a7a4a'),OI+x,0.13,z);add(new THREE.SphereGeometry(0.15,8,6),M(c),OI+x,0.3,z)});
+ for(let k=0;k<3;k++)add(B(0.7,0.08,0.5),M(['#d9c8a0','#b5533c','#3f6fa8'][k]),OI,0.06+k*0.08,5.6).rotation.y=k*0.2;
+ [['Isı köşesi',V(OI-1.6,3.15,-3.9)],['Ahşap ve toprak',V(OI-0.05+1.0,3.15,-3.9)],['Tekstil',V(OI,0.06,1.75)]].forEach(([t,v])=>{const l=label('islik',v,t,true);l.el.classList.add('zt')})}
+{const t=add(new THREE.PlaneGeometry(6.2,0.42),ciniM,OI,0.75,-3.915);t.castShadow=false}
 for(let i=0;i<6;i++)add(B(0.5,0.04,0.3),M('#7a4a2a'),OI-2.4+i*0.95,2.2,-3.85);
 function mkFici(g){put(g,Cy(0.42,0.36,0.85,12),M('#8a5530'),0,0.425,0);[0.15,0.7].forEach(y=>{const t=put(g,new THREE.TorusGeometry(0.405,0.02,4,16),M('#3a3a3a',0.4),0,y,0);t.rotation.x=Math.PI/2});
 put(g,Cy(0.39,0.39,0.02,12),M('#4a2e14',0.3),0,0.82,0);const h=flat(hideShape(0.18),0.01,'#b98a62');h.position.set(0.25,0.86,0.1);h.rotation.z=0.4;g.add(h)}
@@ -44,7 +54,8 @@ const ST=[
 {id:'cark',ad:'Çömlekçi çarkı',tier:1,mk:mkCark,rec:[{in:{kil:2},out:{camur:1},s:12}]},
 {id:'dokuma',ad:'Dokuma tezgâhı',tier:1,mk:mkDokuma,rec:[{in:{sogut:3},out:{hasir:1},s:12},{in:{yun:2},out:{kumas:1},s:16},{in:{yun:3},out:{kece:1},s:20}]}];
 ST.forEach(s=>s.rec.forEach(r=>{r.s=Math.round(r.s*(STX[s.id]||4))}));
-const SP=[[-1.3,-3.1],[1.3,-3.1],[-1.3,-0.8],[1.3,-0.8],[-1.3,1.5],[1.3,1.5],[-1.3,3.8],[1.3,3.8]];
+/* sıra: fici, cikrik, kazan, pres, ors, testere, cark, dokuma */
+const SP=[[-2.2,-0.55],[1.5,3.0],[-0.85,-1.9],[2.2,-0.55],[-2.2,-3.0],[2.2,-3.0],[0.85,-1.9],[-1.5,3.0]];
 ST.forEach((s,i)=>{const g=new THREE.Group(),m=new THREE.Group(),x=OI+SP[i][0],z=SP[i][1];s.mk(m);m.scale.setScalar(0.88);if(s.id==='testere')place('wb_big',{par:m,swap:1,w:1.05,ry:Math.PI});m.position.y=0.06;g.add(m);s.m=m;s.wheel=m.userData.wheel;s.liq=m.userData.liq;
 s.base=put(g,Cy(0.72,0.75,0.06,28),M('#6e4a2c'),0,0.03,0);const h=new THREE.Mesh(Cy(0.95,0.95,1.7,12),HID);h.position.y=0.85;g.add(h);
 g.position.set(x,0,z);g.userData.st=s;S.add(g);s.g=g;s.jobs=[];s.lvl=1;s.ready=null;s.lbl=label('islik',V(x,0.08,z+0.78),null,true);s.lbl.el.classList.add('stl','sm');s.lbl.el.onclick=()=>stationTap(s)});
