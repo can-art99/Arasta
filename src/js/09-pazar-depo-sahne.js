@@ -24,7 +24,7 @@ const LBT={},PCZ=-1.0;let HOUSE=null,HCOL=null;
  [[-4.8,-5.6],[4.8,-5.6],[-4.8,3.6],[4.8,3.6]].forEach(([x,z])=>place('street_light',{x:OP+x,z,h:2.8,ry:x<0?Math.PI/2:-Math.PI/2}));
  place('shack',{x:OP-5.2,z:-0.6,h:1.35,ry:Math.PI/2});place('bike',{x:OP+5.0,z:-1.4,h:0.7,ry:-1.2});place('car',{x:OP+5.4,z:2.6,h:0.55,ry:-0.3});
 }
-for(let i=0;i<36;i++)add(B(0.55+(i%3)*0.15,0.012,0.42),M(i%2?'#b59f74':'#d1bc92'),OP-3.6+(i%6)*1.4+(Math.floor(i/6)%2)*0.5,0.004,-3.4+Math.floor(i/6)*1.5).castShadow=false;
+for(let i=0;i<42;i++){const x=-3.6+(i%6)*1.4+(Math.floor(i/6)%2)*0.5,z=-3.4+Math.floor(i/6)*1.5;if(Math.hypot(x,z+1)<2.9)continue;add(B(0.55+(i%3)*0.15,0.012,0.42),M(i%2?'#b59f74':'#d1bc92'),OP+x,0.004,z).castShadow=false}
 [[-3.5,'#e8d8b8',2.6],[-1.1,'#d9b89a',3.2],[1.3,'#e6cfa8',2.7],[3.6,'#c9d6c0',3]].forEach(([x,c,h])=>{add(B(2.2,h,1.6),M(c),OP+x,h/2,-7.4);const r=add(new THREE.ConeGeometry(1.75,0.9,4),M('#b5533c'),OP+x,h+0.45,-7.4);r.rotation.y=Math.PI/4;
 add(B(0.5,0.95,0.05),M('#6e4122'),OP+x-0.4,0.47,-6.58);add(B(0.5,0.5,0.05),glow('#ffe6a8'),OP+x+0.45,h*0.62,-6.58).castShadow=false});
 function stall(x,z,c1,tab,keys){const g=new THREE.Group();put(g,B(1.7,0.75,0.8),M('#8a5530'),0,0.375,0);put(g,B(1.8,0.06,0.9),M('#a8693a'),0,0.78,0);
@@ -85,7 +85,7 @@ function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return
 {const RA={mezat:1,bit:0.75,tohum:0.5,deko:0.25,gift:0,ted:-0.25,pazar:-0.5,takas:-0.75},RX=3.7,RZ=3.3;
  STALLS.forEach(g=>{const t=g.userData.tab;if(RA[t]==null)return;const a=RA[t]*Math.PI,x=OP+Math.sin(a)*RX,z=PCZ+Math.cos(a)*RZ;g.position.set(x,0,z);g.rotation.y=a+Math.PI;
   const l=LBT[t];if(l){const up=l.pos.y>0.5;l.pos.set(x,up?l.pos.y:0.05,up?z:z+0.85)}})
- const ring=add(new THREE.RingGeometry(1.25,2.55,40),M('#d8c6a0'),OP,0.014,PCZ);ring.rotation.x=-Math.PI/2;ring.castShadow=false;
+ const ring=add(new THREE.RingGeometry(1.25,2.55,40),M('#d8c6a0'),OP,0.02,PCZ);ring.rotation.x=-Math.PI/2;ring.castShadow=false;
  [[-5.9,-4.6,0],[5.9,-4.6,0],[-5.9,0.8,0],[5.9,0.8,0]].forEach(([x,z,r])=>place('hedge',{x:OP+x,z,w:1.6,ry:Math.PI/2}));
  [[-6.0,-2.0],[6.0,-1.9],[-6.0,3.2],[6.0,3.0],[-3.2,-6.2],[3.3,-6.2],[-2.3,3.5],[2.4,3.4]].forEach(([x,z],i)=>place('bush',{x:OP+x,z,w:0.75+(i%3)*0.15,ry:i*1.7}));
  /* güney kenarı: alçak taş duvar, çitler, ağaçlar, evler (sahne bütünlüğü) */
@@ -93,7 +93,7 @@ function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return
  [-5.6,-3.6,3.6,5.6].forEach((x,i)=>place('hedge',{x:OP+x,z:5.9,w:1.7,ry:Math.PI/2}));
  [[-6.6,6.2],[6.6,6.4],[-1.7,6.4],[1.7,6.3]].forEach(([x,z],i)=>plant(OP+x,0,z,1.5));
  [-6.2,-3.8,-1.4,1.4,3.8,6.2].forEach((x,i)=>HOUSE(OP+x,8.6,Math.PI,HCOL[(i+2)%6],2.3+(i%3)*0.4,2.2));
- for(let i=0;i<14;i++)add(B(0.55+(i%3)*0.15,0.012,0.42),M(i%2?'#b59f74':'#d1bc92'),OP-4.2+(i%7)*1.4,0.004,4.2+Math.floor(i/7)*0.9).castShadow=false}
+}
 /* ---------- depo ---------- */
 for(let i=0;i<10;i++)add(B(0.66,0.05,9),M(i%2?'#6a4428':'#5e3b22'),OD-3+i*0.66,0,0);
 add(B(40,0.05,40),M('#4a3424'),OD,-0.04,0).castShadow=false;
