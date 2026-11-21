@@ -22,7 +22,7 @@ function cobanNow(){if(fOff('coban'))return;if(!G.coban){toast('Çoban Ticaret m
 /* görünüş: Adventurer (x_coban) modeli varsa o, yoksa çiftçi modeli + elde asa */
 let COB=null,COBL=null;
 function cobStaff(){const g=new THREE.Group(),wd=M('#5a3519');const s=put(g,Cy(0.032,0.038,1.6,7),wd,0,0.8,0);const c=new THREE.Mesh(new THREE.TorusGeometry(0.11,0.024,6,12,Math.PI*1.25),wd);c.position.set(0.1,1.58,0);c.rotation.z=-0.2;g.add(c);return g}
-function cobMake(){const src=CHX.x_coban||CHR.find(g=>g.nm==='c_farmer');if(!src)return null;const c=makeCustomer(src);c.cob=true;c.g.position.copy(CBP[4]);anim(c,'idle');
+function cobMake(){const src=CHX.x_coban||CHR.find(g=>g.nm==='c_farmer');if(!src)return null;const c=makeCustomer(src);c.cob=true;c.g.scale.multiplyScalar(0.8);c.g.position.copy(CBP[4]);anim(c,'idle');
  const st=cobStaff();st.position.set(0.32,0,0.08);c.g.add(st);c.staff=st;c.hand=['WristR','Wrist.R','HandR','FistR'].map(n=>c.g.getObjectByName(n)).find(Boolean);c.goal=null;c.w=2;const hb=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,2,8),new THREE.MeshBasicMaterial({visible:false}));hb.position.y=1;c.g.add(hb);c.hit=hb;return c}
 const CTV=new THREE.Vector3();function cobHand(c){if(!c.hand||!c.staff)return;c.g.updateMatrixWorld(true);CTV.setFromMatrixPosition(c.hand.matrixWorld);c.g.worldToLocal(CTV);c.staff.position.set(CTV.x,CTV.y-0.92,CTV.z+0.02)}
 function cobLabel(){if(!G.coban||COBL)return;COBL=label('bahce',V(FX,0.02,0),'',true);COBL.el.classList.add('sm');COBL.el.onclick=cobanNow}

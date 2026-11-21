@@ -69,7 +69,7 @@ function otoNow(k){if(!G[k]){toast(k==='trak'?'Çiftçi Ticaret menüsünden al�
 let CIRL=null;function cirLabel(){if(!G.cirak||CIRL)return;CIRL=label('islik',V(OI,0.02,2.45),'',true);CIRL.el.classList.add('sm');CIRL.el.onclick=()=>otoNow('cirak')}
 
 /* Çiftçi: bostanda traktörün yanında çalışan karakter */
-let FRM=null;function frmTick(dt){if(!G.trak||!TRACT||!TRACT.tg||!CHX.x_ciftci||view!=='bahce')return;const tg=TRACT.tg;if(!FRM){FRM=makeCustomer(CHX.x_ciftci);FRM.frm=true;FRM.g.position.set(tg.position.x-Math.sin(tg.rotation.y)*0.62,0,tg.position.z-Math.cos(tg.rotation.y)*0.62);FRM.g.rotation.y=tg.rotation.y;anim(FRM,'idle')}
+let FRM=null;function frmTick(dt){if(!G.trak||!TRACT||!TRACT.tg||!CHX.x_ciftci||view!=='bahce')return;const tg=TRACT.tg;if(!FRM){FRM=makeCustomer(CHX.x_ciftci);FRM.frm=true;FRM.g.scale.multiplyScalar(0.8);FRM.g.position.set(tg.position.x-Math.sin(tg.rotation.y)*0.62,0,tg.position.z-Math.cos(tg.rotation.y)*0.62);FRM.g.rotation.y=tg.rotation.y;anim(FRM,'idle')}
  const g=FRM.g,r=tg.rotation.y,to=V(tg.position.x-Math.sin(r)*0.62,0,tg.position.z-Math.cos(r)*0.62);
  const dx=to.x-g.position.x,dz=to.z-g.position.z,d=Math.hypot(dx,dz);if(d>0.04){const sp=Math.min(d,(d>1.2?2.4:1.3)*dt);g.position.x+=dx/d*sp;g.position.z+=dz/d*sp;let a=Math.atan2(dx,dz)-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*8);if(FRM.cur!=='walk')anim(FRM,'walk')}
  else{let a=tg.rotation.y-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=a*Math.min(1,dt*5);if(FRM.cur==='walk')anim(FRM,'idle')}}
