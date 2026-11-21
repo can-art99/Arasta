@@ -4,6 +4,8 @@ const DOOR=V(-1.4,0,-3.4),SLOT=[V(0.3,0,-0.45),V(-0.4,0,-1.65),V(-1.0,0,-2.7)],Q
 const tweens=[];const ease=k=>k<0.5?2*k*k:1-((-2*k+2)**2)/2;
 function tween(dur,fn,done){tweens.push({t:0,dur,fn,done})}
 let camTok=0;
+/* sonuç ekranına geçiş: kamera başka bir hareketle kesilse bile sonuç mutlaka açılır */
+function finCam(done){let ok=false;const go=()=>{if(ok)return;ok=true;camCur.p.copy(VIEWS.home.p);camCur.l.copy(VIEWS.home.l);done()};moveCam(VIEWS.home,1.1,go);setTimeout(go,1500)}
 function moveCam(to,dur,done){const id=++camTok,fp=camCur.p.clone(),fl=camCur.l.clone();tween(dur,k=>{if(id!==camTok)return;camCur.p.lerpVectors(fp,to.p,k);camCur.l.lerpVectors(fl,to.l,k)},()=>{if(id===camTok&&done)done()})}
 /* ---------- 3D modeller ---------- */
 const CHR=[],ALLC=[];let DOORH=null;
@@ -67,7 +69,7 @@ function walk(c,to,dur,done){const id=++c.tok,fr=c.g.position.clone();{const dd=
 function pCx(p){return Object.entries(p.need).reduce((a,[k,n])=>a+(k==='boya'?0:n),0)+Object.keys(p.need).length*0.5+p.steps.length/4}
 function easyM(k){if(k==='boya'||(G.inv[k]||0)>0)return true;const mk=a=>MARKET.some(m=>m.k===a&&(!m.t||G.tier>=m.t));if(mk(k)||Object.values(CROPS).some(c=>c.out===k))return true;if(Object.entries(GOUT).some(([ad,o])=>o.includes(k)&&gOpen(ad)))return true;return ST.some(s=>stOwned(s)&&s.rec.some(r=>r.out[k]&&Object.keys(r.in).every(a=>mk(a)||(G.inv[a]||0)>0||Object.entries(GOUT).some(([ad,o])=>o.includes(a)&&gOpen(ad)))))}
 /* sipariş akışı: başta en basit birkaç ürün sırayla, itibar arttıkça yelpaze genişler; son istenenler tekrar edilmez, hiç istenmemişler öne çıkar */
-function ordPick(pool0,sp){const r=G.rep||0,H=G.ordH||(G.ordH=[]),seen=G.seenP||(G.seenP={});let L=pool0.slice().sort((a,b)=>pCx(a)-pCx(b)||a.base-b.base);const cap=Math.max(3,3+Math.floor(r/20));if(r<150)L=L.slice(0,cap);
+function ordPick(pool0,sp){if(!Array.isArray(G.ordH))G.ordH=[];if(!G.seenP||typeof G.seenP!=='object')G.seenP={};const r=G.rep||0,H=G.ordH,seen=G.seenP;let L=pool0.slice().sort((a,b)=>pCx(a)-pCx(b)||a.base-b.base);const cap=Math.max(3,3+Math.floor(r/20));if(r<150)L=L.slice(0,cap);
  const last=H.slice(-Math.min(3,L.length-1)),C=L.filter(p=>!last.includes(p.id));const W=(C.length?C:L).map(p=>{let w=1;if(!seen[p.id])w+=r<150?2.5:1.5;if(sp.includes(p.id))w+=1.5;if(r<40)w+=Math.max(0,3-L.indexOf(p))*0.6;return [p,w]});
  let t=W.reduce((a,x)=>a+x[1],0)*Math.random(),p=W[W.length-1][0];for(const [q,w] of W){if((t-=w)<=0){p=q;break}}H.push(p.id);if(H.length>8)H.shift();seen[p.id]=1;return p}
 function mkOrder(){const pa=PRODS.filter(unlocked),mx=3.6+(G.rep||0)/35,pe=pa.filter(p=>pCx(p)<=mx),pz=(G.rep||0)<80?pa.filter(p=>pCx(p)<=mx+2&&Object.keys(p.need).every(easyM)):[],pool0=pz.length>=2?pz:pe.length>=2?pe:pa,sp=SEAS[season()].p,p=ordPick(pool0,sp),color=p.need.boya?pick(PAINTS):null,style=p.styles&&Math.random()<0.6?pick(p.styles):null;

@@ -35,7 +35,7 @@ function repFinish(o){const sc=K.scores.filter(Number.isFinite),work=sc.length?a
  const g=K.model.g,fr=g.position.clone();view='home';G.st.fix=(G.st.fix||0)+1;
  if(o.rid){const it=(G.store||[]).find(x=>String(x.id)===String(o.rid));if(it){it.stars=clamp(it.stars+Math.max(1,gain),1,5);delete it.worn;delete it.paid;it.ref=1;it.price=sugg(it)}K.res={it}}
  else{const pay=Math.max(Math.round(o.budget*0.4),Math.round(o.budget*(0.55+0.45*work))-(K.skips?Math.round(o.budget*0.15):0));K.res={pay,work}}
- moveCam(VIEWS.home,1.1,()=>{sway=1;repShow(o)});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar(1.6-0.6*k)})}
+ finCam(()=>{sway=1;repShow(o)});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar(1.6-0.6*k)})}
 function repShow(o){G.phase='result';refresh();sfx.good();const pct=v=>'%'+Math.round(v*100);const br=K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('');
  if(o.rid){const it=K.res.it;openSheet('result',`<h3>♻️ ${it?pr(it).ad:''} yenilendi</h3>${it?`<div class="stars">${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></div>`:''}<div style="margin-top:8px">${br}</div><div class="tot">Yeni değeri: ${it?it.price:0} altın</div><p>Ürün depo rafında; Depo'dan vitrine koyabilirsin.</p><div style="text-align:center"><button class="btn g" id="repOk">Tamam</button></div>`);
   $('repOk').onclick=()=>repDone(o)}
