@@ -12,7 +12,7 @@ function mkTool(kind){const g=new THREE.Group(),dk=M('#2a2420',0.7),st=M('#c8ccd
  else if(kind==='drill'){put(g,B(0.06,0.12,0.05),M('#d07a2a',0.5),0,0.2,0);put(g,B(0.05,0.07,0.04),dk,0,0.12,0.03);const b=put(g,Cy(0.004,0.004,0.12,6),st,0,0.06,0);g.userData.bit=b}
  else if(kind==='plane'){put(g,B(0.09,0.035,0.2),M('#8a5a30',0.7),0,0.02,0);put(g,Cy(0.018,0.018,0.04,8),dk,0,0.055,0.06);put(g,B(0.07,0.03,0.02),st,0,0.045,-0.02)}
  else if(kind==='shuttle'){const s=put(g,new THREE.SphereGeometry(0.03,10,6),M('#a0703a',0.6),0,0.02,0);s.scale.set(2.4,0.6,0.7)}
- else if(kind==='gouge'){put(g,Cy(0.012,0.014,0.13,8),M('#7a4a2a'),0,0.1,0.04).rotation.x=0.5;put(g,Cy(0.006,0.01,0.05,8),st,0,0.025,0.008).rotation.x=0.5}
+ else if(kind==='gouge'&&GLC.m_spoon){const w=fitM('m_spoon',{w:0.24});if(w){w.rotation.y=Math.PI;const o=new THREE.Group();w.position.z=-0.1;o.add(w);o.rotation.x=0.28;g.add(o);kind='_sp'}}if(kind==='gouge'){put(g,Cy(0.012,0.014,0.13,8),M('#7a4a2a'),0,0.1,0.04).rotation.x=0.5;put(g,Cy(0.006,0.01,0.05,8),st,0,0.025,0.008).rotation.x=0.5}
  g.visible=false;K.work.add(g);return g}
 
 /* Gözlük: havya ucunu dolaştırarak lehim */
