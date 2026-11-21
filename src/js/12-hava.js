@@ -46,7 +46,7 @@ if(st%2===0&&st%8!==0&&Math.random()<0.5)mv(hz(ch[1+Math.floor(Math.random()*(ch
 
 MU.next+=e;MU.step++}}
 setInterval(musSched,140);
-function musSet(on){G.mus=on;ac();if(AC){musInit();const t=AC.currentTime;MU.g.gain.cancelScheduledValues(t);MU.g.gain.setTargetAtTime(on?0.6:0,t,on?1.2:0.4)}const b=$('musB');if(b)b.classList.toggle('off',!on)}
+function musSet(on){G.mus=on;ac();if(AC){musInit();const t=AC.currentTime;MU.g.gain.cancelScheduledValues(t);MU.g.gain.setTargetAtTime(on?0.6:0,t,on?1.2:0.4)}const b=$('musB');if(b)b.classList.toggle('off',!on&&!G.snd)}
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else AC.resume()});
 const sThr=(fn,gap)=>{if(tt-sT>(gap||0.07)){sT=tt;fn()}};
 $('ui').addEventListener('click',e=>{if(e.target.closest('button'))sfx.tap()},true);

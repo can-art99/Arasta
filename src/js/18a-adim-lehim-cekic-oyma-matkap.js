@@ -39,7 +39,7 @@ function bHammer(){const st=K.st,hits=st.hits||2,nail=st.kind==='nail',riv=st.ki
  K.skipFn=()=>{K.work.remove(mk);K.work.remove(hm);ghost.forEach(g=>K.work.remove(g))}}
 
 /* Cüzdan: katlama */
-function bFold(){const bb=shapeBB(),w=bb.w,l=bb.l,th=K.p.wood?0.03:0.012,col=K.p.sheet;if(K.piece&&K.piece.visible!==undefined)K.piece.visible=false;
+function bFold(){const bb=shapeBB(),w=bb.w,l=bb.l,th=K.p.wood?0.03:0.012,col=K.p.sheet;if(K.piece&&K.piece.visible!==undefined)K.piece.visible=false;K.work.updateMatrixWorld(true);K.work.children.forEach(c=>{if(!c.visible||c===TOOL)return;const b2=new THREE.Box3().setFromObject(c);if(b2.isEmpty())return;const cx=(b2.min.x+b2.max.x)/2,cz=(b2.min.z+b2.max.z)/2;if(Math.abs(cx-BC.x)<w/2+0.08&&Math.abs(cz-BC.z)<l/2+0.08&&b2.max.y<Y+0.08)c.visible=false});
  const bot=flat(rrect(w,l/2,0.02),th,col);bot.position.set(BC.x,Y,BC.z+l/4);K.work.add(bot);const pv=new THREE.Group();pv.position.set(BC.x,Y+th,BC.z);K.work.add(pv);const fl=flat(rrect(w,l/2,0.02),th,shade(col,0.06));fl.position.set(0,-th,-l/4);pv.add(fl);
  const ar=dashRing(0.03,Y+0.004,1);K.work.remove(ar);let ang=0,z0=null;K.hy=Y+th;
  K.pd=p=>{z0=p.z};K.pm=p=>{if(z0==null)return;ang=clamp((p.z-(BC.z-l/4))/(l/2),0,1)*Math.PI;pv.rotation.x=ang;toolAt(V(p.x,0,p.z),'cl',Y+0.04+Math.sin(ang)*l/4);tipStep(`Katla · %${Math.round(ang/Math.PI*100)}`)};

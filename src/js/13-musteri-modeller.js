@@ -152,7 +152,7 @@ function sale(it,p){const c=Q[0];anim(c,'clap',true);if(!G.stock.includes(it))re
 G.phase='leaving';G.order=null;actions([]);refresh();save();setTimeout(()=>{G.bubOn=false;say(null);if(c)leave(c)},1200)}
 function acceptOrder(msg){if(G.phase!=='ordering')return;G.phase='active';say(msg||'Harika, bekliyorum!');setTimeout(()=>{if(G.phase==='active'){G.bubOn=false;say(null)}},1800);refresh();
 if(G.first)setTimeout(()=>toast('Kartta neyin eksik olduğu yazıyor.<br>Eksikleri bahçeden topla, atölyede işle.',3200),600)}
-function rejectOrder(){if(G.phase!=='ordering')return;const c=Q[0],vip=c&&c.order&&c.order.vip,pen=vip?10:3;G.rep=Math.max(0,G.rep-pen);hud();sf('reddet',0.55)||sfx.bad();toast(`Müşteri kırıldı · −${pen} itibar`,1500);save();leave(c)}
+function rejectOrder(){if(G.phase!=='ordering')return;const c=Q[0],vip=c&&c.order&&c.order.vip,pen=vip?10:3;G.rep=Math.max(-50,G.rep-pen);hud();sf('reddet',0.55)||sfx.bad();toast(`Müşteri kırıldı · −${pen} itibar`,1500);save();leave(c)}
 var PQ=new THREE.Quaternion(),PE=new THREE.Euler();function pRot(c,k,x,y,z){const b=c.proc[k];if(!b)return;PE.set(x,y,z);PQ.setFromEuler(PE);b.quaternion.copy(c.rest[k]).multiply(PQ)}
 function procAnim(c){const t=tt*1.0,s=c.cur;if(s==='walk'){const a=Math.sin(t*8)*0.5;pRot(c,'ul',a,0,0);pRot(c,'ur',-a,0,0);pRot(c,'ll',Math.max(0,-a)*0.8,0,0);pRot(c,'lr',Math.max(0,a)*0.8,0,0);pRot(c,'al',-a*0.6,0,0);pRot(c,'ar',a*0.6,0,0);pRot(c,'sp',0,Math.sin(t*8)*0.06,0)}
  else if(s==='clap'||s==='wave'){const a=Math.abs(Math.sin(t*10))*0.4;pRot(c,'ul',0,0,0);pRot(c,'ur',0,0,0);pRot(c,'ll',0,0,0);pRot(c,'lr',0,0,0);pRot(c,'al',-1.1-a,0,0);pRot(c,'ar',-1.1-a,0,0);pRot(c,'fl',-0.6,0,0);pRot(c,'fr',-0.6,0,0)}
