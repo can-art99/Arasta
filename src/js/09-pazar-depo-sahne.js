@@ -1,12 +1,13 @@
 /* ---------- pazar ---------- */
 function figure(x,z,col){const g=new THREE.Group();put(g,B(0.44,0.45,0.28),M('#3a2f28'),0,0.22,0);put(g,Cy(0.25,0.32,0.95,8),M(col),0,0.92,0);put(g,new THREE.SphereGeometry(0.22,10,8),M('#e0b088'),0,1.62,0);put(g,Cy(0.24,0.27,0.1,8),M('#8a3a28'),0,1.82,0);g.position.set(x,0,z);S.add(g);return g}
 add(B(18,0.1,18),M('#c4ad82'),OP,-0.05,-1).castShadow=false;add(B(90,0.1,90),M('#a8916a'),OP,-0.07,-1).castShadow=false;
-const LBT={},PCZ=-1.0;
+const LBT={},PCZ=-1.0;let HOUSE=null,HCOL=null;
 /* meydan: yan sıra evler, çeşme, fenerler, ağaçlar */
 {const HC=['#e8d8b8','#d9b89a','#e6cfa8','#c9d6c0','#e2c9a4','#d4b896'];
  const house=(x,z,ry,c,h,w)=>{const g=new THREE.Group();put(g,B(w,h,1.6),M(c),0,h/2,0);const r=put(g,new THREE.ConeGeometry(Math.max(w,1.6)*0.78,0.9,4),M('#b5533c'),0,h+0.45,0);r.rotation.y=Math.PI/4;r.scale.set(w/1.6>1?w/1.9:1,1,1);
   put(g,B(0.5,0.95,0.05),M('#6e4122'),-w*0.18,0.47,0.81);put(g,B(0.45,0.45,0.05),glow('#ffe6a8'),w*0.2,h*0.62,0.81).castShadow=false;
   const aw=put(g,B(w*0.8,0.05,0.6),M(['#b5533c','#2f6b5a','#e2b24a'][Math.abs(Math.round(x+z))%3]),0,1.25,1.05);aw.rotation.x=0.35;g.position.set(x,0,z);g.rotation.y=ry;S.add(g)};
+ HOUSE=house;HCOL=HC;
  [-5.6,-3.2,-0.8,1.6,4.0].forEach((z,i)=>{house(OP-7.2,z,Math.PI/2,HC[i%6],2.4+(i%3)*0.5,2.2);house(OP+7.2,z,-Math.PI/2,HC[(i+3)%6],2.6+((i+1)%3)*0.4,2.2)});
  [-8.2,-6.8].forEach((x,i)=>house(OP+x+ (i?0:0),-7.4,0,HC[i+4],2.2,1.6));[6.8,8.2].forEach((x,i)=>house(OP+x,-7.4,0,HC[i+1],2.5,1.6));
  /* çeşme */
@@ -86,7 +87,13 @@ function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return
   const l=LBT[t];if(l){const up=l.pos.y>0.5;l.pos.set(x,up?l.pos.y:0.05,up?z:z+0.85)}})
  const ring=add(new THREE.RingGeometry(1.25,2.55,40),M('#d8c6a0'),OP,0.006,PCZ);ring.rotation.x=-Math.PI/2;ring.castShadow=false;
  [[-5.9,-4.6,0],[5.9,-4.6,0],[-5.9,0.8,0],[5.9,0.8,0]].forEach(([x,z,r])=>place('hedge',{x:OP+x,z,w:1.6,ry:Math.PI/2}));
- [[-6.0,-2.0],[6.0,-1.9],[-6.0,3.2],[6.0,3.0],[-3.2,-6.2],[3.3,-6.2],[-2.3,3.5],[2.4,3.4]].forEach(([x,z],i)=>place('bush',{x:OP+x,z,w:0.75+(i%3)*0.15,ry:i*1.7}))}
+ [[-6.0,-2.0],[6.0,-1.9],[-6.0,3.2],[6.0,3.0],[-3.2,-6.2],[3.3,-6.2],[-2.3,3.5],[2.4,3.4]].forEach(([x,z],i)=>place('bush',{x:OP+x,z,w:0.75+(i%3)*0.15,ry:i*1.7}));
+ /* güney kenarı: alçak taş duvar, çitler, ağaçlar, evler (sahne bütünlüğü) */
+ [[-4.6,3.2],[4.6,3.2]].forEach(([x,w])=>{add(B(w,0.42,0.32),M('#cbb994'),OP+x,0.21,5.3);add(B(w+0.06,0.06,0.38),M('#b9a57c'),OP+x,0.45,5.3)});
+ [-5.6,-3.6,3.6,5.6].forEach((x,i)=>place('hedge',{x:OP+x,z:5.9,w:1.7,ry:Math.PI/2}));
+ [[-6.6,6.2],[6.6,6.4],[-1.7,6.4],[1.7,6.3]].forEach(([x,z],i)=>plant(OP+x,0,z,1.5));
+ [-6.2,-3.8,-1.4,1.4,3.8,6.2].forEach((x,i)=>HOUSE(OP+x,8.6,Math.PI,HCOL[(i+2)%6],2.3+(i%3)*0.4,2.2));
+ for(let i=0;i<14;i++)add(B(0.55+(i%3)*0.15,0.012,0.42),M(i%2?'#b59f74':'#d1bc92'),OP-4.2+(i%7)*1.4,0.004,4.2+Math.floor(i/7)*0.9).castShadow=false}
 /* ---------- depo ---------- */
 for(let i=0;i<10;i++)add(B(0.66,0.05,9),M(i%2?'#6a4428':'#5e3b22'),OD-3+i*0.66,0,0);
 add(B(40,0.05,40),M('#4a3424'),OD,-0.04,0).castShadow=false;
@@ -94,14 +101,14 @@ add(B(40,0.05,40),M('#4a3424'),OD,-0.04,0).castShadow=false;
  [[-4.2,0.4],[4.3,0.6]].forEach(([x,z])=>{for(let k=0;k<3;k++)add(B(0.6,0.5,0.6),M(['#8a5a34','#7a4a2a','#9a6a3a'][k]),OD+x+(k%2)*0.35,0.25+(k>1?0.5:0),z+(k===1?0.62:0)).rotation.y=k*0.3});
  [-3.8,3.8].forEach(x=>place('post_lantern',{x:OD+x,z:-3.0,h:1.5}))}
 add(B(6.6,4.4,0.15),M('#7a5636'),OD,2.2,-3.25);add(B(0.15,4.4,9),M('#6e4a30'),OD-3.2,2.2,0);add(B(0.15,4.4,9),M('#6e4a30'),OD+3.2,2.2,0);
-const GORD=['Ham madde','İşlenmiş','Yardımcı','Tohum'],DEP=[],BSS=3.0/4.3,DROW=[3.43,2.61,1.79,0.97,0.15].map(y=>y*BSS),DCX=[-1.64,-0.82,0,0.82,1.64].map(x=>x*BSS);
+const GORD=['Ham madde','İşlenmiş','Yardımcı','Tohum'],DEP=[],DROW=[2.95,2.35,1.75,1.15,0.55],DCX=[-1.12,-0.56,0,0.56,1.12];
 const RFA=M('#8a5a34'),RFB=M('#5a3519');const RFM=[];[3.45,2.83,2.21,1.59,0.97,0.35].forEach(y=>RFM.push(add(B(4.0,0.06,0.55),RFA,OD,y-0.03,-2.9)));[-2.0,2.0].forEach(x=>RFM.push(add(B(0.1,3.9,0.55),RFB,OD+x,1.95,-2.9)));
-[-1.55,1.55].forEach(dx=>place('bookshelf2',{x:OD+dx,z:-2.95,w:3.0,ry:Math.PI/2,cb:w=>{RFM.forEach(m=>m.visible=false)}}));
+RFM.forEach(m=>m.visible=false);[-1.5,1.5].forEach(dx=>DROW.forEach(y=>place('wall_shelf',{x:OD+dx,y:y-0.57,z:-2.88,w:2.85,cb:w=>{w.rotation.y=Math.PI/2;w.scale.x=0.62;w.traverse(o=>{if(o.isMesh)o.material=/Top/.test(o.material.name)?RFA:RFB})}})));
 place('lounge_chair',{x:OD-2.45,z:-0.45,h:0.75,ry:-2.0});place('box_a',{x:OD+2.5,z:0.2,h:0.5,ry:0.4});place('box_a',{x:OD+2.75,z:-0.35,h:0.4,ry:-0.3});place('trash_can',{x:OD+2.6,z:-1.55,h:0.55});
 Object.keys(MATS).sort((a,b)=>GORD.indexOf(MATS[a].g)-GORD.indexOf(MATS[b].g)).forEach((k,i)=>{const [x,y]=slotXY(i%40),o=MATS[k].mk();o.scale.setScalar(1.4);o.position.set(x,y,-2.9);o.visible=false;S.add(o);
 const l=label('depo',V(x,y+0.02,-2.62),'',true);l.el.classList.add('dn');l.off=true;const hb=new THREE.Mesh(new THREE.SphereGeometry(0.19,6,5),HID);hb.position.y=0.08;o.add(hb);const dd={k,o,l,n:-1};DEP.push(dd)});
-place('round_rug',{x:OD,y:0.03,z:0.4,w:2.4});place('m_rug2',{x:OI,y:0.012,z:3.4,w:2.2});place('wall_art',{x:-0.12,y:1.3,z:-3.9,h:0.95,ry:Math.PI});place('wb_kenney',{x:OD+1.45,z:-1.55,w:0.9,ry:-0.5});const DHIT=new THREE.Mesh(B(6.2,3.1,0.7),HID);DHIT.position.set(OD,1.5,-2.9);S.add(DHIT);
-add(B(0.75,0.65,0.75),M('#8b5a2b'),OD-2.6,0.33,-1.6);
+place('round_rug',{x:OD,y:0.03,z:0.4,w:2.4});place('m_rug2',{x:OI,y:0.012,z:3.4,w:2.2});place('wall_art',{x:-0.12,y:1.3,z:-3.9,h:0.95,ry:Math.PI});const DHIT=new THREE.Mesh(B(6.2,3.0,0.7),HID);DHIT.position.set(OD,1.75,-2.9);S.add(DHIT);
+
 /* ---------- depo/vitrin kapasite ve düzen ---------- */
 const CAPS={d:{ad:'Malzeme deposu',v:[100,150,250,400],c:[150,300,600]},s:{ad:'Depo ürün rafı',v:[2,4,6],c:[100,250]},v:{ad:'Vitrin',v:[3,6,9],c:[150,300]}};
 function capLv(k){if(!G.cap)G.cap={d:0,s:0,v:0};return G.cap[k]||0}
@@ -114,7 +121,7 @@ function toVit(it){if(it&&it.worn){toast('Önce tamir et',1300);return false}if(
 const DSTO=new THREE.Group();S.add(DSTO);
 function storeSync(){DSTO.clear();(G.store||[]).slice(0,10).forEach((it,i)=>{const p=pr(it),m=p.build(it.col?paintOf(it.col).hex:p.sheet,it.style,{cila:true});m.g.scale.setScalar(0.6);const [sx]=slotXY(i);m.g.position.set(sx,DROW[4]+0.01,-2.85);m.g.rotation.y=0.4;m.g.userData.sid=it.id;DSTO.add(m.g)})}
 let DRG=null,DRGJ=false;const DPL=new THREE.Plane(new THREE.Vector3(0,0,1),2.75),DPT=new THREE.Vector3();
-function slotXY(i){const c=i%10;return [OD+(c<5?-1.55:1.55)+DCX[c%5],DROW[Math.floor(i/10)]]}
+function slotXY(i){const c=i%10;return [OD+(c<5?-1.5:1.5)+DCX[c%5],DROW[Math.floor(i/10)]]}
 function depoTap(){if(DRGJ){DRGJ=false;return}
  const hs=ray.intersectObjects(DSTO.children,true)[0];if(hs){let o=hs.object;while(o&&o.userData.sid==null)o=o.parent;const it=o&&(G.store||[]).find(x=>x.id===o.userData.sid);if(it)storeItem(it);return}
  if(ray.intersectObject(DHIT)[0])openDepo()}
