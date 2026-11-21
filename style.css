@@ -332,4 +332,26 @@ svg.gi{width:1.15em;height:1.15em;vertical-align:-0.22em;flex:none;display:inlin
 #tip{font-size:13px}#toast{font-size:14px}
 .sheet{width:min(420px,48vw)}
 }
+/* dükkânlarım listesi */
+.shl{display:flex;flex-direction:column;gap:8px;margin:2px 0 10px}
+.shp{background:#fffaf0;border:2px solid #e3d3b4;border-radius:14px;padding:9px 10px}
+.shp.on{border-color:#2f6b5a;background:#f1f7f2}
+.shp>.shm{display:inline-block;vertical-align:top;width:calc(100% - 120px)}
+.shp{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.shm{flex:1;min-width:0}.shn{font-weight:700;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shs{font-size:11.5px;opacity:.7;margin:1px 0 4px}
+.shg{display:flex;flex-wrap:wrap;gap:4px}.shg .tg{font-style:normal;font-size:10.5px;padding:1px 7px;border-radius:9px;background:#efe3cb;color:#6b4a26}
+.shg .tg.c{background:#dceee6;color:#245a4a}.shg .tg.g{background:#eee;color:#666}
+.sha{display:flex;align-items:center;gap:6px}.sha .btn.sm{padding:5px 14px;min-height:34px;font-size:13px}
+.shnow{font-size:12px;font-weight:700;color:#2f6b5a;padding:0 4px}
+.shx{width:36px;height:36px;border-radius:10px;border:2px solid #e3c9bd;background:#fff;font-size:16px;line-height:1;cursor:pointer}
+.shx.on{background:#f3d9cf;border-color:#c0452e;color:#8a2e1c;font-weight:700}
+.shdl{flex-basis:100%;border-top:1px dashed #e3d3b4;margin-top:4px;padding-top:8px;display:flex;flex-direction:column;gap:6px}
+.shq{font-size:12px;font-weight:700;opacity:.75}
+.shopt{display:block;text-align:left;width:100%;border:2px solid #dcc9a6;background:#fff;border-radius:11px;padding:7px 10px;cursor:pointer;color:var(--ink)}
+.shopt b{display:block;font-size:13.5px}.shopt small{display:block;font-size:11px;opacity:.7;margin-top:1px}
+.shopt.r{border-color:#e2b3a5;background:#fdf1ec}.shopt.r b{color:#a8381f}
+.shopt.armed{background:#c0452e;border-color:#8a2e1c}.shopt.armed b,.shopt.armed small{color:#fff;opacity:1}
+.shnew{border:2px dashed #cdb68c;background:transparent;border-radius:14px;padding:10px;font-weight:700;color:#6b4a26;cursor:pointer;font-size:14px}.shnew small{font-weight:500;opacity:.65;margin-left:6px}
+.shnote{font-size:11.5px;opacity:.7;margin:0}
 

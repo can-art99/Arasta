@@ -67,13 +67,13 @@ function acctShops(){if(!acctLoc())return `<p style="font-size:12px;opacity:.75;
 function acctDelBox(){if(!ACS.acDel)return `<div class="pk" style="margin-top:8px"><button class="btn l" id="acOut">Bu cihazda çıkış yap</button><button class="btn r" id="acDel">Hesabı sil</button></div>`;
  return `<div style="margin-top:8px;padding:10px;border-radius:12px;background:#f3d9cf"><b style="font-size:13px">Hesabı sil</b><p style="font-size:12px;margin:4px 0 6px">Onaylamak için şifreni yaz. Geri alınamaz.</p><input id="adP" type="password" inputmode="numeric" placeholder="Şifre" autocomplete="current-password" style="width:100%;box-sizing:border-box"><div class="pk" style="margin-top:6px;flex-wrap:wrap"><button class="btn r" data-ad="keep">Sadece hesabı sil</button><button class="btn r" data-ad="all">Hesabı ve tüm dükkânlarını sil</button><button class="btn l" id="adX">Vazgeç</button></div><p style="font-size:11px;opacity:.7;margin:4px 0 0">Sadece hesabı sil: dükkânların bu cihazda ve kayıt kodlarıyla bulutta kalır.</p></div>`}
 function acctLocalWipe(code,removeLocal){['1','2','3'].forEach(n=>{try{const k=SKOF(n),d=JSON.parse(localStorage.getItem(k));if(!d||d.cloud!==code||n===SSLOT)return;if(removeLocal)localStorage.removeItem(k);else{d.cloud=null;localStorage.setItem(k,JSON.stringify(d))}}catch(e){}})}
-function renderAcct(){return G.acct?`<div class="grp">Hesap</div><p style="font-size:13px;margin:0 0 6px">Kullanıcı adın: <b>${esc(G.acct)}</b> ✓<br><small style="opacity:.75">Yeni telefonda giriş ekranındaki <b>Giriş yap</b> ile dükkânlarına dönebilirsin.</small></p><div class="grp">Hesabındaki dükkânlar (bulut)</div><p style="font-size:11.5px;opacity:.7;margin:-2px 0 4px">Kullanıcı adına bağlı dükkânlar. Başka bir cihazda <b>Giriş yap</b> dediğinde bunlar gelir. Çoğu zaman yukarıdakilerle aynıdır.</p>${acctShops()}${acctDelBox()}`:
+function renderAcct(){return G.acct?`<div class="grp">Hesap</div><p style="font-size:13px;margin:0 0 6px">Kullanıcı adın: <b>${esc(G.acct)}</b> ✓<br><small style="opacity:.75">Yeni telefonda giriş ekranındaki <b>Giriş yap</b> ile dükkânlarına dönebilirsin.</small></p>${acctDelBox()}`:
  `<div class="grp">Hesap</div><p style="font-size:12px;margin:0 0 6px;opacity:.8">Kullanıcı adı ve şifre belirle; uygulamayı silsen ya da telefon değiştirsen de dükkânına geri dönersin.</p><div style="display:flex;gap:6px;flex-wrap:wrap"><input id="acU" placeholder="Kullanıcı adı" autocomplete="username" autocapitalize="none" style="flex:1;min-width:120px"><input id="acP" placeholder="Şifre" aria-label="Şifre" inputmode="numeric" type="password" autocomplete="new-password" style="width:130px"></div><div class="pk" style="margin-top:6px"><button class="btn g" id="acB">Hesabı kaydet</button></div>`}
-function acctWire2(){const sh=ui.sheet;
+function acctWire2(){const sh=ui.sheet;shopsWire();
  sh.querySelectorAll('[data-au]').forEach(b=>b.onclick=async()=>{const c=b.dataset.au,how=b.dataset.how;if(!how){ACS.del=c;renderMenu();return}const a=acctLoc();if(!a)return;b.disabled=true;b.textContent='…';
   let r;try{r=await rpc('arasta_user_unlink',{p_uname:a.u,p_pin:a.p,p_code:c,p_del:how==='all'})}catch(e){r='net'}
   if(r!=='ok'){toast(ACM[r]||'Olmadı, bağlantını kontrol et',2200);renderMenu();return}
-  ACS.del=null;ACS.list=ACS.list.filter(x=>x.code!==c);sfx.tap();
+  ACS.del=null;SHD=null;ACS.list=ACS.list.filter(x=>x.code!==c);sfx.tap();
   if(how==='all'){acctLocalWipe(c,true);if(c===G.cloud){G.cloud=null;try{localStorage.removeItem(SK)}catch(e){}save=()=>{};toast('Dükkân silindi',1400);setTimeout(()=>location.reload(),900);return}toast('Dükkân her yerden silindi',1800)}
   else toast('Dükkân hesabından çıkarıldı',1800);renderMenu()});
  sh.querySelectorAll('[data-aux]').forEach(b=>b.onclick=()=>{ACS.del=null;renderMenu()});
@@ -101,3 +101,28 @@ function loopTick(){if(!AC)return;const on=G.snd&&!document.hidden&&G.started&&G
  loopSet('kalabalik',on&&view==='pazar'?0.22:0);loopSet('cim',on&&view==='bahce'&&!!TRB?0.07:0);loopSet('kus',on&&view==='bahce'?(zc>0?0.3:zc===0?0.12:0):0);
  if(view!==ambV||zc!==ambZ){ambV=view;ambZ=zc;AMSRC.forEach(o=>{try{const t=AC.currentTime;o.g.gain.setTargetAtTime(0,t,0.08);o.s.stop(t+0.4)}catch(e){}});AMSRC.length=0}}
 setInterval(loopTick,150);
+/* ---------- birleşik "Dükkânlarım" listesi ---------- */
+let SHD=null;
+function shopRows(){const L=[],acc=G.acct&&acctLoc()&&ACS.list;if(G.acct&&acctLoc()&&ACS.list===null)acctLoad();
+ ['1','2','3'].forEach(n=>{const i=slotInfo(n);if(!i)return;L.push({k:'s'+n,n,code:i.cloud,ad:i.ad,day:i.day,tier:i.tier,gold:i.gold,loc:true,cur:n===SSLOT,acc:!!(acc&&i.cloud&&ACS.list.some(x=>x.code===i.cloud))})});
+ if(acc)ACS.list.forEach(x=>{if(!L.some(r=>r.code===x.code))L.push({k:'c'+x.code,code:x.code,ad:x.ad||'Dükkânım',day:x.day||1,tier:x.tier||1,gold:x.gold||0,loc:false,acc:true})});
+ L.sort((a,b)=>(b.cur?1:0)-(a.cur?1:0));return L}
+function shopsHTML(){const L=shopRows(),free=['1','2','3'].filter(n=>!slotInfo(n));
+ const opt=(cls,attrs,t,d)=>`<button class="shopt ${cls}" ${attrs}><b>${t}</b><small>${d}</small></button>`;
+ let h=`<div class="grp">Dükkânlarım</div><div class="shl">`;
+ L.forEach(r=>{const tags=(r.loc?'<i class="tg">📱 Bu cihazda</i>':'')+(r.acc?'<i class="tg c">☁ Hesabında</i>':r.code?'<i class="tg g">☁ Bulut kodu var</i>':'');
+  let act='';if(r.cur)act='<span class="shnow">Şu an açık</span>';else if(r.loc)act=`<button class="btn l sm" data-sl="${r.n}">Geç</button>`;else act=free.length?`<button class="btn l sm" data-sc="${r.code}">İndir</button>`:'';
+  const canDel=!r.cur||r.acc;
+  h+=`<div class="shp${r.cur?' on':''}"><div class="shm"><div class="shn">${esc(r.ad)}</div><div class="shs">${r.day}. gün · K${r.tier} · ${r.gold} altın</div><div class="shg">${tags}</div></div><div class="sha">${act}${canDel?`<button class="shx${SHD===r.k?' on':''}" data-shd="${r.k}" aria-label="Sil">${SHD===r.k?'✕':'🗑'}</button>`:''}</div>`;
+  if(SHD===r.k){h+='<div class="shdl"><div class="shq">Bu dükkânla ne yapmak istiyorsun?</div>';
+   if(r.loc&&!r.cur)h+=opt('','data-sd="'+r.n+'" data-how="loc"','Bu cihazdan kaldır',r.code?'Bulutta'+(r.acc?' ve hesabında':'')+' kalır, sonra geri indirebilirsin':'Bulut kaydı yok, kalıcı olarak gider');
+   if(r.acc)h+=opt('','data-au="'+r.code+'" data-how="un"','Hesabımdan çıkar','Dükkân yerinde kalır, sadece kullanıcı adınla bağı kopar');
+   if(r.acc)h+=opt('r arm','data-au="'+r.code+'" data-how="all"','Her yerden sil','Bu cihaz, bulut ve hesap · geri alınamaz');else if(r.loc&&!r.cur&&r.code)h+=opt('r arm','data-sd="'+r.n+'" data-how="all"','Her yerden sil','Bu cihaz ve bulut · geri alınamaz');
+   h+='</div>'}
+  h+='</div>'});
+ if(free.length)h+=`<button class="shnew" data-sl="${free[0]}">＋ Yeni dükkân aç <small>${free.length} boş yer</small></button>`;
+ if(G.acct&&acctLoc()&&ACS.list===null)h+=`<p class="shnote">${ACS.err?esc(ACS.err):'Hesabındaki dükkânlar yükleniyor…'}</p>`;
+ return h+'</div>'}
+function shopsWire(){const sh=ui.sheet;sh.querySelectorAll('[data-shd]').forEach(b=>b.onclick=()=>{sfx.tap();SHD=SHD===b.dataset.shd?null:b.dataset.shd;renderMenu()});
+ sh.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{b.disabled=true;b.textContent='…';cloudLoadInto(b.dataset.sc).then(r=>{if(r!=='ok'){toast(r==='full'?'Boş yer yok':'İndirilemedi, bağlantını kontrol et',1800);renderMenu()}})});
+ if(!sh.dataset.armw){sh.dataset.armw=1;sh.addEventListener('click',e=>{const b=e.target.closest('.arm');if(!b||b.dataset.ok)return;e.stopImmediatePropagation();e.preventDefault();b.dataset.ok=1;b.classList.add('armed');b.querySelector('b').textContent='Emin misin? Tekrar dokun';sfx.tap()},true)}}
