@@ -8,7 +8,7 @@ const SBRAW={};let SBLIST=null;
 try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLIST=l;LD.n++;LD.t+=l.length;l.forEach(n=>fetch(AU('sounds/'+n)).then(r=>r.arrayBuffer()).then(b=>{SBRAW[n]=b;LD.n++}).catch(()=>{LD.n++}))}).catch(()=>{LD.n++})}catch(e){}
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261121.2208';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261121.2218';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -2761,5 +2761,7 @@ toast(G.first?`Hoş geldin usta!<br>İlk müşterin geliyor.`:`Tekrar hoş geldi
 try{if(sessionStorage.getItem('arasta-go')){sessionStorage.removeItem('arasta-go');setTimeout(()=>{const b=document.getElementById('startB');if(b&&document.getElementById('splash')&&!G.started)b.click()},700)}}catch(e){}
 /* konuşma balonu sipariş kartıyla çakışmasın */
 setInterval(()=>{const b=$('bubble'),c=ui.card;if(!b||!c)return;if(b.classList.contains('hide')){b.style.top='';return}b.style.top='';if(c.classList.contains('hide')||c.offsetParent===null)return;const fr=b.offsetParent?b.offsetParent.getBoundingClientRect():{top:0},br=b.getBoundingClientRect(),cr=c.getBoundingClientRect();if(br.left<cr.right&&br.right>cr.left&&br.top<cr.bottom&&br.bottom>cr.top)b.style.top=(cr.bottom-fr.top+8)+'px'},150);
+/* sekme rozetleri: atölyede toplanacak ürün, bahçede hasat */
+setInterval(()=>{try{const now=NOW(),nI=ST.filter(s=>s.ready&&stOwned(s)).length,nB=(typeof PL!=='undefined'?PL:[]).filter(o=>o.own&&o.seed&&o.w&&o.end&&o.end<=now).length;[['islik',nI],['bahce',nB]].forEach(([v,n])=>{const b=document.querySelector('#nav button[data-v="'+v+'"]');if(!b)return;let d=b.querySelector('.nbd');if(n&&view!==v){if(!d){d=document.createElement('i');d.className='nbd';b.appendChild(d)}if(d.textContent!==String(n))d.textContent=n;if(!b.dataset.bd){b.dataset.bd=1;d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop')}}else if(d){d.remove();delete b.dataset.bd}})}catch(e){}},600);
 
 })();
