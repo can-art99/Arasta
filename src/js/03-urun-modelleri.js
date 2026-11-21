@@ -51,7 +51,7 @@ m.traverse(o=>{if(o.isMesh){const a=(Array.isArray(o.material)?o.material:[o.mat
 m.updateMatrixWorld(true);let bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(V(0,0,0));m.scale.multiplyScalar(size/Math.max(sz.x,sz.z));m.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(m);
 m.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);g.add(m);return {g,um}}}
 var KASB=glbProd('spoon',0.34,kasikModel,/./,-Math.PI/2),TABB=glbProd('stool',0.3,tabureModel,/./),CANB=glbProd('briefcase',0.44,cantaModel,/lambert3SG/);['spoon','stool','briefcase','basket','soap','button'].forEach(n=>glb(n,()=>{}));
-['sneaker','cap','boxing','basketball','sunglasses','glove'].forEach(n=>glb(n,()=>{}));
+['sneaker','cap','boxing','basketball','sunglasses','glove','bow'].forEach(n=>glb(n,()=>{}));
 var SHOEB=glbProd('pair_of_shoes',0.48,shoeModel,/lambert4SG/);glb('pair_of_shoes',()=>{});
 PRODS.push({id:'sirt',ad:'Sırt çantası',tier:2,base:190,need:{deri:2,iplik:1,toka:1,boya:1},sheet:'#9c6b4e',shape:()=>rrect(0.5,0.6,0.07),build:glbProd('backpack',0.42,cantaModel),
  steps:[{t:'trace'},{t:'rub',k:'incelt'},{t:'rhythm',k:'dik',n:12},{t:'drag',what:'toka'},{t:'hold'},{t:'rub',k:'parlat'},{t:'design'}]});
@@ -116,6 +116,7 @@ var BBALL;{const T=(ad,o)=>Object.assign({t:'trace',ad},o||{}),Rb=(k,ad)=>({t:'r
  const ballFb=(hex)=>{const g=new THREE.Group(),um=M(hex||'#c8642a',0.7);put(g,new THREE.SphereGeometry(0.15,20,14),um,0,0.15,0);[0,Math.PI/2].forEach(a=>{const t=put(g,new THREE.TorusGeometry(0.151,0.004,4,32),M('#222'),0,0.15,0);t.rotation.y=a});const t2=put(g,new THREE.TorusGeometry(0.151,0.004,4,32),M('#222'),0,0.15,0);t2.rotation.x=Math.PI/2;return {g,um}};
  const glassFb=(hex)=>{const g=new THREE.Group(),um=M(hex||'#3a2a20',0.4);[-0.085,0.085].forEach(x=>{const r=put(g,new THREE.TorusGeometry(0.06,0.012,6,20),um,x,0.07,0);put(g,Cy(0.055,0.055,0.004,16),M('#333',0.2),x,0.07,0).rotation.x=Math.PI/2});put(g,B(0.05,0.012,0.012),um,0,0.08,0);[-1,1].forEach(k=>put(g,B(0.012,0.012,0.22),um,k*0.15,0.08,-0.11));return {g,um}};
  const capFb=(hex)=>{const g=new THREE.Group(),um=M(hex||'#3f6fa8',0.9);const d=put(g,new THREE.SphereGeometry(0.13,16,10,0,Math.PI*2,0,Math.PI/2),um,0,0,0);d.scale.y=0.8;put(g,Cy(0.1,0.1,0.01,16,1,false,0,Math.PI),um,0,0.005,0.12).scale.z=0.9;return {g,um}};
+ const bowFb=(hex)=>{const g=new THREE.Group(),um=M(hex||'#8a5a34',0.6);const a=put(g,new THREE.TorusGeometry(0.3,0.018,6,24,Math.PI*0.9),um,0,0.02,0);a.rotation.x=-Math.PI/2;a.rotation.z=Math.PI*0.55;put(g,B(0.008,0.008,0.56),M('#efe3c8'),-0.07,0.02,0);return {g,um}};
  const gloveFb=(hex)=>{const g=new THREE.Group(),um=M(hex||'#a3302a',0.5);[-0.1,0.1].forEach(x=>{const b=put(g,new THREE.SphereGeometry(0.08,12,10),um,x,0.08,0.02);b.scale.set(1,0.9,1.3);put(g,Cy(0.055,0.06,0.07,12),M('#222'),x,0.06,-0.09).rotation.x=Math.PI/2});return {g,um}};
  const tintB=(n,size,fb,rx)=>{const base=glbProd(n,size,fb,null,rx);return (hex,st,k)=>{const src=GLC[n];if(!src)return fb(hex,st,k);const r=base('#ffffff',st,k);let um=null;r.g.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(!um)um=o.material;else o.material=um;um.color.set(hex)}});return {g:r.g,um:um||r.um}}};
 BBALL=tintB('basketball',0.3,ballFb);
@@ -199,7 +200,9 @@ const haliM=(hex)=>{const g=new THREE.Group(),um=M(hex||'#a83a2a',0.95);put(g,B(
  {id:'terlik',ad:'Keçe terlik',tier:2,base:90,need:{kece:2,iplik:1},sheet:'#8a6a5a',shape:()=>soleShape(1),build:terlikM,
   steps:[T('Taban keçesini kes'),T('Yüz keçesi',{part:'yuz',n:1,shape:rr(0.2,0.16),at:[-0.45,0]}),Rb('sekil','Keçeyi ıslak ovala'),A('yuz','Yüzü yerleştir',[[0,-0.1]],'flat'),Y('dik','Kenar dikişi',{n:10}),Hd('Kalıpta kurut'),D]},
  {id:'eldiven',ad:'Deri eldiven',tier:2,base:100,need:{deri:1,iplik:1},sheet:'#9c6b4e',shape:rr(0.3,0.42),build:glbProd('glove',0.36,gloveFb,/./),after:['cuzdan',1],
-  steps:[T('Avuç parçasını kes'),T('Parmak parçası',{part:'parmak',n:1,shape:rr(0.22,0.14),at:[-0.45,0]}),Rb('incelt','Kenar inceltme'),A('parmak','Parmakları yerleştir',[[0,0.14]],'flat'),Y('dik','Parmak dikişi',{n:12}),Rb('parlat','Yağla ve parlat'),D]}].forEach(p=>PRODS.push(p));
+  steps:[T('Avuç parçasını kes'),T('Parmak parçası',{part:'parmak',n:1,shape:rr(0.22,0.14),at:[-0.45,0]}),Rb('incelt','Kenar inceltme'),A('parmak','Parmakları yerleştir',[[0,0.14]],'flat'),Y('dik','Parmak dikişi',{n:12}),Rb('parlat','Yağla ve parlat'),D]},
+ {id:'yay',ad:'Ahşap yay',tier:2,base:160,need:{kereste:2,iplik:1},sheet:'#8a5a34',wood:true,shape:rr(0.1,0.62),build:glbProd('bow',0.62,bowFb,/LightWood/,-Math.PI/2),after:['kasik',1],
+  steps:[T('Yay gövdesini kes'),Rb('incelt','Rendeleyip incelt'),{t:'pour',steam:true,ad:'Buharla yumuşat'},Hd('Kalıpta bükerek kurut'),T('Kiriş',{part:'kiris',n:1,shape:rr(0.02,0.56),at:[-0.45,0],col:'#efe3c8',wood:true}),A('kiris','Kirişi tak',[[0.08,0]],'flat'),Y('dik','Kabza sargısı',{pts:[[0,-0.06],[0,-0.02],[0,0.02],[0,0.06]]}),Rb('parlat','Yağla ve parlat'),D]}].forEach(p=>PRODS.push(p));
 }
 
 const PHASE={oy:'Hazırlık',asm:'Birleştirme',trace:'Hazırlık',incelt:'Hazırlık',dik:'Birleştirme',yapistir:'Birleştirme',delik:'Birleştirme',taban:'Birleştirme',toka:'Birleştirme',hold:'Birleştirme',zimpara:'Bitiriş',cila:'Bitiriş',parlat:'Bitiriş',design:'Bitiriş'};
