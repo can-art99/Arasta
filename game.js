@@ -8,7 +8,7 @@ const SBRAW={};let SBLIST=null;
 try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLIST=l;LD.n++;LD.t+=l.length;l.forEach(n=>fetch(AU('sounds/'+n)).then(r=>r.arrayBuffer()).then(b=>{SBRAW[n]=b;LD.n++}).catch(()=>{LD.n++}))}).catch(()=>{LD.n++})}catch(e){}
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261121.2134';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261121.2147';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1138,7 +1138,8 @@ const CN='<svg class="cn" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="
 /* ---------- ses ---------- */
 let AC=null,NB=null,sT=0;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state!=='running'){try{AC.resume()}catch(e){}try{const b=AC.createBuffer(1,1,22050),s=AC.createBufferSource();s.buffer=b;s.connect(AC.destination);s.start(0)}catch(e){}}if(AC)loadSounds()}
-['pointerdown','touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{if(!AC||AC.state!=='running')ac()},{capture:true,passive:true}));
+var AC_RE=false;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+['pointerdown','touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{if(AC&&AC_RE&&ev!=='pointerdown'){AC_RE=false;try{AC.suspend().then(()=>AC.resume()).then(()=>ac()).catch(()=>ac())}catch(e){ac()}return}if(!AC||AC.state!=='running')ac()},{capture:true,passive:true}));
 document.addEventListener('pointerdown',ac,true);
 function tone(f,d,type,vol,f2,delay){const a=AC;if(!a||!G.snd)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
 g.gain.setValueAtTime(vol||0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+d);o.connect(g);g.connect(BUS(AMBF?'a':'e'));o.start(t);o.stop(t+d+0.02)}
@@ -1219,7 +1220,7 @@ if(st%2===0&&st%8!==0&&Math.random()<0.5)mv(hz(ch[1+Math.floor(Math.random()*(ch
 MU.next+=e;MU.step++}}
 setInterval(musSched,140);
 function musSet(on){G.mus=on;ac();if(AC){musInit();const t=AC.currentTime;MU.g.gain.cancelScheduledValues(t);MU.g.gain.setTargetAtTime(on?0.6:0,t,on?1.2:0.4)}const b=$('musB');if(b)b.classList.toggle('off',!on&&!G.snd)}
-document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else AC.resume()});
+document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden){AC_RE=true;try{AC.suspend()}catch(e){}}else{try{AC.resume()}catch(e){}}});addEventListener('pageshow',e=>{if(e.persisted)AC_RE=true});
 const sThr=(fn,gap)=>{if(tt-sT>(gap||0.07)){sT=tt;fn()}};
 $('ui').addEventListener('click',e=>{if(e.target.closest('button'))sfx.tap()},true);
 
@@ -2043,7 +2044,7 @@ tween(0.45,k=>{m.position.set(c.x+Math.cos(a)*r*k,c.y+0.06*Math.sin(k*Math.PI),c
 const SRC=new THREE.Raycaster();function hitTop(x,z){if(!(K&&K.is3d&&K.m3))return null;K.m3.g.updateMatrixWorld(true);SRC.set(V(x,Y+3,z),V(0,-1,0));const h=SRC.intersectObject(K.m3.g,true).find(i=>i.object.visible!==false);return h?h.point:null}
 function onSurf(q){if(!(K&&K.is3d&&K.m3))return q;for(let t=1;t>=0;t-=0.08){const x=BC.x+(q.x-BC.x)*t,z=BC.z+(q.z-BC.z)*t,h=hitTop(x,z);if(h)return V(h.x,h.y+0.003,h.z)}return q}
 function bRhythm(){const s=K.st;let P=[];if(s.pts)P=s.pts.map(q=>V(BC.x+q[0],K.top+0.002,BC.z+q[1]));else if(s.line)for(let i=0;i<s.n;i++)P.push(V(BC.x,K.top+0.002,BC.z-0.32+i*0.05));else P=shapePts(K.p.shape(),s.n,BC,K.top-Y+0.002,s.sc||0.86);
-if(K.is3d&&K.m3&&!s.pts&&!s.line){K.m3.g.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(K.m3.g),C=bb.getCenter(V()),Rr=Math.min(bb.max.x-bb.min.x,bb.max.z-bb.min.z)/2*0.8;P=[];for(let i=0;i<s.n;i++){const t=i/s.n*Math.PI*2+Math.PI/2;P.push(V(C.x+Math.cos(t)*Rr,0,C.z+Math.sin(t)*Rr))}}if(K.is3d)P=P.map(onSurf);K.rp=P;K.ri=-1;K.rs=[];K.prev=null;const gk=s.k;K.ghost=P.map(q=>{const m=new THREE.Mesh(gk==='yapistir'?Cy(0.014,0.014,0.003,10):Cy(0.006,0.006,0.003,8),new THREE.MeshBasicMaterial({color:gk==='yapistir'?'#fff6d8':'#2a1c12',transparent:true,opacity:0.35}));m.position.copy(q);K.work.add(m);return m});setTimeout(nextDot,400)}
+if(K.is3d&&K.m3&&!s.pts&&!s.line){K.m3.g.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(K.m3.g),C=bb.getCenter(V()),Rr=Math.min(bb.max.x-bb.min.x,bb.max.z-bb.min.z)/2*0.8;P=[];const R0=Rr/0.8;for(let i=0;i<s.n;i++){const t=i/s.n*Math.PI*2+Math.PI/2;let best=null;for(let f=0.98;f>=0.35;f-=0.04){const h=hitTop(C.x+Math.cos(t)*R0*f,C.z+Math.sin(t)*R0*f);if(h&&(!best||h.y>best.y+0.004))best=h}P.push(best?V(best.x,best.y+0.003,best.z):V(C.x+Math.cos(t)*Rr,0,C.z+Math.sin(t)*Rr))}P=P.map(q=>q.y>0?q:onSurf(q))}else if(K.is3d)P=P.map(onSurf);K.rp=P;K.ri=-1;K.rs=[];K.prev=null;const gk=s.k;K.ghost=P.map(q=>{const m=new THREE.Mesh(gk==='yapistir'?Cy(0.014,0.014,0.003,10):Cy(0.006,0.006,0.003,8),new THREE.MeshBasicMaterial({color:gk==='yapistir'?'#fff6d8':'#2a1c12',transparent:true,opacity:0.35}));m.position.copy(q);K.work.add(m);return m});setTimeout(nextDot,400)}
 const ringScale=t=>3.2-t*2.4;
 function nextDot(){if(G.step!=='rhythm')return;K.ri++;if(K.ri>=K.rp.length){K.dot=null;stepDone(K.rs.reduce((a,b)=>a+b,0)/K.rs.length);return}
 const k=K.st.k,m=k==='yapistir'?mesh(Cy(0.016,0.016,0.006,10),M('#f4ecd0')):mesh(Cy(k==='delik'?0.012:0.007,k==='delik'?0.012:0.007,0.004,8),M('#1d1612'));
@@ -2754,5 +2755,7 @@ toast(G.first?`Hoş geldin usta!<br>İlk müşterin geliyor.`:`Tekrar hoş geldi
 /* giriş ekranı: uçuşan ışık tanecikleri + ilk dokunuşta müzik */
 {const sp=$('splash'),f=document.createElement('div');f.className='spfx';for(let i=0;i<14;i++){const e=document.createElement('i'),w=4+Math.random()*5;e.style.cssText=`left:${5+Math.random()*90}%;--dx:${(Math.random()*70-35)|0}px;width:${w}px;height:${w}px;animation-duration:${7+Math.random()*7}s;animation-delay:${-Math.random()*12}s`;f.appendChild(e)}sp.insertBefore(f,sp.firstChild);sp.addEventListener('pointerdown',()=>{ac();if(G.mus&&!G.started)musSet(true)},true)}
 try{if(sessionStorage.getItem('arasta-go')){sessionStorage.removeItem('arasta-go');setTimeout(()=>{const b=document.getElementById('startB');if(b&&document.getElementById('splash')&&!G.started)b.click()},700)}}catch(e){}
+/* konuşma balonu sipariş kartıyla çakışmasın */
+setInterval(()=>{const b=$('bubble'),c=ui.card;if(!b||!c)return;if(b.classList.contains('hide')){b.style.top='';return}b.style.top='';if(c.classList.contains('hide')||c.offsetParent===null)return;const fr=b.offsetParent?b.offsetParent.getBoundingClientRect():{top:0},br=b.getBoundingClientRect(),cr=c.getBoundingClientRect();if(br.left<cr.right&&br.right>cr.left&&br.top<cr.bottom&&br.bottom>cr.top)b.style.top=(cr.bottom-fr.top+8)+'px'},150);
 
 })();
