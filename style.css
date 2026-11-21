@@ -306,4 +306,7 @@ svg.gi{width:1.15em;height:1.15em;vertical-align:-0.22em;flex:none;display:inlin
 @keyframes wsl{from{transform:translateX(30%);opacity:.3}}
 #splash .spc{max-width:520px;margin:0 auto}
 }
+/* ==== Açılış ekranı: çizilmiş arasta sokağı (gün batımı) ==== */
+#splash{background:linear-gradient(180deg,rgba(255,247,232,0) 0%,rgba(255,247,232,0) 44%,rgba(255,247,232,.8) 60%,rgba(255,247,232,.97) 74%),url(arka-dikey.svg) center 18%/cover no-repeat!important}
+@media (min-aspect-ratio:1/1){#splash{background:linear-gradient(180deg,rgba(255,247,232,0) 0%,rgba(255,247,232,0) 46%,rgba(255,247,232,.82) 62%,rgba(255,247,232,.97) 76%),url(arka-genis.svg) center 30%/cover no-repeat!important}}
 
