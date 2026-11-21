@@ -6,9 +6,9 @@ function hit(e,h){setRay(e);return ray.ray.intersectPlane(new THREE.Plane(V(0,1,
 function hitW(e){if(K&&K.is3d&&K.m3){setRay(e);const h=ray.intersectObject(K.m3.g,true)[0];if(h)return h.point.clone()}return hit(e,K.top)}
 let dragging=null,drawing=false,tap=null,pinch=null;const RZ={z:1,t:1},V2T=new THREE.Vector2(),DP=new Map();
 const PT=new Map(),ZM={z:1,t:1,px:0,pz:0};
-const zoomable=()=>view==='bahce'||view==='islik'||view==='pazar'||view==='depo';
-function clampPan(){const r=Math.max(0.3,0.3+(ZM.t-1)*2.4);ZM.px=clamp(ZM.px,-r,r);ZM.pz=clamp(ZM.pz,-r*1.3,r*1.3)}
-function setZoom(t){ZM.t=clamp(t,0.72,2.5);clampPan()}
+const zoomable=()=>view==='bahce'||view==='islik'||view==='pazar'||view==='depo'||(view==='home'&&G.phase!=='craft'&&G.phase!=='result');
+function clampPan(){const r=view==='home'?0.4:Math.max(0.3,0.3+(ZM.t-1)*2.4);ZM.px=clamp(ZM.px,-r,r);ZM.pz=clamp(ZM.pz,-r*1.3,r*1.3)}
+function setZoom(t){ZM.t=view==='home'?clamp(t,0.85,1.35):clamp(t,0.72,2.5);clampPan()}
 $('zi').onclick=()=>setZoom(ZM.t*1.35);$('zo').onclick=()=>setZoom(ZM.t/1.35);
 canvas.addEventListener('wheel',e=>{if(G.phase==='result'||(G.phase==='craft'&&G.step==='design')){RZ.t=clamp(RZ.t*(e.deltaY<0?1.12:0.89),1,3.2);return}if(zoomable()){e.preventDefault();setZoom(ZM.t*(e.deltaY<0?1.12:0.89))}},{passive:false});
 function floatTxt(cx,cy,html){const r=frame.getBoundingClientRect(),d=document.createElement('div');d.className='flt';d.innerHTML=html;d.style.left=(cx-r.left)+'px';d.style.top=(cy-r.top)+'px';$('ui').appendChild(d);setTimeout(()=>d.remove(),900)}
@@ -41,7 +41,7 @@ if(PT.has(e.pointerId)){const p=PT.get(e.pointerId),dx=e.clientX-p.x,dy=e.client
  if(PT.size===2&&pinch){const a=[...PT.values()],q=pinch.z*Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)/pinch.d;if(G.phase==='result')RZ.t=clamp(q,1,3.2);else setZoom(q)}
  else if(tap){if(!tap.moved&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>8)tap.moved=true;
   if(tap.moved&&G.phase==='result'&&K&&K.model){K.model.g.rotation.y+=dx*0.012}
-  if(tap.moved&&zoomable()){const w=VIEWS[view].p.distanceTo(VIEWS[view].l)*1.2/H/ZM.z;ZM.px-=dx*w;ZM.pz-=dy*w*1.35;clampPan()}}
+  if(tap.moved&&zoomable()&&view!=='home'){const w=VIEWS[view].p.distanceTo(VIEWS[view].l)*1.2/H/ZM.z;ZM.px-=dx*w;ZM.pz-=dy*w*1.35;clampPan()}}
  return}
 if(!K)return;
 if(K.pm&&K.pdn){const p=hit(e,K.hy!=null?K.hy:K.top);if(p)K.pm(p,e);return}
@@ -101,7 +101,7 @@ custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';if
 ALLC.forEach(c=>{if(c.proc)procAnim(c);else if(c.mix)c.mix.update(dt)});MIX.forEach(m=>m.update(dt));wxTick(dt);if(SPL){const a=Math.sin(tt*0.07)*0.7,r=8.6+Math.sin(tt*0.11)*0.6;camCur.l.set(OP,-1.3,0.2);camCur.p.set(OP+Math.sin(a)*r,4.7+Math.sin(tt*0.09)*0.25,0.4+Math.cos(a)*r)}catTick(dt);wandTick(dt);frmTick(dt);cobTick(dt);collFx(dt);BOB.forEach(b=>{const k=tt*b.sp+b.ph;if(b.br){b.o.scale.y=b.s0*(1+Math.sin(k)*0.025)}else{b.o.rotation.order='YXZ';b.o.rotation.y=b.r0+Math.sin(k*0.11)*0.25;if(b.sp>=3){b.o.position.y=Math.max(0,Math.sin(k))*0.03;b.o.rotation.x=0}else{b.o.position.y=0;b.o.rotation.x=Math.pow(Math.max(0,Math.sin(k*0.7)),2)*(b.sp<1?0.22:0.45)}}});if(DOORH){const tg=(G.open&&!G.night)||ALLC.some(c=>c.walking&&!c.wand&&!c.cirak&&!c.frm&&!c.cob)?-1.55:0;DOORH.rotation.y+=(tg-DOORH.rotation.y)*Math.min(1,dt*4)}
 islikSfx(dt);if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.jobs.length)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
 AWN.visible=camCur.p.y<2.05;toolTick();if(lamp.visible)lamp.intensity=1.35+Math.sin(tt*2.3)*0.05;
-ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1,fk=view==='depo'?Math.min(1.6,Math.max(1,0.9/cam.aspect)):view==='pazar'?Math.min(1.45,Math.max(1,0.8/cam.aspect)):1;cam.position.copy(camCur.p).sub(camCur.l).multiplyScalar(fk/zz).add(camCur.l);
+if(!zoomable()&&(ZM.t!==1||ZM.px||ZM.pz)){ZM.t=1;ZM.px=ZM.pz=0}ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1,fk=view==='depo'?Math.min(1.6,Math.max(1,0.9/cam.aspect)):view==='pazar'?Math.min(1.45,Math.max(1,0.8/cam.aspect)):1;cam.position.copy(camCur.p).sub(camCur.l).multiplyScalar(fk/zz).add(camCur.l);
 cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.9)*0.01*sway;cam.position.z+=ZM.pz;look.copy(camCur.l);look.x+=ZM.px;look.z+=ZM.pz;const dsg=G.phase==='craft'&&G.step==='design';if((G.phase==='result'||dsg)&&K&&K.model){RZ.z+=(RZ.t-RZ.z)*Math.min(1,dt*10);if(Math.abs(RZ.z-1)>0.002){const P=K.model.g.position.clone();P.y+=0.08;const f=1-1/RZ.z;cam.position.lerp(P,f*0.9);look.lerp(P,Math.min(1,Math.max(0,f*1.3)));const sz=R.getSize(V2T);if(!dsg)cam.setViewOffset(sz.x,sz.y,0,sz.y*0.25*clamp(f*2.2,0,1),sz.x,sz.y);else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else{RZ.z=RZ.t=1;if(cam.view&&cam.view.enabled)cam.clearViewOffset();const h=document.getElementById('zhint');if(h&&!h.classList.contains('hide'))h.classList.add('hide')}if(SHK>1e-5)cam.position.y+=Math.sin(tt*75)*SHK;cam.lookAt(look);
 busy=PT.size>0||tweens.length>0||!!(K&&(K.tick||K.pdn))||!!(K&&(K.drag||K.holding))||switching||(G.phase==='craft'&&['rhythm','hold','pump','rub','trace'].includes(G.step))||ALLC.some(c=>c.walking&&!c.wand&&!c.cirak&&!c.frm);shT+=dt;if((busy&&hotNow)||shT>(G.phase==='craft'?0.1:view==='bahce'||view==='pazar'?0.25:0.4)){shT=0;R.shadowMap.needsUpdate=true}zoneTick();R.render(S,cam);drawFx();drawLabels()}
 glb('backpack',()=>{ICON.sirt=snap(PRODS.find(p=>p.id==='sirt').build('#8a4a26').g);vitrinSync()});

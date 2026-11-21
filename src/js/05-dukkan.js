@@ -28,14 +28,14 @@ const AWN=new THREE.Group();
 function plant(x,y,z,k){put(S,Cy(0.14*k,0.1*k,0.2*k,8),M('#b06a3a'),x,y,z);for(let i=0;i<6;i++){const a=i/6*Math.PI*2,l=put(S,new THREE.ConeGeometry(0.06*k,0.38*k,4),M(i%2?'#4f7a3a':'#5f8a44'),x+Math.cos(a)*0.1*k,y+0.2*k,z+Math.sin(a)*0.1*k);l.rotation.z=Math.cos(a)*0.6;l.rotation.x=-Math.sin(a)*0.6}}
 place('plant_white',{x:-0.35,z:-3.45,h:1.0});place('flower_pot2',{x:2.15,z:-3.4,h:0.75,ry:1});place('round_rug',{x:-1.45,y:0.03,z:-2.55,w:1.3});
 
-place('pair_of_shoes',{x:-2.7,y:2.33,z:-1.45,w:0.42,ry:-1.3});place('glove',{x:-1.75,y:1.085,z:2.05,w:0.2,ry:0.5});place('light_desk',{x:1.85,y:1.085,z:1.3,h:0.5,ry:-2.4});
+place('pair_of_shoes',{x:-2.7,y:2.33,z:-1.45,w:0.42,ry:-1.3});place('light_desk',{x:1.85,y:1.085,z:1.3,h:0.5,ry:-2.4});
 const Y=1.085,BC=V(0,Y,1.66);
 const CTB=M('#8a5530'),CTT=M('#a8693a');add(B(4.2,1.0,1.3),CTB,0,0.5,1.7);add(B(4.4,0.08,1.42),CTT,0,1.04,1.7);
 for(let i=0;i<3;i++)add(B(4.2,0.04,0.02),beam,0,0.25+i*0.28,2.36);
 add(B(1.36,0.006,1.0),M('#3d5a3a'),0,Y-0.002,1.66);
 for(let i=0;i<7;i++)add(B(0.004,0.008,1.0),M('#577a52'),-0.6+i*0.2,Y-0.001,1.66);
 for(let i=0;i<5;i++)add(B(1.36,0.008,0.004),M('#577a52'),0,Y-0.001,1.26+i*0.2);
-add(Cy(0.1,0.1,0.22,8),M('#d9a441'),1.45,1.19,1.7);
+
 add(B(0.05,0.02,0.32),M('#c0c4c8'),0.9,Y+0.01,1.25).rotation.y=0.5;
 {const bz=1.08;[['#a3302a',-0.6],['#2c3e6b',-0.47],['#c9982a',-0.34]].forEach(([h,x])=>{const o=pot(h);o.scale.setScalar(0.75);o.position.set(x,Y,bz);S.add(o)});
 const br=new THREE.Group();put(br,Cy(0.009,0.011,0.2,6),M('#a0703c'),0,0,0);put(br,Cy(0.012,0.012,0.04,6),M('#b8bcc0',0.4),0,0.115,0);put(br,new THREE.ConeGeometry(0.014,0.06,6),M('#3a2a1e'),0,0.165,0);br.rotation.z=Math.PI/2;br.rotation.y=0.3;br.position.set(-0.13,Y+0.014,bz);S.add(br);

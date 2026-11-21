@@ -38,7 +38,7 @@ const STALLS=[stall(-1.2,-2.1,'#b5533c','pazar',['hamderi','deri','iplik','toka'
 const hd=put(g,B(1.1,0.06,0.06),M('#5a3519'),-1.35,0.5,0);hd.rotation.z=-0.15;
 [[-0.45,'#9b6a3a'],[0.1,'#8b5a2b'],[0.55,'#a8743e']].forEach((q,i)=>put(g,B(0.42,0.38,0.42),M(q[1]),q[0],0.84,(i%2)*0.2-0.1));const sk=put(g,new THREE.SphereGeometry(0.22,8,6),M('#cdbb94'),-0.15,1.2,0);sk.scale.y=0.8;
 const h=new THREE.Mesh(B(2.4,1.8,1.5),HID);h.position.y=0.9;g.add(h);g.position.set(OP-1.3,0,0.25);g.userData.tab='ted';S.add(g);STALLS.push(g)}
-[[0,'#3f6fa8'],[1,'#4f7a3a']].forEach(([i,c])=>{const f=figure(0,0,c);S.remove(f);f.position.set(0,0,-0.7);STALLS[i].add(f)});
+[[0,'#3f6fa8'],[1,'#4f7a3a']].forEach(([i,c])=>{const f=figure(0,0,c);S.remove(f);f.scale.setScalar(0.8);f.position.set(0,0,-0.7);STALLS[i].add(f)});
 const GL=label('pazar',V(OP-1.25,0.05,3.15),null,true);LBT.gift=GL;GL.el.classList.add('stl');GL.el.onclick=()=>marketTab('gift');
 {const g=new THREE.Group();put(g,B(0.7,0.4,0.5),M('#8a5530'),0,0.2,0);put(g,B(0.74,0.16,0.54),M('#a8693a'),0,0.48,0);[-0.22,0.22].forEach(x=>put(g,B(0.08,0.6,0.56),M('#d9a23a',0.4),x,0.3,0));put(g,B(0.1,0.13,0.04),M('#e8c05a',0.3),0,0.38,0.27);
 const h=new THREE.Mesh(B(1,1,0.9),HID);h.position.y=0.4;g.add(h);g.position.set(OP-1.25,0,2.8);g.userData.tab='gift';S.add(g);STALLS.push(g);place('chest',{par:g,swap:1,h:0.62})}
@@ -85,7 +85,7 @@ function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return
 {const RA={mezat:1,bit:0.75,tohum:0.5,deko:0.25,gift:0,ted:-0.25,pazar:-0.5,takas:-0.75},RX=3.7,RZ=3.3;
  STALLS.forEach(g=>{const t=g.userData.tab;if(RA[t]==null)return;const a=RA[t]*Math.PI,x=OP+Math.sin(a)*RX,z=PCZ+Math.cos(a)*RZ;g.position.set(x,0,z);g.rotation.y=a+Math.PI;
   const l=LBT[t];if(l){const up=l.pos.y>0.5;l.pos.set(x,up?l.pos.y:0.05,up?z:z+0.85)}})
- const ring=add(new THREE.RingGeometry(1.25,2.55,40),M('#d8c6a0'),OP,0.006,PCZ);ring.rotation.x=-Math.PI/2;ring.castShadow=false;
+ const ring=add(new THREE.RingGeometry(1.25,2.55,40),M('#d8c6a0'),OP,0.014,PCZ);ring.rotation.x=-Math.PI/2;ring.castShadow=false;
  [[-5.9,-4.6,0],[5.9,-4.6,0],[-5.9,0.8,0],[5.9,0.8,0]].forEach(([x,z,r])=>place('hedge',{x:OP+x,z,w:1.6,ry:Math.PI/2}));
  [[-6.0,-2.0],[6.0,-1.9],[-6.0,3.2],[6.0,3.0],[-3.2,-6.2],[3.3,-6.2],[-2.3,3.5],[2.4,3.4]].forEach(([x,z],i)=>place('bush',{x:OP+x,z,w:0.75+(i%3)*0.15,ry:i*1.7}));
  /* güney kenarı: alçak taş duvar, çitler, ağaçlar, evler (sahne bütünlüğü) */
@@ -103,7 +103,7 @@ add(B(40,0.05,40),M('#4a3424'),OD,-0.04,0).castShadow=false;
 add(B(6.6,4.4,0.15),M('#7a5636'),OD,2.2,-3.25);add(B(0.15,4.4,9),M('#6e4a30'),OD-3.2,2.2,0);add(B(0.15,4.4,9),M('#6e4a30'),OD+3.2,2.2,0);
 const GORD=['Ham madde','İşlenmiş','Yardımcı','Tohum'],DEP=[],DROW=[2.95,2.35,1.75,1.15,0.55],DCX=[-1.12,-0.56,0,0.56,1.12];
 const RFA=M('#8a5a34'),RFB=M('#5a3519');const RFM=[];[3.45,2.83,2.21,1.59,0.97,0.35].forEach(y=>RFM.push(add(B(4.0,0.06,0.55),RFA,OD,y-0.03,-2.9)));[-2.0,2.0].forEach(x=>RFM.push(add(B(0.1,3.9,0.55),RFB,OD+x,1.95,-2.9)));
-RFM.forEach(m=>m.visible=false);[-1.5,1.5].forEach(dx=>DROW.forEach(y=>place('wall_shelf',{x:OD+dx,y:y-0.57,z:-2.88,w:2.85,cb:w=>{w.rotation.y=Math.PI/2;w.scale.x=0.62;w.traverse(o=>{if(o.isMesh)o.material=/Top/.test(o.material.name)?RFA:RFB})}})));
+RFM.forEach(m=>m.visible=false);DROW.forEach(y=>place('wall_shelf',{x:OD,y:y-0.3,z:-2.88,w:5.9,cb:w=>{w.rotation.y=Math.PI/2;w.scale.x=0.27;w.scale.y=0.5;w.position.y=y-0.5*0.456*5.9/2.3;w.traverse(o=>{if(o.isMesh)o.material=/Top/.test(o.material.name)?RFA:RFB})}}));
 place('lounge_chair',{x:OD-2.45,z:-0.45,h:0.75,ry:-2.0});place('box_a',{x:OD+2.5,z:0.2,h:0.5,ry:0.4});place('box_a',{x:OD+2.75,z:-0.35,h:0.4,ry:-0.3});place('trash_can',{x:OD+2.6,z:-1.55,h:0.55});
 Object.keys(MATS).sort((a,b)=>GORD.indexOf(MATS[a].g)-GORD.indexOf(MATS[b].g)).forEach((k,i)=>{const [x,y]=slotXY(i%40),o=MATS[k].mk();o.scale.setScalar(1.4);o.position.set(x,y,-2.9);o.visible=false;S.add(o);
 const l=label('depo',V(x,y+0.02,-2.62),'',true);l.el.classList.add('dn');l.off=true;const hb=new THREE.Mesh(new THREE.SphereGeometry(0.19,6,5),HID);hb.position.y=0.08;o.add(hb);const dd={k,o,l,n:-1};DEP.push(dd)});
@@ -121,7 +121,7 @@ function toVit(it){if(it&&it.worn){toast('Önce tamir et',1300);return false}if(
 const DSTO=new THREE.Group();S.add(DSTO);
 function storeSync(){DSTO.clear();(G.store||[]).slice(0,10).forEach((it,i)=>{const p=pr(it),m=p.build(it.col?paintOf(it.col).hex:p.sheet,it.style,{cila:true});m.g.scale.setScalar(0.6);const [sx]=slotXY(i);m.g.position.set(sx,DROW[4]+0.01,-2.85);m.g.rotation.y=0.4;m.g.userData.sid=it.id;DSTO.add(m.g)})}
 let DRG=null,DRGJ=false;const DPL=new THREE.Plane(new THREE.Vector3(0,0,1),2.75),DPT=new THREE.Vector3();
-function slotXY(i){const c=i%10;return [OD+(c<5?-1.5:1.5)+DCX[c%5],DROW[Math.floor(i/10)]]}
+function slotXY(i){const c=i%10;return [OD+(c-4.5)*0.57,DROW[Math.floor(i/10)]]}
 function depoTap(){if(DRGJ){DRGJ=false;return}
  const hs=ray.intersectObjects(DSTO.children,true)[0];if(hs){let o=hs.object;while(o&&o.userData.sid==null)o=o.parent;const it=o&&(G.store||[]).find(x=>x.id===o.userData.sid);if(it)storeItem(it);return}
  if(ray.intersectObject(DHIT)[0])openDepo()}

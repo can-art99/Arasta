@@ -51,7 +51,7 @@ m.traverse(o=>{if(o.isMesh){const a=(Array.isArray(o.material)?o.material:[o.mat
 m.updateMatrixWorld(true);let bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(V(0,0,0));m.scale.multiplyScalar(size/Math.max(sz.x,sz.z));m.updateMatrixWorld(true);bb=new THREE.Box3().setFromObject(m);
 m.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);g.add(m);return {g,um}}}
 var KASB=glbProd('spoon',0.34,kasikModel,/./,-Math.PI/2),TABB=glbProd('stool',0.3,tabureModel,/./),CANB=glbProd('briefcase',0.44,cantaModel,/lambert3SG/);['spoon','stool','briefcase','basket','soap','button'].forEach(n=>glb(n,()=>{}));
-['sneaker','cap','boxing','basketball','sunglasses'].forEach(n=>glb(n,()=>{}));
+['sneaker','cap','boxing','basketball','sunglasses','glove'].forEach(n=>glb(n,()=>{}));
 var SHOEB=glbProd('pair_of_shoes',0.48,shoeModel,/lambert4SG/);glb('pair_of_shoes',()=>{});
 PRODS.push({id:'sirt',ad:'Sırt çantası',tier:2,base:190,need:{deri:2,iplik:1,toka:1,boya:1},sheet:'#9c6b4e',shape:()=>rrect(0.5,0.6,0.07),build:glbProd('backpack',0.42,cantaModel),
  steps:[{t:'trace'},{t:'rub',k:'incelt'},{t:'rhythm',k:'dik',n:12},{t:'drag',what:'toka'},{t:'hold'},{t:'rub',k:'parlat'},{t:'design'}]});
@@ -197,7 +197,9 @@ const haliM=(hex)=>{const g=new THREE.Group(),um=M(hex||'#a83a2a',0.95);put(g,B(
 [{id:'balkav',ad:'Bal kavanozu',tier:2,base:70,need:{bal:2,kum:1},sheet:'#e09a2a',wood:true,cut:'sc',shape:ci(0.14),build:balM,
   steps:[T('Kapak bezini kes'),{t:'pour',ad:'Balı kavanoza dök'},{t:'lace',ad:'Kapağı iple bağla',pts:[0,1,2,3,4,5,6].map(i=>[Math.cos(i/6*6.283)*0.1,Math.sin(i/6*6.283)*0.1])},D]},
  {id:'terlik',ad:'Keçe terlik',tier:2,base:90,need:{kece:2,iplik:1},sheet:'#8a6a5a',shape:()=>soleShape(1),build:terlikM,
-  steps:[T('Taban keçesini kes'),T('Yüz keçesi',{part:'yuz',n:1,shape:rr(0.2,0.16),at:[-0.45,0]}),Rb('sekil','Keçeyi ıslak ovala'),A('yuz','Yüzü yerleştir',[[0,-0.1]],'flat'),Y('dik','Kenar dikişi',{n:10}),Hd('Kalıpta kurut'),D]}].forEach(p=>PRODS.push(p));
+  steps:[T('Taban keçesini kes'),T('Yüz keçesi',{part:'yuz',n:1,shape:rr(0.2,0.16),at:[-0.45,0]}),Rb('sekil','Keçeyi ıslak ovala'),A('yuz','Yüzü yerleştir',[[0,-0.1]],'flat'),Y('dik','Kenar dikişi',{n:10}),Hd('Kalıpta kurut'),D]},
+ {id:'eldiven',ad:'Deri eldiven',tier:2,base:100,need:{deri:1,iplik:1},sheet:'#9c6b4e',shape:rr(0.3,0.42),build:glbProd('glove',0.36,gloveFb,/./),after:['cuzdan',1],
+  steps:[T('Avuç parçasını kes'),T('Parmak parçası',{part:'parmak',n:1,shape:rr(0.22,0.14),at:[-0.45,0]}),Rb('incelt','Kenar inceltme'),A('parmak','Parmakları yerleştir',[[0,0.14]],'flat'),Y('dik','Parmak dikişi',{n:12}),Rb('parlat','Yağla ve parlat'),D]}].forEach(p=>PRODS.push(p));
 }
 
 const PHASE={oy:'Hazırlık',asm:'Birleştirme',trace:'Hazırlık',incelt:'Hazırlık',dik:'Birleştirme',yapistir:'Birleştirme',delik:'Birleştirme',taban:'Birleştirme',toka:'Birleştirme',hold:'Birleştirme',zimpara:'Bitiriş',cila:'Bitiriş',parlat:'Bitiriş',design:'Bitiriş'};
