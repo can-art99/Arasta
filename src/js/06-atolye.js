@@ -1,6 +1,12 @@
 /* ---------- işlik ---------- */
 const LBL=[];
 for(let i=0;i<10;i++)add(B(0.66,0.05,12),M(i%2?'#5e3a22':'#54331d'),OI-3+i*0.66,0,1);
+add(B(44,0.05,44),M('#4a3424'),OI,-0.04,1).castShadow=false;
+{const crate=(x,z,s,r)=>add(B(s,s*0.8,s),M(['#8a5a34','#7a4a2a','#9a6a3a'][Math.abs(Math.round(x*3+z))%3]),OI+x,s*0.4,z).rotation.y=r;
+ [[-4.3,-2.6,0.6,0.2],[-4.0,-1.9,0.45,0.6],[4.4,-2.0,0.6,-0.3],[4.1,3.8,0.55,0.4],[-4.4,4.4,0.6,0.1]].forEach(q=>crate(...q));
+ place('barrel',{x:OI-4.5,z:1.0,h:0.85});place('barrel',{x:OI+4.6,z:0.6,h:0.85,ry:1.2});place('barrel',{x:OI+4.2,z:1.4,h:0.7,ry:0.5});
+ [-4.0,4.0].forEach(x=>{place('post_lantern',{x:OI+x,z:-3.4,h:1.5});place('post_lantern',{x:OI+x,z:5.8,h:1.5})});
+ place('drafting_table',{x:OI-4.6,z:6.2,w:1.2,ry:Math.PI/2})}
 add(B(6.5,3.6,0.15),M('#6e4a30'),OI,1.8,-4);add(B(0.15,3.6,12),M('#6e4a30'),OI-3.2,1.8,1);add(B(0.15,3.6,12),M('#6e4a30'),OI+3.2,1.8,1);
 ['deri','iplik','kumas','kereste','boya_kahve','balmumu'].forEach((k,i)=>{const o=MATS[k].mk();o.scale.setScalar(1.4);o.position.set(OI-2.4+i*0.95,2.22,-3.82);S.add(o)});
 place('barrel',{x:OI-2.85,z:5.2,h:0.85});place('barrel',{x:OI-2.75,z:-2.0,h:0.7,ry:1});place('handsaw',{x:OI+2.72,y:0.82,z:-1.6,w:0.45,ry:0.4});place('desk',{x:OI+2.72,z:-1.75,w:1.15,ry:-Math.PI/2});add(Cy(0.3,0.26,0.7,10),M('#8a5530'),OI+2.75,0.35,5.3);

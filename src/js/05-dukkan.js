@@ -29,7 +29,7 @@ const ciniM=new THREE.MeshStandardMaterial({map:canTex(512,64,cini),roughness:0.
 const AWN=new THREE.Group();S.add(AWN);for(let i=0;i<11;i++){const x=-1.1+i*0.22,c=glow(i%2?'#e9dcc0':'#a84a35');put(AWN,B(0.22,0.2,0.02),c,x,2.42,2.2).castShadow=false;put(AWN,new THREE.CircleGeometry(0.11,12,Math.PI,Math.PI),c,x,2.32,2.21).castShadow=false}
 function plant(x,y,z,k){put(S,Cy(0.14*k,0.1*k,0.2*k,8),M('#b06a3a'),x,y,z);for(let i=0;i<6;i++){const a=i/6*Math.PI*2,l=put(S,new THREE.ConeGeometry(0.06*k,0.38*k,4),M(i%2?'#4f7a3a':'#5f8a44'),x+Math.cos(a)*0.1*k,y+0.2*k,z+Math.sin(a)*0.1*k);l.rotation.z=Math.cos(a)*0.6;l.rotation.x=-Math.sin(a)*0.6}}
 place('bookcase_open',{x:-2.4,z:-3.62,h:1.75});place('m_crown',{x:-2.4,y:1.76,z:-3.6,h:0.15,ry:0.3});place('flowerpot',{x:-0.35,z:-3.5,h:1.05});place('flowerpot',{x:2.15,z:-3.45,h:0.95,ry:1});
-place('flower_petal',{x:-2.6,y:2.33,z:0.75,h:0.38});place('flower_petal',{x:2.6,y:2.33,z:0.75,h:0.38});place('wallshelf',{x:2.35,y:1.15,z:-3.72,w:0.95});
+place('wallshelf',{x:2.35,y:1.15,z:-3.72,w:0.95});
 place('pair_of_shoes',{x:-2.7,y:2.33,z:-1.45,w:0.42,ry:-1.3});place('glove',{x:-1.75,y:1.085,z:2.05,w:0.2,ry:0.5});place('light_desk',{x:1.85,y:1.085,z:1.3,h:0.5,ry:-2.4});
 const Y=1.085,BC=V(0,Y,1.66);
 const CTB=M('#8a5530'),CTT=M('#a8693a');add(B(4.2,1.0,1.3),CTB,0,0.5,1.7);add(B(4.4,0.08,1.42),CTT,0,1.04,1.7);
