@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261122.2327';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261122.2331';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -532,7 +532,7 @@ add(B(1.4,0.12,0.18),beam,-1.4,2.36,-3.88);add(B(0.12,2.36,0.18),beam,-2.06,1.18
 const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.7,1.3,5,4,1,true),new THREE.MeshBasicMaterial({color:'#ffd68a',transparent:true,opacity:0.07,depthWrite:false,blending:THREE.AdditiveBlending}));
 shaft.position.set(0.6,1.4,-1.6);shaft.rotation.set(1.1,0.785,0);S.add(shaft);
 const shelfItems=[()=>shoeModel('#6e3d1f','Bağcıklı'),()=>cuzdanModel('#a3302a'),()=>cantaModel('#2c3e6b','Kısa sap'),()=>kemerModel('#262220'),()=>atkiModel('#a3302a'),()=>shoeModel('#262220','Tokalı')];
-[-2.7,2.7].forEach((x,si)=>{for(let k=0;k<3;k++){add(B(0.45,0.06,2.6),M('#6e4122'),x,0.9+k*0.7,-1.4);
+const VBD=[];[-2.7,2.7].forEach((x,si)=>{for(let k=0;k<3;k++){const bd=add(B(0.45,0.06,2.6),M('#6e4122'),x,0.9+k*0.7,-1.4);if(x>0)VBD.push(bd);
 if(x>0)continue;for(let j=0;j<3;j++){const it=shelfItems[(j+k+si*2)%shelfItems.length]();it.g.scale.setScalar(0.85);it.g.position.set(x,0.93+k*0.7,-2.3+j*0.85);it.g.rotation.y=x<0?-1.2:1.2;S.add(it.g)}}});
 
 const VIT=new THREE.Group();S.add(VIT);const VSL=[];for(let k=0;k<3;k++)for(let j=0;j<3;j++)VSL.push(V(2.7,0.93+k*0.7,-2.3+j*0.85));
@@ -894,7 +894,8 @@ const DECO={
  kapi:{ad:'Kapı',o:[{id:'std',ad:'Ahşap kapı',m:'door',c:['#9a5a2a'],f:0},{id:'mese',ad:'Çivili meşe kapı',m:'dr_straight',leaf:1,c:['#8a5a2a','#b08040'],f:450},{id:'nane',ad:'Camlı nane kapı',m:'dr_front',leaf:1,c:['#5a8a7a','#a8c8b8'],f:650}]},
  zem:{ad:'Zemin',o:[{id:'tahta',ad:'Ahşap tahta',c:['#7a4a2a','#6c4024'],f:0},{id:'tas',ad:'Taş döşeme',m:'fl_stone',c:['#8a8a90','#6a6a70'],f:750},{id:'cini',ad:'Damalı çini',m:'fl_pink',c:['#f0a0b8','#202020'],f:950}]},
  hal:{ad:'Halı',o:[{id:'yuvarlak',ad:'Yuvarlak halı',m:'round_rug',c:['#b86a40'],f:0},{id:'cerceve',ad:'Çerçeveli halı',m:'rg_jarlan',c:['#9ab0b8','#e8e4dc'],f:250},{id:'kilim',ad:'Renkli kilim',m:'rg_akim',c:['#c84a6a','#e8c040'],f:350}]},
- ekm:{ad:'Köşe mobilyası',o:[{id:'yok',ad:'Yok',c:['#d8ccb4'],f:0},{id:'cizim',ad:'Çizim masası',m:'drafting_table',c:['#7a5a3a','#e6ddc8'],f:220},{id:'kitap',ad:'Kitaplık',m:'km_books',c:['#8a4a2a'],f:350},{id:'raf',ad:'Dikey raf',m:'km_vshelf',c:['#202020'],f:280}]},
+ ekm:{ad:'Köşe mobilyası',o:[{id:'yok',ad:'Yok',c:['#d8ccb4'],f:0},{id:'cizim',ad:'Çizim masası',m:'drafting_table',c:['#7a5a3a','#e6ddc8'],f:220}]},
+ vit:{ad:'Vitrin rafları',o:[{id:'std',ad:'Duvar rafları',c:['#6e4122','#8a5a34'],f:0},{id:'kitap',ad:'Basamaklı kitaplık',m:'km_books',c:['#8a4a2a'],f:550},{id:'raf',ad:'Modern dikey raf',m:'km_vshelf',c:['#2a2a2a'],f:450}]},
  mzk:{ad:'Müzik kutusu',o:[{id:'teyp',ad:'Teyp',m:'mz_boom',c:['#c8d0d4','#303840'],f:0},{id:'radyo',ad:'Radyo',m:'mz_radio',c:['#303030','#c83030'],f:450},{id:'gramo',ad:'Gramofon',m:'mz_gramo',c:['#c8a040','#6a4a2a'],f:950}]},
  cer2:{ad:'Duvar süsü',o:[{id:'yok',ad:'Yok',c:['#d8ccb4'],f:0},{id:'cerceve',ad:'Resim çerçevesi',c:['#bd5410','#38bdd4'],f:90}]},
  tav:{ad:'Tavan lambası',o:[{id:'sarkit',ad:'Sarkıt lamba',c:['#3b2616','#ffdd99'],f:0},{id:'fener',ad:'Asma fener',m:'lamp_lantern',c:['#8a8f96','#f2c66a'],f:650},{id:'metal',ad:'Metal tavan lambası',m:'lamp_ceil',c:['#d8d4cc','#f4f0e6'],f:900}]},
@@ -908,12 +909,15 @@ function decoExtra(){if(!ES1){ES1=new THREE.Group();ES1.visible=false;S.add(ES1)
   const fl=(k,n,sz)=>{const g=new THREE.Group();ESL[k]=g;g.visible=false;glb(n,()=>{try{const t=fitM(n,{w:sz});const bb=new THREE.Box3().setFromObject(t),dy=0.027-bb.max.y;const G2=new THREE.Group();for(let i=0;i*sz<6-1e-3;i++)for(let j=0;j*sz<9-1e-3;j++){const c=t.clone();c.position.set(-3+sz/2+i*sz,dy,-4.5+sz/2+j*sz);G2.add(c)}G2.traverse(x=>{if(x.isMesh){x.castShadow=false;x.receiveShadow=true}});S.add(G2);try{mergeStatic({scene:G2})}catch(e){}S.remove(G2);g.add(G2);S.add(g);decoExtra()}catch(e){}})};
   fl('zem.tas','fl_stone',1.0);fl('zem.cini','fl_pink',0.75);
   mk('hal.cerceve','rg_jarlan',{x:-1.45,y:0.03,z:-2.55,w:1.7,ry:Math.PI/2});mk('hal.kilim','rg_akim',{x:-1.45,y:0.03,z:-2.55,w:1.8});
-  mk('ekm.kitap','km_books',{x:2.62,z:0.42,h:1.55,ry:-Math.PI/2});mk('ekm.raf','km_vshelf',{x:2.75,z:0.42,h:1.9,ry:-Math.PI/2});
+  [-2.25,-1.3,-0.35].forEach((z,j)=>{mk('vit.kitap#'+j,'km_books',{x:2.79,z,h:2.2,ry:-Math.PI/2});mk('vit.raf#'+j,'km_vshelf',{x:2.82,z,h:2.4,ry:-Math.PI/2,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>m.color.set('#3a3430'))})})});
   mk('mzk.teyp','mz_boom',{x:-1.78,y:1.085,z:1.28,h:0.2,ry:Math.PI+0.35});mk('mzk.radyo','mz_radio',{x:-1.78,y:1.085,z:1.28,h:0.24,ry:0.35});mk('mzk.gramo','mz_gramo',{x:-1.78,y:1.085,z:1.28,h:0.42,ry:0.35});
   mk('tav.fener','lamp_lantern',{x:0,y:2.5,z:0.6,h:0.75});mk('tav.metal','lamp_ceil',{x:0,y:2.3,z:0.6,h:0.95});
   mk('mlm.mimar','lamp_desk2',{x:1.85,y:1.085,z:1.3,h:0.4,ry:-0.9,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>{if(/Metal/.test(m.name))m.color.set('#2f5a9a')})})});mk('mlm.abajur','lamp_round',{x:1.85,y:1.085,z:1.3,h:0.42,ry:-2.4})}
- const SEL={};['tav','mlm','zem','hal','ekm','mzk'].forEach(k=>SEL[k]=decoSel(k).id);CL0.visible=SEL.tav==='sarkit';DL0.visible=SEL.mlm==='klasik';FLPK.forEach(m=>m.visible=SEL.zem==='tahta');RG0.visible=SEL.hal==='yuvarlak';
- Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('.');g.visible=SEL[a]===b});doorApply()}
+ const SEL={};['tav','mlm','zem','hal','ekm','mzk','vit'].forEach(k=>SEL[k]=decoSel(k).id);CL0.visible=SEL.tav==='sarkit';DL0.visible=SEL.mlm==='klasik';FLPK.forEach(m=>m.visible=SEL.zem==='tahta');RG0.visible=SEL.hal==='yuvarlak';
+ Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('#')[0].split('.');g.visible=SEL[a]===b});doorApply();vitLayout(SEL.vit)}
+/* vitrin raf düzeni: ürün yerleri seçilen rafa göre */
+let VLAY=null;function vitLayout(id){if(VLAY===id)return;VLAY=id;VBD.forEach(b=>b.visible=id==='std');const Z=[-2.25,-1.3,-0.35],LV={std:null,kitap:[0.91,1.34,1.77],raf:[0.725,1.385,2.057]}[id];
+ VSL.forEach((p,i)=>{const k=Math.floor(i/3),j=i%3;if(!LV)p.set(2.7,0.93+k*0.7,-2.3+j*0.85);else p.set(id==='kitap'?2.79:2.82,LV[k]+0.01,Z[j])});try{VL.forEach((l,i)=>l.pos.set(VSL[i].x,VSL[i].y-0.03,VSL[i].z));vitrinSync()}catch(e){}}
 function leafOf(n){const s=GLC[n].scene.clone(true),rm=[];s.traverse(x=>{if(x.isMesh&&[].concat(x.material).some(m=>/Stone|carpet/i.test(m.name||'')))rm.push(x)});rm.forEach(x=>x.parent&&x.parent.remove(x));return s}
 function doorApply(){if(!DOORH)return;const o=decoSel('kapi');if(DOORH.userData.kd===o.id)return;if(!DOORH.userData.d0)DOORH.userData.d0=DOORH.children[0];
  if(o.leaf&&!GLC[o.m]){glb(o.m,()=>doorApply());return}DOORH.children.slice().forEach(c=>DOORH.remove(c));
