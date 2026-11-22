@@ -369,3 +369,5 @@ body.dt #card{margin-top:50px}
 .loot .it img{width:48px;height:48px}.loot .it .e{font-size:34px;line-height:48px}.loot .it b{font-size:15px}.loot .it small{font-size:11px;opacity:.75;line-height:1.15}
 .loot .it.r{border-color:#7a4bbf;background:#f1e8ff}.loot .it.g{border-color:#1f7a9a;background:#e4f6fb}
 @keyframes lit{to{opacity:1;transform:scale(1)}}
+.chod{margin-top:8px;font-size:13px;background:#fbf6ea;border:2px solid var(--ln);border-radius:12px;padding:6px 10px}.chod summary{font-weight:700;cursor:pointer}.chod ul{margin:2px 0 6px;padding-left:18px}.chod small{opacity:.7}
+.loot .it.x{border-color:#c98a1a;background:#fff3d6;grid-column:span 2}
