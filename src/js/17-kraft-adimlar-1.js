@@ -50,8 +50,8 @@ function bSpin(){const m=grow3D(0.1),bb=K.fullBB,R=Math.max(bb.max.x-bb.min.x,bb
 
 /* Sabun: karıştırma */
 /* Karıştırma döngü sesi: hareket ettikçe duyulur, durunca söner */
-let MXS=null,MXT=0,MXI=0;function mxOn(){MXT=tt;if(!SB.karistir||!AC||!G.snd)return;if(!MXS){try{MXS=playB('karistir',0,true);MXS.s.playbackRate.value=1}catch(e){MXS=null;return}}MXS.g.gain.setTargetAtTime(0.55,AC.currentTime,0.05);if(!MXI)MXI=setInterval(()=>{if(MXS&&tt-MXT>0.22)MXS.g.gain.setTargetAtTime(0,AC.currentTime,0.08)},120)}
-function mxOff(){if(MXI){clearInterval(MXI);MXI=0}if(!MXS)return;const z=MXS;MXS=null;try{z.g.gain.setTargetAtTime(0,AC.currentTime,0.06);z.s.stop(AC.currentTime+0.4)}catch(e){}}
+const MXL={};function mxOn(n){n=n||'karistir';let L=MXL[n];if(!L)L=MXL[n]={s:null,t:0,i:0};L.t=tt;if(!SB[n]||!AC||!G.snd)return;if(!L.s){try{L.s=playB(n,0,true);L.s.s.playbackRate.value=1}catch(e){L.s=null;return}}L.s.g.gain.setTargetAtTime(0.55,AC.currentTime,0.05);if(!L.i)L.i=setInterval(()=>{if(L.s&&tt-L.t>0.22)L.s.g.gain.setTargetAtTime(0,AC.currentTime,0.08)},120)}
+function mxOff(n){const L=MXL[n||'karistir'];if(!L)return;if(L.i){clearInterval(L.i);L.i=0}if(!L.s)return;const z=L.s;L.s=null;try{z.g.gain.setTargetAtTime(0,AC.currentTime,0.06);z.s.stop(AC.currentTime+0.4)}catch(e){}}
 function bStir(){const pc=K.piece;if(pc&&pc.visible!==undefined)pc.visible=false;const bw=new THREE.Group();bw.position.copy(BC);const bm=M('#e8dcc8',0.6);
  const lt=new THREE.LatheGeometry([[0,0],[0.17,0.005],[0.24,0.06],[0.27,0.15],[0.26,0.155]].map(q=>new THREE.Vector2(q[0],q[1])),28);const b=put(bw,lt,bm,0,0,0);b.material.side=THREE.DoubleSide;
  const lm=M('#f6f0e4',0.5),liq=put(bw,Cy(0.245,0.24,0.01,28),lm,0,0.115,0);const sp=[];for(let i=0;i<14;i++){const a=Math.random()*6.28,r=0.04+Math.random()*0.17,d=put(bw,Cy(0.014,0.014,0.004,8),M(i%2?'#8a63b8':'#b49ad6'),Math.cos(a)*r,0.122,Math.sin(a)*r);d.userData={a,r};sp.push(d)}

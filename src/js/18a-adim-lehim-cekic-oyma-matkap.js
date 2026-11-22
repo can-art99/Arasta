@@ -10,6 +10,7 @@ function mkTool(kind){const g=new THREE.Group(),dk=M('#2a2420',0.7),st=M('#c8ccd
  if(kind==='havya'){const h=put(g,Cy(0.016,0.018,0.14,10),M('#3a6a8a',0.6),0,0.13,0.05);h.rotation.x=0.5;const s=put(g,Cy(0.005,0.006,0.1,8),st,0,0.05,0.012);s.rotation.x=0.5;const t=put(g,new THREE.ConeGeometry(0.006,0.025,8),M('#b06a2a',0.4),0,0.008,0);t.rotation.x=Math.PI}
  else if(kind==='hammer'){const piv=new THREE.Group();piv.position.x=0.27;g.add(piv);g.rotation.y=-0.5;const p=new THREE.Group();p.position.x=-0.27;piv.add(p);put(p,B(0.11,0.04,0.04),st,0,0,0);put(p,Cy(0.012,0.012,0.22,8),M('#7a4a2a'),0.07,0,0).rotation.z=Math.PI/2;p.children[1].position.x=0.13;g.userData.p=piv;{const R=swingRig('m_hammer',{rz:Math.PI/2,w:0.3},Math.PI/2,0.03);if(R){piv.visible=false;g.add(R);g.userData.p=R.userData.p;g.userData.rig=1}}}
  else if(kind==='drill'){put(g,B(0.06,0.12,0.05),M('#d07a2a',0.5),0,0.2,0);put(g,B(0.05,0.07,0.04),dk,0,0.12,0.03);const b=put(g,Cy(0.004,0.004,0.12,6),st,0,0.06,0);g.userData.bit=b}
+ else if(kind==='plane'&&GLC.m_grater){const w=fitM('m_grater',{rx:-Math.PI/2,w:0.27});if(w){w.traverse(x=>{if(x.isMesh)x.castShadow=true});const o=new THREE.Group();o.add(w);o.rotation.x=-0.12;g.add(o)}}
  else if(kind==='plane'){put(g,B(0.09,0.035,0.2),M('#8a5a30',0.7),0,0.02,0);put(g,Cy(0.018,0.018,0.04,8),dk,0,0.055,0.06);put(g,B(0.07,0.03,0.02),st,0,0.045,-0.02)}
  else if(kind==='shuttle'){const s=put(g,new THREE.SphereGeometry(0.03,10,6),M('#a0703a',0.6),0,0.02,0);s.scale.set(2.4,0.6,0.7)}
  else if(kind==='gouge'&&GLC.m_spoon){const w=fitM('m_spoon',{w:0.24});if(w){w.rotation.y=Math.PI;const o=new THREE.Group();w.position.z=-0.1;o.add(w);o.rotation.x=0.28;g.add(o);kind='_sp'}}if(kind==='gouge'){put(g,Cy(0.012,0.014,0.13,8),M('#7a4a2a'),0,0.1,0.04).rotation.x=0.5;put(g,Cy(0.006,0.01,0.05,8),st,0,0.025,0.008).rotation.x=0.5}
@@ -71,10 +72,10 @@ function bChisel(){const g=mkTool('gouge'),cells=[],cc=K.st.c||[0,0.2],rr2=K.st.
 
 /* Kesme tahtası: rende */
 function bPlane(){const n=K.st.n||6,bb=shapeBB(),L=bb.l,tl=mkTool('plane'),mat=K.piece&&K.piece.material;let s0=null,cnt=0,dx=0,dn=0,lx=0;const c0=mat?mat.color.clone():null,c1=new THREE.Color(shade(K.p.sheet,0.12));
- const mv=p=>{tl.visible=true;if(tl.userData.lz!=null)tl.rotation.x+=(clamp((p.z-tl.userData.lz)*7,-0.13,0.13)-tl.rotation.x)*0.3;tl.userData.lz=p.z;tl.position.set(p.x,K.top,p.z);if(s0==null){s0=p.z;lx=p.x;return}dx+=Math.min(Math.abs(p.x-lx),0.1);dn++;if(Math.abs(p.z-s0)>=L*0.7){cnt++;s0=p.z;sfx.skive();jolt(K.piece,0.001);
+ const mv=p=>{tl.visible=true;if(tl.userData.lz!=null)tl.rotation.x+=(clamp((p.z-tl.userData.lz)*7,-0.13,0.13)-tl.rotation.x)*0.3;tl.userData.lz=p.z;tl.position.set(p.x,K.top,p.z);if(Math.abs(p.z-(tl.userData.pz??p.z))>0.002)mxOn('rende');tl.userData.pz=p.z;if(s0==null){s0=p.z;lx=p.x;return}dx+=Math.min(Math.abs(p.x-lx),0.1);dn++;if(Math.abs(p.z-s0)>=L*0.7){cnt++;s0=p.z;if(!SB.rende)sfx.skive();jolt(K.piece,0.001);
   const sv=put(K.work,new THREE.TorusGeometry(0.02,0.006,4,10,Math.PI*1.6),M(shade(K.p.sheet,0.15)),p.x,K.top+0.04,p.z);tween(0.6,k=>{sv.position.y=K.top+0.04+k*0.1;sv.position.x=p.x+0.1*k;sv.rotation.z+=0.2;sv.scale.setScalar(1-0.5*k)},()=>K.work.remove(sv));
-  if(mat)mat.color.copy(c0).lerp(c1,cnt/n);tipStep(`Rende ${cnt}/${n}`);if(cnt>=n){tl.visible=false;fin(clamp(1-(dx/Math.max(dn,1)-0.005)/0.03,0.35,1),'Pürüzsüz yüzey!')}}};
- K.pd=p=>{s0=null;mv(p)};K.pm=mv;K.pu=()=>{s0=null;tl.visible=false;tl.userData.lz=null;tl.rotation.x=0};K.skipFn=()=>K.work.remove(tl);tipStep('Rendeyi tahta boyunca baştan sona it')}
+  if(mat)mat.color.copy(c0).lerp(c1,cnt/n);tipStep(`Rende ${cnt}/${n}`);if(cnt>=n){tl.visible=false;mxOff('rende');fin(clamp(1-(dx/Math.max(dn,1)-0.005)/0.03,0.35,1),'Pürüzsüz yüzey!')}}};
+ K.pd=p=>{s0=null;mv(p)};K.pm=mv;K.pu=()=>{s0=null;mxOff('rende');tl.visible=false;tl.userData.lz=null;tl.rotation.x=0};K.skipFn=()=>{mxOff('rende');K.work.remove(tl)};tipStep('Rendeyi tahta boyunca baştan sona it')}
 
 /* Matkap ile delme */
 function bDrill(){const P=K.st.pts.map(LP),dr=mkTool('drill');let i=0,dp=0,on=false,sc=[],sp=0,mvg=false;
