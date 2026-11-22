@@ -28,7 +28,7 @@ const AWN=new THREE.Group();
 function plant(x,y,z,k){put(S,Cy(0.14*k,0.1*k,0.2*k,8),M('#b06a3a'),x,y,z);for(let i=0;i<6;i++){const a=i/6*Math.PI*2,l=put(S,new THREE.ConeGeometry(0.06*k,0.38*k,4),M(i%2?'#4f7a3a':'#5f8a44'),x+Math.cos(a)*0.1*k,y+0.2*k,z+Math.sin(a)*0.1*k);l.rotation.z=Math.cos(a)*0.6;l.rotation.x=-Math.sin(a)*0.6}}
 place('plant_white',{x:-0.35,z:-3.45,h:1.0});place('flower_pot2',{x:2.15,z:-3.4,h:0.75,ry:1});place('round_rug',{x:-1.45,y:0.03,z:-2.55,w:1.3});
 
-place('pair_of_shoes',{x:-2.7,y:2.33,z:-1.45,w:0.42,ry:-1.3});place('light_desk',{x:1.85,y:1.085,z:1.3,h:0.5,ry:-2.4});
+const DL0=new THREE.Group();S.add(DL0);place('pair_of_shoes',{x:-2.7,y:2.33,z:-1.45,w:0.42,ry:-1.3});place('light_desk',{par:DL0,x:1.85,y:1.085,z:1.3,h:0.5,ry:-2.4});
 const Y=1.085,BC=V(0,Y,1.66);
 const CTB=M('#8a5530'),CTT=M('#a8693a');add(B(4.2,1.0,1.3),CTB,0,0.5,1.7);add(B(4.4,0.08,1.42),CTT,0,1.04,1.7);
 for(let i=0;i<3;i++)add(B(4.2,0.04,0.02),beam,0,0.25+i*0.28,2.36);
@@ -44,9 +44,10 @@ const sp=MATS.iplik.mk();sp.scale.setScalar(0.7);sp.position.set(0.38,Y,bz);S.ad
 add(new THREE.SphereGeometry(0.045,8,6),M('#b5533c'),0.54,Y+0.02,bz).scale.y=0.6;[[0.52,0.25],[0.56,-0.25]].forEach(q=>{const n=add(Cy(0.003,0.003,0.07,4),M('#d0d4d8',0.3),q[0],Y+0.06,bz);n.rotation.z=q[1]});
 add(B(0.5,0.008,0.045),M('#e3c98a'),-0.36,Y+0.004,2.26);for(let i=0;i<10;i++)add(B(0.004,0.002,0.02),M('#4a3423'),-0.585+i*0.05,Y+0.009,2.25);
 const ml=new THREE.Group();put(ml,Cy(0.04,0.04,0.1,8),M('#8a5530'),0,0,0).rotation.z=Math.PI/2;put(ml,Cy(0.011,0.011,0.18,6),M('#5a3519'),0,0,0.11).rotation.x=Math.PI/2;ml.position.set(0.4,Y+0.04,2.25);ml.rotation.y=0.6;S.add(ml);place('m_hammer',{par:ml,swap:1,w:0.3,y:-0.035})}
-add(new THREE.CylinderGeometry(0.01,0.01,0.6,4),M('#222'),0,2.95,0.6);
+const cordL=add(new THREE.CylinderGeometry(0.01,0.01,0.6,4),M('#222'),0,2.95,0.6);
 const shadeL=add(new THREE.ConeGeometry(0.3,0.25,8,1,true),M('#3b2616'),0,2.55,0.6);shadeL.material.side=THREE.DoubleSide;
-add(new THREE.SphereGeometry(0.08,8,6),glow('#ffdd99'),0,2.45,0.6).castShadow=false;
+const bulbL=add(new THREE.SphereGeometry(0.08,8,6),glow('#ffdd99'),0,2.45,0.6);bulbL.castShadow=false;
+const CL0=new THREE.Group();S.add(CL0);[cordL,shadeL,bulbL].forEach(m=>CL0.add(m));
 const DN=80,pg=new THREE.BufferGeometry(),pp=new Float32Array(DN*3);
 for(let i=0;i<DN;i++){pp[i*3]=-1+Math.random()*3;pp[i*3+1]=0.4+Math.random()*2.6;pp[i*3+2]=-3.5+Math.random()*3.5}
 pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
