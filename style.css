@@ -357,4 +357,6 @@ svg.gi{width:1.15em;height:1.15em;vertical-align:-0.22em;flex:none;display:inlin
 body.dt #card{margin-top:50px}
 /* Dar ekranda üst panel taşmasın */
 @media (max-width:500px){#top{gap:3px}#top>div{gap:3px!important;min-width:0}#top .pill{padding:3px 5px;font-size:12.5px;gap:2px}#top .pill svg{width:14px;height:14px}#top .pill.ib,#top #musB{width:29px;min-width:29px}#tierP .tc{width:2.9em}#tierP{gap:2px}#tierP svg.gi{width:14px;height:14px}}
+#pvB{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 92px);display:flex;gap:8px;align-items:center;background:var(--cr);border:2px solid var(--ln);box-shadow:0 3px 0 var(--ln);border-radius:16px;padding:8px 10px;z-index:30;pointer-events:auto}
+#pvB .pvT{flex:1;min-width:0;line-height:1.15}#pvB .pvT b{display:block;font-size:15px}#pvB .pvT small{opacity:.7;font-size:12px}#pvB .btn{padding:6px 12px;min-height:38px;font-size:14px}
 
