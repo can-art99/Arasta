@@ -83,7 +83,7 @@ function mkOrder(){const pa=PRODS.filter(unlocked),mx=3.6+(G.rep||0)/35,pe=pa.fi
 if(G.first)Object.entries(p.need).forEach(([k,n])=>{const key=k==='boya'?'boya_'+color.id:k;G.inv[key]=Math.max(G.inv[key],n)});
 return {p,color,style,budget:Math.round(p.base*(0.9+Math.random()*0.4)*(sp.includes(p.id)?1.2:1)*balM('sell')*prodM(p.id)/5)*5,hurry:!G.first&&(G.rep||0)>=60&&Math.random()<0.15}}
 function spawn(){if(Q.length>=3)return;if(!CHR.length&&performance.now()<30000)return;const c=makeCustomer(),pv=G.stock.filter(x=>x.price>0);
-if(!G.first&&pv.length&&Math.random()<0.45){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
+if(!G.first&&pv.length&&Math.random()<0.45*(1+dB('vit'))){const it=pick(pv);c.order={buy:it.id,p:PRODS.find(x=>x.id===it.pid)};c.acc=c.accMax=35;c.dead=c.deadMax=9999;c.wait=90}
 else if(!G.first&&!fOff('tamir',true)&&Math.random()<0.16){const o=c.order=mkRepOrder();c.acc=c.accMax=75;c.dead=c.deadMax=260;c.wait=170}
 else{const o=c.order=mkOrder(),h=o.hurry;const rgs=(G.reg||[]).filter(r=>c.sex&&regSex(r)===c.sex);if(!G.first&&rgs.length&&Math.random()<0.3){const rg=pick(rgs),fp=PRODS.find(x=>x.id===rg.fav);if(fp&&unlocked(fp)&&fp.id!==o.p.id){o.p=fp;o.color=fp.need.boya?pick(PAINTS):null;o.style=null;o.budget=Math.round(fp.base*(1+Math.random()*0.3)/5)*5}o.reg=rg.ad}const pf=(1+0.8*clamp(1-(G.rep||0)/400,0,1))*(1+decoPat());c.acc=c.accMax=G.first?9999:Math.round((h?45:75)*pf);c.dead=c.deadMax=G.first?9999:Math.round(((h?150:280)+o.p.steps.length*20)*pf);c.wait=h?100:170}
 c.g.visible=G.phase!=='craft';Q.push(c);cust=Q[0];hud();seat(c)}
@@ -109,7 +109,7 @@ function qRestore(){const L=G.qsL;G.qsL=null;if(!L)return;const el=Math.max(0,(D
  const keep=(v,mx)=>Math.max(el<600?Math.min(mx,25):0,v-el);c.accMax=d.accMax||75;c.deadMax=d.deadMax||300;c.acc=keep(d.acc!=null?d.acc:c.accMax,c.accMax);c.dead=keep(d.dead!=null?d.dead:c.deadMax,c.deadMax);c.wait=keep(d.wait!=null?d.wait:120,120);
  if((d.act?c.dead:c.acc)<=0&&i===0)return;c.g.visible=true;Q.push(c);if(i===0&&d.act&&Q.length===1){G.order=o;G.phase='active';G.bubOn=false}seat(c)});cust=Q[0]||null;hud();refresh()}
 addEventListener('pagehide',()=>{try{save()}catch(e){}});document.addEventListener('visibilitychange',()=>{if(document.hidden)try{save()}catch(e){}});
-function custTick(dt){if(!G.started)return;if(G.qsL&&ALLC!==undefined){qRestore()}if(G.open&&!G.night){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:22+Math.random()*24;spawn()}}
+function custTick(dt){if(!G.started)return;if(G.qsL&&ALLC!==undefined){qRestore()}if(G.open&&!G.night){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:(22+Math.random()*24)*(1-dB('cust'));spawn()}}
 for(let i=Q.length-1;i>=0;i--){const c=Q[i];if(!c.at)continue;
 const mine=G.order&&G.order===c.order;
 if(i>0||(!mine&&G.phase!=='idle')){c.wait-=dt;if(c.wait<=0){G.st.lost++;toast('Sırada bekleyen müşteri sıkılıp gitti',1800);sfx.bad();leave(c)}}
@@ -144,7 +144,7 @@ function hDeal(p){if(!HG)return;const h=hClose();sfx.good();h.onDeal(p)}
 function hOffer(){if(!HG)return;const a=HG.ask;if(a<=HG.max){hDeal(a);return}const big=a>HG.max*1.35;HG.round+=big?2:1;
 if(HG.round>3){const h=hClose();sfx.bad();h.onBreak();return}
 HG.offer=Math.min(HG.max,r5(HG.offer+(HG.max-HG.offer)*0.55));HG.line=big?`${a} mı? Çok fazla! En fazla ${HG.offer} veririm.`:HG.round===3?`Son teklifim ${HG.offer} altın.`:pick([`Biraz artırayım: ${HG.offer} altın.`,`${HG.offer} olsun, anlaşalım.`,`En fazla ${HG.offer} verebilirim.`]);sfx.tap();renderH()}
-function haggleOrder(){const o=G.order,c=Q[0];if(!o||o.haggled||G.phase!=='ordering')return;if(o.hmax==null)o.hmax=r5(o.budget*(1.08+Math.random()*0.35+(o.hurry?0.15:0)));
+function haggleOrder(){const o=G.order,c=Q[0];if(!o||o.haggled||G.phase!=='ordering')return;if(o.hmax==null)o.hmax=r5(o.budget*(1.08+Math.random()*0.35+(o.hurry?0.15:0)+dB('hag')));
 haggle({line:`Bütçem ${o.budget} altın, ne dersin?`,offer:o.budget,max:o.hmax,ask:r5(o.budget*1.25),lo:o.budget,hi:r5(o.budget*1.8),
  onDeal:p=>{o.budget=p;o.haggled=true;acceptOrder(`Anlaştık, ${p} altın!`)},onBreak:()=>{o.haggled=true;lose(c,'Pazarlık bozuldu, müşteri gitti',1)},onBack:()=>{o.haggled=true;orderActions()}})}
 function rmStock(it){G.stock=G.stock.filter(x=>x!==it);vitrinSync()}
