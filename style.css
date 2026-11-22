@@ -367,7 +367,7 @@ body.dt #card{margin-top:50px}
 .chx.open .burst{animation:chb .55s forwards}@keyframes chb{0%{opacity:0;transform:scale(.5)}40%{opacity:1}100%{opacity:0;transform:scale(1.4)}}
 .loot{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:6px}
 .loot .it{background:#fbf6ea;border:2px solid var(--ln);border-radius:14px;padding:6px 4px;text-align:center;opacity:0;transform:scale(.6);animation:lit .35s forwards;display:flex;flex-direction:column;align-items:center;gap:1px}
-.loot .it img{width:48px;height:48px}.loot .it .e{font-size:34px;line-height:48px}.loot .it b{font-size:15px}.loot .it small{font-size:11px;opacity:.75;line-height:1.15}
+.loot .it img{width:48px;height:48px}.loot .it .e{font-size:34px;line-height:48px;height:48px;display:grid;place-items:center}.loot .it b{font-size:15px}.loot .it small{font-size:11px;opacity:.75;line-height:1.15}
 .loot .it.r{border-color:#7a4bbf;background:#f1e8ff}.loot .it.g{border-color:#1f7a9a;background:#e4f6fb}
 @keyframes lit{to{opacity:1;transform:scale(1)}}
 .chod{margin-top:8px;font-size:13px;background:#fbf6ea;border:2px solid var(--ln);border-radius:12px;padding:6px 10px}.chod summary{font-weight:700;cursor:pointer}.chod ul{margin:2px 0 6px;padding-left:18px}.chod small{opacity:.7}
