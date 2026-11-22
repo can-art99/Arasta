@@ -1,5 +1,5 @@
 /* ---------- otomasyon: traktör (bostan) ve çırak (atölye) · mod: oto / kosul / pasif ---------- */
-const OTO_P=1800,OTO_COST={cirak:100,trak:200},OTO_AD={oto:'Oto',kosul:'Koşullu',pasif:'Pasif'};
+const OTO_P=1800,OTO_COST={cirak:60,trak:120},OTO_AD={oto:'Oto',kosul:'Koşullu',pasif:'Pasif'};
 function otoMode(k){return G[k]?(G[k+'M']||'oto'):'pasif'}
 function otoLeft(k){return Math.max(0,OTO_P-(NOW()-(G[k+'Last']||0)))}
 /* Bekleyen siparişlerin eksik malzemeleri; atölyede üretilebilenler tarifleriyle (make), kalanı ham olarak (raw) döner */

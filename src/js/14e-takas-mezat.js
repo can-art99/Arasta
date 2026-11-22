@@ -1,15 +1,15 @@
 /* ---------- pazar: takas (barter) ve mezat (açık artırma) ---------- */
 const TKN=['Seyyah Kemal','Bakırcı Nuri','Dokumacı Hatice','Kervancı Rıza','Aktar Saliha','Çiftçi Dursun','Ormancı Yusuf','Nalbant Ziya'];
 const MZN=['Koleksiyoncu Selim','Hanım Ağa Nezihe','Tüccar Ömer','Antikacı Leman','Kaptan Faruk','Esnaf Fikret','Ressam Nur','Mimar Taner','Doktor Ayla','Hoca Rüstem'];
-const matVal=k=>{const m=MARKET.find(x=>x.k===k);if(m)return m.f;const c=CROPS&&CROPS[k];if(c)return c.f;return MATS[k]&&MATS[k].g==='İşlenmiş'?24:MATS[k]&&MATS[k].g==='Yardımcı'?10:14};
+const matVal=k=>Math.max(3,mktPrice(k));
 const usedMats=()=>[...new Set(PRODS.filter(unlocked).flatMap(p=>Object.keys(p.need||{})))].filter(k=>MATS[k]);
 function tkGen(){const used=usedMats(),have=Object.keys(G.inv).filter(k=>MATS[k]&&G.inv[k]>=2),L=[];
  for(let i=0;i<4;i++){const id=Date.now()+i;
   const prods=[...G.stock,...(G.store||[])].filter(x=>!x.worn);
-  if(i===3&&prods.length){const it=pick(prods),p=pr(it),V=Math.round(p.base*(0.6+it.stars*0.14)*1.2),gk=pick(used),n=Math.max(2,Math.round(V/matVal(gk))),gk2=pick(used.filter(x=>x!==gk))||gk;
+  if(i===3&&prods.length){const it=pick(prods),p=pr(it),V=Math.round(p.base*(0.6+it.stars*0.14)*1.2),uv=used.filter(k=>matVal(k)>=8),gk=pick(uv.length?uv:used),n=Math.min(16,Math.max(2,Math.round(V/matVal(gk)))),gk2=pick((uv.length>1?uv:used).filter(x=>x!==gk))||gk;
    L.push({id,ad:pick(TKN),gp:it.pid,gs:it.stars,get:{[gk]:Math.ceil(n*0.6),[gk2]:Math.max(1,Math.floor(n*0.5))}});continue}
   const gv=pick(have.length&&Math.random()<0.75?have:used);let gt=pick(used.filter(x=>x!==gv));if(!gt)continue;
-  const gn=2+Math.floor(Math.random()*3),val=gn*matVal(gv)*(1.15+Math.random()*0.25),tn=Math.max(1,Math.round(val/matVal(gt)));
+  let tn=1+Math.floor(Math.random()*3);const bon=1.15+Math.random()*0.25;let gn=Math.ceil(tn*matVal(gt)/(matVal(gv)*bon));while(gn>12&&tn>1){tn--;gn=Math.ceil(tn*matVal(gt)/(matVal(gv)*bon))}if(gn>12)continue;gn=Math.max(1,gn);tn=Math.min(16,Math.max(tn,Math.round(gn*matVal(gv)*bon/matVal(gt))));
   L.push({id,ad:pick(TKN),give:{[gv]:gn},get:{[gt]:tn}})}
  return L}
 function tkS(){const now=NOW();if(!G.tks||now>G.tks.t){G.tks={t:now+6*3600,o:tkGen()}}return G.tks}

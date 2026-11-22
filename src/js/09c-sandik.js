@@ -4,7 +4,7 @@ const CH_RARE=['celik','ipek','kece','cam','boya_mor','boya_sari'];
 const GEMV=25; /* değer hesabında 1 elmas = 25 altın */
 /* com:[adet,min,max] · rare:[şans(1=garanti),adet,max] · gem:[şans,min,max] · gold:[min,max] · ex: özel ödül şansı */
 const CHS=[
- {id:'t',ad:'Tahta sandık',m:'ch_2',f:120,d:'4 malzeme · nadir malzeme şansı',com:[4,1,2],rare:[0.25,1,1],gem:[0.05,1,1],gold:[20,40],rep:[0,1]},
+ {id:'t',ad:'Tahta sandık',m:'ch_2',f:120,d:'4 malzeme · nadir malzeme şansı',com:[4,1,3],rare:[0.25,1,1],gem:[0.05,1,1],gold:[20,40],rep:[0,1]},
  {id:'z',ad:'Zümrüt sandık',m:'ch_1',g:8,d:'4 malzeme, 2 nadir · yüksek elmas şansı · itibar',com:[4,2,4],rare:[1,2,2],gem:[0.6,2,4],gold:[80,150],rep:[2,4],pity:3},
  {id:'k',ad:'Kızıl usta sandığı',m:'ch_3',g:20,d:'5 malzeme, 4 nadir · 6–12 💎 · bol altın ve itibar · özel ödül şansı',com:[5,3,6],rare:[1,4,4],gem:[1,6,12],gold:[300,600],rep:[6,12],ex:0.15}];
 /* işe yarayan malzemeler: açık sipariş ve açılmış ürünlerin istedikleri */

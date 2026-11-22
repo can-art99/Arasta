@@ -1,5 +1,5 @@
 /* ---------- çoban: çiftlikte dolaşır, hayvan ürünlerini toplar (oto / koşullu / pasif) ---------- */
-OTO_COST.coban=150;
+OTO_COST.coban=90;
 const CBP=[[-1.85,-1.5],[0,-1.5],[1.85,-1.5],[-1.85,1.0],[0,1.0],[1.85,1.0],[-1.85,3.5],[0,3.5],[1.85,3.5]].map(q=>V(FX+q[0],0,q[1]+0.85));
 const farmColl=()=>COLL.filter(o=>Math.abs(o.position.x-FX)<4.6&&o.position.z>-3);
 function cobCollect(o){const c=o.userData.coll;if(!c.alive||!gOpen(c.src)||hzOf(c.src))return 0;if(invTotal()+1>capOf('d'))return 0;

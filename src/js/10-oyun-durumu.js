@@ -105,7 +105,9 @@ let tt=0;const NOW=()=>Date.now()/1000;
 function restock(){G.market=MARKET.filter(m=>!m.t||G.tier>=m.t).map(m=>({k:m.k,f:Math.max(2,Math.round(m.f*(0.85+Math.random()*0.35))),st:1+Math.floor(Math.random()*5)}));G.mktT=tt+90;G.disc=1;G.haggled=false;mktNeed()}
 /* siparişin eksik malzemesi başka yoldan bulunamıyorsa pazar tezgâhında her zaman olsun */
 function mktMiss(){const o=G.order;if(!o||!o.p||o.buy)return [];return Object.entries(o.p.need).filter(([k,n])=>k!=='boya'&&(G.inv[k]||0)<n)}
-function mktPrice(k){const m=MARKET.find(x=>x.k===k);if(m)return m.f;for(const s of ST)for(const r of s.rec)if(r.out[k]){let c=0;for(const [a,n] of Object.entries(r.in))c+=n*mktPrice(a);return Math.max(6,Math.round(c*1.3/(r.out[k]||1)))}return 20}
+/* bahçe/tarla ham maddelerinin değeri: toplama hızına göre (hızlı çıkan ucuz) */
+const MV={kum:3,tas:4,sogut:4,kil:5,pamuk:4,lavanta:5,ceviz:5,bogurtlen:5,papatya:5,civit:5,kokboya:5,keten:6,recine:6,tuy:6,balik:8,hceviz:10,sut:12,yun:16,yag:16,palmyag:16,bal:20,atkili:25,boynuz:40};
+function mktPrice(k){const m=MARKET.find(x=>x.k===k);if(m)return m.f;if(MV[k])return MV[k];if(CROPS[k])return CROPS[k].f;for(const s of ST)for(const r of s.rec)if(r.out[k]){let c=0;for(const [a,n] of Object.entries(r.in))c+=n*mktPrice(a);return Math.max(6,Math.round(c*1.3/(r.out[k]||1)))}return 20}
 function mktNeed(){if(!G.market)return;mktMiss().forEach(([k,n])=>{const inM=MARKET.some(m=>m.k===k),e=G.market.find(x=>x.k===k);if(!inM&&typeof easyM==='function'&&easyM(k))return;const need=n-(G.inv[k]||0);if(e){if(e.st<need)e.st=need}else G.market.push({k,f:Math.max(2,Math.round(mktPrice(k))),st:Math.max(need,2),sp:1})})}
 restock();
 
