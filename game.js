@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261122.1900';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261122.2231';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1025,8 +1025,8 @@ function skQ(s){try{const c=skCatNow();if(!c||!(s>0))return s;const o=skSel(c);r
 function skSaveWear(id){const o=SKD[id]&&skSel(id);return !!(o&&o.b&&o.b.d&&Math.random()<1-1/o.b.d)}
 /* ikonlar: küçük ikon satırda, büyük ikon önizlemede */
 const SKIC={};
-function skIcon(cat,o,big){const k=cat+'.'+o.id+(big?'.b':'');if(SKIC[k])return SKIC[k];if(!o.m)return null;const nm=skBuild(cat,o);if(!nm)return null;
- try{const ob=GLC[nm].scene.clone(true);if(big){IR.setSize(256,256)}SKIC[k]=snap(ob);if(big)IR.setSize(96,96)}catch(e){IR.setSize(96,96)}return SKIC[k]}
+function skIcon(cat,o,big){const k=cat+'.'+o.id+(big?'.b':'');if(SKIC[k])return SKIC[k];let ob=null;if(!o.m){const i=TL[{bicak:'kn'}[cat]]&&TL[{bicak:'kn'}[cat]].children[0];if(!i)return null;ob=new THREE.Group();i.children.forEach(c=>{if(c.userData.sk)return;const k=c.clone(true);k.visible=true;ob.add(k)});ob.rotation.x=-0.35}else{const nm=skBuild(cat,o);if(!nm)return null;ob=GLC[nm].scene.clone(true)}
+ try{if(big){IR.setSize(256,256)}SKIC[k]=snap(ob);if(big)IR.setSize(96,96)}catch(e){IR.setSize(96,96)}return SKIC[k]}
 function skRows(){let h=`<div class="grp">Alet görünümleri</div><p class="chint" style="margin:0 0 4px">Aldığın alet kraftta elinde olur. Özel aletler daha temiz iş çıkarır ya da daha geç körelir. Görmek için resmine dokun.</p>`;let miss=false;
  Object.entries(SKD).forEach(([cat,c])=>{h+=`<div class="grp" style="opacity:.75;font-size:13px">${c.e} ${c.ad}</div>`;const sel=skSel(cat);
   c.o.forEach(o=>{const own=skOwn(cat,o),ic=skIcon(cat,o);if(o.m&&!ic)miss=true;const bon=skBon(o);

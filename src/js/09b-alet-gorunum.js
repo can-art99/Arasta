@@ -47,8 +47,8 @@ function skQ(s){try{const c=skCatNow();if(!c||!(s>0))return s;const o=skSel(c);r
 function skSaveWear(id){const o=SKD[id]&&skSel(id);return !!(o&&o.b&&o.b.d&&Math.random()<1-1/o.b.d)}
 /* ikonlar: küçük ikon satırda, büyük ikon önizlemede */
 const SKIC={};
-function skIcon(cat,o,big){const k=cat+'.'+o.id+(big?'.b':'');if(SKIC[k])return SKIC[k];if(!o.m)return null;const nm=skBuild(cat,o);if(!nm)return null;
- try{const ob=GLC[nm].scene.clone(true);if(big){IR.setSize(256,256)}SKIC[k]=snap(ob);if(big)IR.setSize(96,96)}catch(e){IR.setSize(96,96)}return SKIC[k]}
+function skIcon(cat,o,big){const k=cat+'.'+o.id+(big?'.b':'');if(SKIC[k])return SKIC[k];let ob=null;if(!o.m){const i=TL[{bicak:'kn'}[cat]]&&TL[{bicak:'kn'}[cat]].children[0];if(!i)return null;ob=new THREE.Group();i.children.forEach(c=>{if(c.userData.sk)return;const k=c.clone(true);k.visible=true;ob.add(k)});ob.rotation.x=-0.35}else{const nm=skBuild(cat,o);if(!nm)return null;ob=GLC[nm].scene.clone(true)}
+ try{if(big){IR.setSize(256,256)}SKIC[k]=snap(ob);if(big)IR.setSize(96,96)}catch(e){IR.setSize(96,96)}return SKIC[k]}
 function skRows(){let h=`<div class="grp">Alet görünümleri</div><p class="chint" style="margin:0 0 4px">Aldığın alet kraftta elinde olur. Özel aletler daha temiz iş çıkarır ya da daha geç körelir. Görmek için resmine dokun.</p>`;let miss=false;
  Object.entries(SKD).forEach(([cat,c])=>{h+=`<div class="grp" style="opacity:.75;font-size:13px">${c.e} ${c.ad}</div>`;const sel=skSel(cat);
   c.o.forEach(o=>{const own=skOwn(cat,o),ic=skIcon(cat,o);if(o.m&&!ic)miss=true;const bon=skBon(o);
