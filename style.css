@@ -359,4 +359,15 @@ body.dt #card{margin-top:50px}
 @media (max-width:500px){#top{gap:3px}#top>div{gap:3px!important;min-width:0}#top .pill{padding:3px 5px;font-size:12.5px;gap:2px}#top .pill svg{width:14px;height:14px}#top .pill.ib,#top #musB{width:29px;min-width:29px}#tierP .tc{width:2.9em}#tierP{gap:2px}#tierP svg.gi{width:14px;height:14px}}
 #pvB{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 92px);display:flex;gap:8px;align-items:center;background:var(--cr);border:2px solid var(--ln);box-shadow:0 3px 0 var(--ln);border-radius:16px;padding:8px 10px;z-index:30;pointer-events:auto}
 #pvB .pvT{flex:1;min-width:0;line-height:1.15}#pvB .pvT b{display:block;font-size:15px}#pvB .pvT small{opacity:.7;font-size:12px}#pvB .btn{padding:6px 12px;min-height:38px;font-size:14px}
+.chx{display:grid;place-items:center;height:210px;position:relative}.chx img{width:200px;height:200px}
+.chx.shake img,.chx.shake>div{animation:chs .85s ease-in-out}
+@keyframes chs{0%,100%{transform:rotate(0)}15%{transform:rotate(-6deg) scale(1.03)}30%{transform:rotate(6deg) scale(1.04)}45%{transform:rotate(-8deg) scale(1.07)}60%{transform:rotate(8deg) scale(1.08)}80%{transform:rotate(-3deg) scale(1.12)}}
+.chx.open img,.chx.open>div{animation:chp .5s forwards}@keyframes chp{to{transform:scale(1.4);opacity:0}}
+.chx .burst{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,#fff6c8 0,#ffd75a88 30%,transparent 65%);opacity:0;pointer-events:none}
+.chx.open .burst{animation:chb .55s forwards}@keyframes chb{0%{opacity:0;transform:scale(.5)}40%{opacity:1}100%{opacity:0;transform:scale(1.4)}}
+.loot{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:6px}
+.loot .it{background:#fbf6ea;border:2px solid var(--ln);border-radius:14px;padding:6px 4px;text-align:center;opacity:0;transform:scale(.6);animation:lit .35s forwards;display:flex;flex-direction:column;align-items:center;gap:1px}
+.loot .it img{width:48px;height:48px}.loot .it .e{font-size:34px;line-height:48px}.loot .it b{font-size:15px}.loot .it small{font-size:11px;opacity:.75;line-height:1.15}
+.loot .it.r{border-color:#7a4bbf;background:#f1e8ff}.loot .it.g{border-color:#1f7a9a;background:#e4f6fb}
+@keyframes lit{to{opacity:1;transform:scale(1)}}
 
