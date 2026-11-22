@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261122.1300';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261122.1402';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1140,7 +1140,7 @@ const CN='<svg class="cn" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="
 let AC=null,NB=null,sT=0;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state!=='running'){try{AC.resume()}catch(e){}try{const b=AC.createBuffer(1,1,22050),s=AC.createBufferSource();s.buffer=b;s.connect(AC.destination);s.start(0)}catch(e){}}if(AC)loadSounds()}
 var AC_RE=false;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-['pointerdown','touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{if(AC&&AC_RE&&ev!=='pointerdown'){AC_RE=false;try{AC.suspend().then(()=>AC.resume()).then(()=>ac()).catch(()=>ac())}catch(e){ac()}return}if(!AC||AC.state!=='running')ac()},{capture:true,passive:true}));
+['pointerdown','touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{if(AC_RE)return;if(!AC||AC.state!=='running')ac()},{capture:true,passive:true}));
 document.addEventListener('pointerdown',ac,true);
 function tone(f,d,type,vol,f2,delay){const a=AC;if(!a||!G.snd)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
 g.gain.setValueAtTime(vol||0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+d);o.connect(g);g.connect(BUS(AMBF?'a':'e'));o.start(t);o.stop(t+d+0.02)}
@@ -2770,7 +2770,7 @@ load();ST.forEach(s=>s.lvl=G.stLv[s.id]||1);setTimeout(()=>{try{cloudCheck()}cat
 setLights('home');hud();refresh();loop();
 const spM=$('spMus'),spS=$('spSnd');const spSync=()=>{spM.classList.toggle('on',!!G.mus);spS.classList.toggle('on',!!G.snd);$('musB').classList.toggle('off',!G.mus&&!G.snd)};spSync();
 spM.onclick=()=>{G.mus=!G.mus;spSync()};spS.onclick=()=>{G.snd=!G.snd;spSync()};
-$('musB').onclick=()=>{const on=!(G.mus||G.snd);G.snd=on;musSet(on);spSync&&spSync();busMix&&busMix();save();toast(on?'Sesler açık':'Tüm sesler kapalı',900)};
+$('musB').onclick=()=>{const on=!(G.mus&&G.snd);if(on&&G.vol===0)G.vol=1;G.snd=on;musSet(on);spSync&&spSync();busMix&&busMix();save();toast(on?'Sesler açık':'Tüm sesler kapalı',900)};
 {const fl=document.querySelector('.flags');if(fl){let h='';[[8,0],[30,1]].forEach(([y0,r])=>{h+=`<path d="M-5 ${y0} Q180 ${y0+26} 365 ${y0}" stroke="#5a3519" stroke-width="1.5" fill="none"/>`;const C=['#b5533c','#e8c77a','#2f6b5a','#f3e6cf','#3f6fa8'];for(let i=0;i<15;i++){const x=6+i*24+r*12,t=x/360,y=y0+4*t*(1-t)*26;h+=`<path d="M${x-8} ${y} L${x+8} ${y} L${x} ${y+15} Z" fill="${C[(i+r*2)%5]}"/>`}});fl.innerHTML=h}
  const inf=slotInfo(SSLOT);$('spInfo').textContent=inf?`${inf.ad} · ${inf.day}. gün · ${inf.gold} altın`:'';$('startB').textContent=inf?'Devam et':'Dükkânı aç';let nA=false;$('spNew').onclick=()=>{if(!inf){$('startB').click();return}if(!nA){nA=true;$('spNew').textContent='Yeni yerde açılsın mı? Dokun';return}if(!newSlot())toast('3 dükkân yeri dolu<br>Ayarlardan birini sil',2200)};
  $('spLog').onclick=()=>{$('spLogBox').classList.toggle('hide');$('spU').focus()};$('spLogGo').onclick=async()=>{const b=$('spLogGo'),u=$('spU').value,p=$('spP').value;b.textContent='…';let r;try{r=await rpc('arasta_user_get',{p_uname:u,p_pin:p})}catch(e){r={err:'net'}}b.textContent='Giriş';if(!r||r.err){msg(ACM[r&&r.err]||'Bağlantı kurulamadı','no');return}const L=r.shops||[];if(!L.length){msg('Bu hesapta kayıtlı dükkân yok','no');return}try{localStorage.setItem('arasta-acct',JSON.stringify({u:u.toLowerCase().trim(),p}))}catch(e){}const go=c=>{msg('Yükleniyor…','ok');cloudLoadInto(c).then(x=>{if(x!=='ok')msg({full:'3 dükkân yeri dolu · önce birini sil',net:'Bağlantı kurulamadı'}[x]||'Yüklenemedi','no')})};if(L.length===1){go(L[0].code);return}$('spShops').innerHTML=L.map(s=>`<button class="btn l" data-sc="${s.code}">${esc(s.ad||'Dükkân')} · K${s.tier||1} · ${s.gold||0} altın</button>`).join('');$('spShops').querySelectorAll('[data-sc]').forEach(x=>x.onclick=()=>go(x.dataset.sc))};
@@ -2795,5 +2795,11 @@ try{if(sessionStorage.getItem('arasta-go')){sessionStorage.removeItem('arasta-go
 setInterval(()=>{const b=$('bubble'),c=ui.card;if(!b||!c)return;if(b.classList.contains('hide')){b.style.top='';return}b.style.top='';if(c.classList.contains('hide')||c.offsetParent===null)return;const fr=b.offsetParent?b.offsetParent.getBoundingClientRect():{top:0},br=b.getBoundingClientRect(),cr=c.getBoundingClientRect();if(br.left<cr.right&&br.right>cr.left&&br.top<cr.bottom&&br.bottom>cr.top)b.style.top=(cr.bottom-fr.top+8)+'px'},150);
 /* sekme rozetleri: atölyede toplanacak ürün, bahçede hasat */
 setInterval(()=>{try{const now=NOW(),nI=ST.filter(s=>s.ready&&stOwned(s)).length,nB=(typeof PL!=='undefined'?PL:[]).filter(o=>o.own&&o.seed&&o.w&&o.end&&o.end<=now).length;[['islik',nI],['bahce',nB]].forEach(([v,n])=>{const b=document.querySelector('#nav button[data-v="'+v+'"]');if(!b)return;let d=b.querySelector('.nbd');if(n&&view!==v){if(!d){d=document.createElement('i');d.className='nbd';b.appendChild(d)}if(d.textContent!==String(n))d.textContent=n;if(!b.dataset.bd){b.dataset.bd=1;d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop')}}else if(d){d.remove();delete b.dataset.bd}})}catch(e){}},600);
+/* sekme geçişindeki takılmayı önle: her görünümün ışık düzeniyle shader'ları önceden derle */
+function preCompile(){try{const cur=view==='bench'||view==='vitrin'?'home':view;['home','pazar','bahce','islik','depo'].forEach(v=>{setLights(v);R.compile(S,cam)});setLights(cur)}catch(e){}}
+setTimeout(preCompile,3500);setTimeout(preCompile,12000);setTimeout(preCompile,30000);
+/* ses: arka plandan dönünce ya da çalışmıyorsa dokunuşta ses motorunu baştan kur (iOS) */
+function acReset(){try{AC&&AC.close&&AC.close()}catch(e){}AC=null;MG=null;Object.keys(BUSG).forEach(k=>delete BUSG[k]);MU.g=MU.f=MU.d=MU.fb=MU.src=null;MU.next=0;Object.keys(AMB).forEach(k=>delete AMB[k]);NB=null;Object.keys(SB).forEach(k=>delete SB[k]);sbTried=false;ac();try{musSet(!!G.mus);busMix()}catch(e){}}
+['touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{if(!AC)return;if(AC_RE||AC.state==='interrupted'||AC.state==='closed'||(AC.state==='suspended'&&AC._tries>1)){AC_RE=false;acReset();return}if(AC.state!=='running'){AC._tries=(AC._tries||0)+1}},{capture:true,passive:true}));
 
 })();

@@ -3,7 +3,7 @@ const CN='<svg class="cn" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="
 let AC=null,NB=null,sT=0;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state!=='running'){try{AC.resume()}catch(e){}try{const b=AC.createBuffer(1,1,22050),s=AC.createBufferSource();s.buffer=b;s.connect(AC.destination);s.start(0)}catch(e){}}if(AC)loadSounds()}
 var AC_RE=false;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-['pointerdown','touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{if(AC&&AC_RE&&ev!=='pointerdown'){AC_RE=false;try{AC.suspend().then(()=>AC.resume()).then(()=>ac()).catch(()=>ac())}catch(e){ac()}return}if(!AC||AC.state!=='running')ac()},{capture:true,passive:true}));
+['pointerdown','touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{if(AC_RE)return;if(!AC||AC.state!=='running')ac()},{capture:true,passive:true}));
 document.addEventListener('pointerdown',ac,true);
 function tone(f,d,type,vol,f2,delay){const a=AC;if(!a||!G.snd)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
 g.gain.setValueAtTime(vol||0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+d);o.connect(g);g.connect(BUS(AMBF?'a':'e'));o.start(t);o.stop(t+d+0.02)}
