@@ -2,7 +2,7 @@ let purT=0;setInterval(()=>{if(purT&&performance.now()-purT>220){purT=0;loopSet(
 /* Daldırma, vidalama (yerleştir + tornavida) */
 /* Körük + ocak */
 function mkBand(){if(K.band)return K.band;const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:'#5b5f66',roughness:0.55,metalness:0.6,emissive:'#000000'});const b=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.012,0.46),m);b.position.y=0.006;b.castShadow=true;g.add(b);g.position.set(BC.x-0.36,Y,BC.z+0.02);K.work.add(g);K.band=g;g.scale.setScalar(0.01);tween(0.35,k=>g.scale.setScalar(Math.max(0.01,k)));return g}
-function bForge(){const obj=K.st.band?mkBand():(K.is3d&&K.m3)?K.m3.g:K.piece;const bp=V(BC.x+0.3,Y,BC.z-0.12),fg=new THREE.Group();fg.position.copy(bp);K.work.add(fg);
+function bForge(){const PP=K.st.part&&K.parts&&K.parts[K.st.part];const obj=K.st.band?mkBand():(PP&&PP.length)?PP[PP.length-1]:(K.is3d&&K.m3)?K.m3.g:K.piece;const bp=V(BC.x+0.3,Y,BC.z-0.12),fg=new THREE.Group();fg.position.copy(bp);K.work.add(fg);
  put(fg,B(0.3,0.07,0.6),M('#3a3430',0.9),0,0.035,0);put(fg,B(0.24,0.012,0.54),M('#1c1614'),0,0.071,0);
  const cm=new THREE.MeshStandardMaterial({color:'#2a1a12',emissive:'#ff4a10',emissiveIntensity:0.15,roughness:0.9}),coals=[];for(let i=0;i<34;i++){const c=put(fg,new THREE.DodecahedronGeometry(0.018+Math.random()*0.01,0),cm,(Math.random()-0.5)*0.22,0.078+Math.random()*0.01,(Math.random()-0.5)*0.5);c.rotation.set(Math.random()*3,Math.random()*3,0);coals.push(c)}
  const fm=new THREE.MeshBasicMaterial({color:'#ffb030',transparent:true,opacity:0.0,depthWrite:false}),fl=[];for(let i=0;i<9;i++){const f=put(fg,new THREE.ConeGeometry(0.025,0.08,6),fm,(Math.random()-0.5)*0.16,0.12,-0.22+i*0.055);fl.push(f)}
