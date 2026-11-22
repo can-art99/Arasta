@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261122.2337';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261122.2343';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -555,9 +555,9 @@ const DL0=new THREE.Group();S.add(DL0);place('pair_of_shoes',{x:-2.7,y:2.33,z:-1
 const Y=1.085,BC=V(0,Y,1.66);
 const CTB=M('#8a5530'),CTT=M('#a8693a');add(B(4.2,1.0,1.3),CTB,0,0.5,1.7);add(B(4.4,0.08,1.42),CTT,0,1.04,1.7);
 for(let i=0;i<3;i++)add(B(4.2,0.04,0.02),beam,0,0.25+i*0.28,2.36);
-add(B(1.36,0.006,1.0),M('#3d5a3a'),0,Y-0.002,1.66);
-for(let i=0;i<7;i++)add(B(0.004,0.008,1.0),M('#577a52'),-0.6+i*0.2,Y-0.001,1.66);
-for(let i=0;i<5;i++)add(B(1.36,0.008,0.004),M('#577a52'),0,Y-0.001,1.26+i*0.2);
+const MATB=M('#3d5a3a'),MATL=M('#577a52');add(B(1.36,0.006,1.0),MATB,0,Y-0.002,1.66);
+for(let i=0;i<7;i++)add(B(0.004,0.008,1.0),MATL,-0.6+i*0.2,Y-0.001,1.66);
+for(let i=0;i<5;i++)add(B(1.36,0.008,0.004),MATL,0,Y-0.001,1.26+i*0.2);
 
 add(B(0.05,0.02,0.32),M('#c0c4c8'),0.9,Y+0.01,1.25).rotation.y=0.5;
 {const bz=1.08;[['#a3302a',-0.6],['#2c3e6b',-0.47],['#c9982a',-0.34]].forEach(([h,x])=>{const o=pot(h);o.scale.setScalar(0.75);o.position.set(x,Y,bz);S.add(o)});
@@ -895,6 +895,7 @@ const DECO={
  zem:{ad:'Zemin',o:[{id:'tahta',ad:'Ahşap tahta',c:['#7a4a2a','#6c4024'],f:0},{id:'tas',ad:'Taş döşeme',m:'fl_stone',c:['#8a8a90','#6a6a70'],f:750},{id:'cini',ad:'Damalı çini',m:'fl_pink',c:['#f0a0b8','#202020'],f:950}]},
  hal:{ad:'Halı',o:[{id:'yuvarlak',ad:'Yuvarlak halı',m:'round_rug',c:['#b86a40'],f:0},{id:'cerceve',ad:'Çerçeveli halı',m:'rg_jarlan',c:['#9ab0b8','#e8e4dc'],f:250},{id:'kilim',ad:'Renkli kilim',m:'rg_akim',c:['#c84a6a','#e8c040'],f:350}]},
  ekm:{ad:'Köşe mobilyası',o:[{id:'yok',ad:'Yok',c:['#d8ccb4'],f:0},{id:'cizim',ad:'Çizim masası',m:'drafting_table',c:['#7a5a3a','#e6ddc8'],f:220}]},
+ mat:{ad:'Kesim matı',o:[{id:'yesil',ad:'Yeşil mat',c:['#3d5a3a','#577a52'],f:0},{id:'mavi',ad:'Mavi mat',c:['#2f4a6a','#5a7a9a'],f:120},{id:'gri',ad:'Gri mat',c:['#4a4c50','#74787e'],f:120},{id:'bordo',ad:'Bordo mat',c:['#6a2a2a','#9a5048'],f:150},{id:'deri',ad:'Deri altlık',c:['#6a4428','#9a7048'],f:220},{id:'gece',ad:'Gece siyahı, altın çizgili',c:['#242424','#c8a64a'],g:8}]},
  vit:{ad:'Vitrin rafları',o:[{id:'std',ad:'Duvar rafları',c:['#6e4122','#8a5a34'],f:0},{id:'kitap',ad:'Basamaklı kitaplık',m:'km_books',c:['#8a4a2a'],f:550},{id:'raf',ad:'Modern dikey raf',m:'km_vshelf',c:['#2a2a2a'],f:450}]},
  mzk:{ad:'Müzik kutusu',o:[{id:'teyp',ad:'Teyp',m:'mz_boom',c:['#c8d0d4','#303840'],f:0},{id:'radyo',ad:'Radyo',m:'mz_radio',c:['#303030','#c83030'],f:450},{id:'gramo',ad:'Gramofon',m:'mz_gramo',c:['#c8a040','#6a4a2a'],f:950}]},
  cer2:{ad:'Duvar süsü',o:[{id:'yok',ad:'Yok',c:['#d8ccb4'],f:0},{id:'cerceve',ad:'Resim çerçevesi',c:['#bd5410','#38bdd4'],f:90}]},
@@ -923,7 +924,7 @@ function leafOf(n){const s=GLC[n].scene.clone(true),rm=[];s.traverse(x=>{if(x.is
 function doorApply(){if(!DOORH)return;const o=decoSel('kapi');if(DOORH.userData.kd===o.id)return;if(!DOORH.userData.d0)DOORH.userData.d0=DOORH.children[0];
  if(o.leaf&&!GLC[o.m]){glb(o.m,()=>doorApply());return}DOORH.children.slice().forEach(c=>DOORH.remove(c));
  if(!o.leaf)DOORH.add(DOORH.userData.d0);else{const d=leafOf(o.m);d.rotation.set(0,0,0);d.position.set(0,0,0);d.scale.set(1,1,1);if(o.flip)d.rotation.y=Math.PI;const w=new THREE.Group();w.add(d);let b=fitModel(w,2.3);const bw=b.max.x-b.min.x;if(bw>1.22){w.scale.multiplyScalar(1.22/bw);b=new THREE.Box3().setFromObject(w)}w.position.set(-b.min.x,-b.min.y,-(b.min.z+b.max.z)/2);w.traverse(x=>{if(x.isMesh)x.castShadow=true});DOORH.add(w)}DOORH.userData.kd=o.id}
-function decoApply(){try{decoExtra()}catch(e){}const t=decoSel('tez'),r=decoSel('raf'),c=decoSel('cer'),d=decoSel('duv');CTB.color.set(t.c[0]);CTT.color.set(t.c[1]);RFA.color.set(r.c[0]);RFB.color.set(r.c[1]);beam.color.set(c.c[0]);wallM.color.set(d.c[0]);
+function decoApply(){try{decoExtra()}catch(e){}const t=decoSel('tez'),r=decoSel('raf'),c=decoSel('cer'),d=decoSel('duv');CTB.color.set(t.c[0]);CTT.color.set(t.c[1]);RFA.color.set(r.c[0]);RFB.color.set(r.c[1]);beam.color.set(c.c[0]);{const mt=decoSel('mat');MATB.color.set(mt.c[0]);MATL.color.set(mt.c[1])}wallM.color.set(d.c[0]);
 if(DOORH&&!decoSel('kapi').leaf){DOORH.traverse(o=>{if(o.isMesh){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(!m.userData.c0)m.userData.c0=m.color.clone();m.color.copy(m.userData.c0);if(c.c[1])m.color.lerp(new THREE.Color(c.c[1]),0.75)})}});DOORH.userData.dk=c.id}}
 function openDeco(){if(!G.deco)G.deco={own:{},sel:{}};let h=BKH+'Dekorcu</h3><p>Dükkânını kendine göre düzenle. Aldığın görünümler senin olur, istediğin an geri dönebilirsin. Denemek için renklere dokun.</p>';
  Object.entries(DECO).forEach(([k,cat])=>{h+=`<div class="grp">${cat.ad}</div>`;cat.o.forEach(o=>{const own=(!o.f&&!o.g)||G.deco.own[k+'.'+o.id],sel=decoSel(k).id===o.id;
