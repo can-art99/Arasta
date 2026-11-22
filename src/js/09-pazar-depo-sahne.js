@@ -97,7 +97,7 @@ function marketTab(t){if(G.phase==='craft'||G.phase==='result'||switching)return
 /* ---------- depo ---------- */
 for(let i=0;i<10;i++)add(B(0.66,0.05,9),M(i%2?'#6a4428':'#5e3b22'),OD-3+i*0.66,0,0);
 add(B(40,0.05,40),M('#4a3424'),OD,-0.04,0).castShadow=false;
-add(B(6.6,4.4,0.15),M('#7a5636'),OD,2.2,-3.25);add(B(0.15,4.4,9),M('#6e4a30'),OD-3.2,2.2,0);add(B(0.15,4.4,9),M('#6e4a30'),OD+3.2,2.2,0);
+add(B(6.6,7.6,0.15),M('#7a5636'),OD,3.8,-3.25);add(B(0.15,7.6,9),M('#6e4a30'),OD-3.2,3.8,0);add(B(0.15,7.6,9),M('#6e4a30'),OD+3.2,3.8,0);add(B(6.5,0.22,0.3),M('#4e321e'),OD,4.4,-3.1);[-2.4,2.4].forEach(x=>add(B(0.2,0.2,6.2),M('#4e321e'),OD+x,4.5,-0.1));
 const GORD=['Ham madde','İşlenmiş','Yardımcı','Tohum'],DEP=[],DROW=[2.95,2.35,1.75,1.15,0.55],DCX=[-1.12,-0.56,0,0.56,1.12];
 const RFA=M('#8a5a34'),RFB=M('#5a3519');const RFM=[];[3.45,2.83,2.21,1.59,0.97,0.35].forEach(y=>RFM.push(add(B(4.0,0.06,0.55),RFA,OD,y-0.03,-2.9)));[-2.0,2.0].forEach(x=>RFM.push(add(B(0.1,3.9,0.55),RFB,OD+x,1.95,-2.9)));
 RFM.forEach(m=>m.visible=false);DROW.forEach(y=>place('wall_shelf',{x:OD,y:y-0.3,z:-2.88,w:5.9,cb:w=>{w.rotation.y=Math.PI/2;w.scale.x=0.27;w.scale.y=0.5;w.position.y=y-0.5*0.456*5.9/2.3;w.traverse(o=>{if(o.isMesh)o.material=/Top/.test(o.material.name)?RFA:RFB})}}));
