@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261123.0021';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261123.0035';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -551,7 +551,7 @@ const AWN=new THREE.Group();
 function plant(x,y,z,k){put(S,Cy(0.14*k,0.1*k,0.2*k,8),M('#b06a3a'),x,y,z);for(let i=0;i<6;i++){const a=i/6*Math.PI*2,l=put(S,new THREE.ConeGeometry(0.06*k,0.38*k,4),M(i%2?'#4f7a3a':'#5f8a44'),x+Math.cos(a)*0.1*k,y+0.2*k,z+Math.sin(a)*0.1*k);l.rotation.z=Math.cos(a)*0.6;l.rotation.x=-Math.sin(a)*0.6}}
 place('plant_white',{x:-0.35,z:-3.45,h:1.0});place('flower_pot2',{x:2.15,z:-3.4,h:0.75,ry:1});const RG0=new THREE.Group();S.add(RG0);place('round_rug',{par:RG0,x:-1.45,y:0.03,z:-2.55,w:1.3});
 
-const DL0=new THREE.Group();S.add(DL0);const SHO0=new THREE.Group();place('light_desk',{par:DL0,x:1.85,y:1.085,z:1.3,h:0.5,ry:-2.4});
+const DL0=new THREE.Group();S.add(DL0);const SHO0=new THREE.Group();place('light_desk',{par:DL0,x:1.02,y:1.085,z:1.08,h:0.42,ry:-2.4});
 const Y=1.085,BC=V(0,Y,1.66);
 const CTB=M('#8a5530'),CTT=M('#a8693a');add(B(4.2,1.0,1.3),CTB,0,0.5,1.7);add(B(4.4,0.08,1.42),CTT,0,1.04,1.7);
 for(let i=0;i<3;i++)add(B(4.2,0.04,0.02),beam,0,0.25+i*0.28,2.36);
@@ -926,9 +926,9 @@ function decoExtra(){if(!ES1){ES1=new THREE.Group();ES1.visible=false;S.add(ES1)
   fl('zem.tas','fl_stone',1.0);fl('zem.cini','fl_pink',0.75);
   mk('hal.cerceve','rg_jarlan',{x:-1.45,y:0.03,z:-2.55,w:1.7,ry:Math.PI/2});mk('hal.kilim','rg_akim',{x:-1.45,y:0.03,z:-2.55,w:1.8});
   [-2.25,-1.3,-0.35].forEach((z,j)=>{mk('vit.kitap#'+j,'km_books',{x:2.79,z,h:2.2,ry:-Math.PI/2});mk('vit.kitap#L'+j,'km_books',{x:-2.79,z,h:2.2,ry:Math.PI/2});mk('vit.raf#L'+j,'km_vshelf',{x:-2.82,z,h:2.4,ry:-Math.PI/2,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>m.color.set('#3a3430'))})});mk('vit.raf#'+j,'km_vshelf',{x:2.82,z,h:2.4,ry:Math.PI/2,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>m.color.set('#3a3430'))})})});
-  mk('mzk.teyp','mz_boom',{x:-1.78,y:1.085,z:1.28,h:0.2,ry:Math.PI+0.35});mk('mzk.radyo','mz_radio',{x:-1.78,y:1.085,z:1.28,h:0.24,ry:0.35});mk('mzk.gramo','mz_gramo',{x:-1.78,y:1.085,z:1.28,h:0.42,ry:0.35});
+  mk('mzk.teyp','mz_boom',{x:-1.0,y:1.085,z:1.08,h:0.2,ry:Math.PI+0.35});mk('mzk.radyo','mz_radio',{x:-1.0,y:1.085,z:1.08,h:0.24,ry:0.35});mk('mzk.gramo','mz_gramo',{x:-1.0,y:1.085,z:1.08,h:0.42,ry:0.35});
   mk('tav.fener','lamp_lantern',{x:0,y:2.5,z:0.6,h:0.75});mk('tav.metal','lamp_ceil',{x:0,y:2.3,z:0.6,h:0.95});
-  mk('mlm.mimar','lamp_desk2',{x:1.85,y:1.085,z:1.3,h:0.4,ry:-0.9,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>{if(/Metal/.test(m.name))m.color.set('#2f5a9a')})})});mk('mlm.abajur','lamp_round',{x:1.85,y:1.085,z:1.3,h:0.42,ry:-2.4})}
+  mk('mlm.mimar','lamp_desk2',{x:1.02,y:1.085,z:1.08,h:0.36,ry:-0.9,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>{if(/Metal/.test(m.name))m.color.set('#2f5a9a')})})});mk('mlm.abajur','lamp_round',{x:1.02,y:1.085,z:1.08,h:0.36,ry:-2.4})}
  const SEL={};['tav','mlm','zem','hal','ekm','mzk','vit','mat'].forEach(k=>SEL[k]=decoSel(k).id);CL0.visible=SEL.tav==='sarkit';DL0.visible=SEL.mlm==='klasik';FLPK.forEach(m=>m.visible=SEL.zem==='tahta');MATG.visible=!decoSel('mat').m;RG0.visible=SEL.hal==='yuvarlak';
  Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('#')[0].split('.');g.visible=SEL[a]===b});doorApply();vitLayout(SEL.vit);LAMPON=!(G.deco&&G.deco.lamp===0);lampLook()}
 /* vitrin raf düzeni: ürün yerleri seçilen rafa göre */

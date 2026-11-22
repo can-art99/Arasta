@@ -82,9 +82,9 @@ function decoExtra(){if(!ES1){ES1=new THREE.Group();ES1.visible=false;S.add(ES1)
   fl('zem.tas','fl_stone',1.0);fl('zem.cini','fl_pink',0.75);
   mk('hal.cerceve','rg_jarlan',{x:-1.45,y:0.03,z:-2.55,w:1.7,ry:Math.PI/2});mk('hal.kilim','rg_akim',{x:-1.45,y:0.03,z:-2.55,w:1.8});
   [-2.25,-1.3,-0.35].forEach((z,j)=>{mk('vit.kitap#'+j,'km_books',{x:2.79,z,h:2.2,ry:-Math.PI/2});mk('vit.kitap#L'+j,'km_books',{x:-2.79,z,h:2.2,ry:Math.PI/2});mk('vit.raf#L'+j,'km_vshelf',{x:-2.82,z,h:2.4,ry:-Math.PI/2,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>m.color.set('#3a3430'))})});mk('vit.raf#'+j,'km_vshelf',{x:2.82,z,h:2.4,ry:Math.PI/2,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>m.color.set('#3a3430'))})})});
-  mk('mzk.teyp','mz_boom',{x:-1.78,y:1.085,z:1.28,h:0.2,ry:Math.PI+0.35});mk('mzk.radyo','mz_radio',{x:-1.78,y:1.085,z:1.28,h:0.24,ry:0.35});mk('mzk.gramo','mz_gramo',{x:-1.78,y:1.085,z:1.28,h:0.42,ry:0.35});
+  mk('mzk.teyp','mz_boom',{x:-1.0,y:1.085,z:1.08,h:0.2,ry:Math.PI+0.35});mk('mzk.radyo','mz_radio',{x:-1.0,y:1.085,z:1.08,h:0.24,ry:0.35});mk('mzk.gramo','mz_gramo',{x:-1.0,y:1.085,z:1.08,h:0.42,ry:0.35});
   mk('tav.fener','lamp_lantern',{x:0,y:2.5,z:0.6,h:0.75});mk('tav.metal','lamp_ceil',{x:0,y:2.3,z:0.6,h:0.95});
-  mk('mlm.mimar','lamp_desk2',{x:1.85,y:1.085,z:1.3,h:0.4,ry:-0.9,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>{if(/Metal/.test(m.name))m.color.set('#2f5a9a')})})});mk('mlm.abajur','lamp_round',{x:1.85,y:1.085,z:1.3,h:0.42,ry:-2.4})}
+  mk('mlm.mimar','lamp_desk2',{x:1.02,y:1.085,z:1.08,h:0.36,ry:-0.9,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>{if(/Metal/.test(m.name))m.color.set('#2f5a9a')})})});mk('mlm.abajur','lamp_round',{x:1.02,y:1.085,z:1.08,h:0.36,ry:-2.4})}
  const SEL={};['tav','mlm','zem','hal','ekm','mzk','vit','mat'].forEach(k=>SEL[k]=decoSel(k).id);CL0.visible=SEL.tav==='sarkit';DL0.visible=SEL.mlm==='klasik';FLPK.forEach(m=>m.visible=SEL.zem==='tahta');MATG.visible=!decoSel('mat').m;RG0.visible=SEL.hal==='yuvarlak';
  Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('#')[0].split('.');g.visible=SEL[a]===b});doorApply();vitLayout(SEL.vit);LAMPON=!(G.deco&&G.deco.lamp===0);lampLook()}
 /* vitrin raf düzeni: ürün yerleri seçilen rafa göre */

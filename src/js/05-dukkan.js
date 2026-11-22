@@ -28,7 +28,7 @@ const AWN=new THREE.Group();
 function plant(x,y,z,k){put(S,Cy(0.14*k,0.1*k,0.2*k,8),M('#b06a3a'),x,y,z);for(let i=0;i<6;i++){const a=i/6*Math.PI*2,l=put(S,new THREE.ConeGeometry(0.06*k,0.38*k,4),M(i%2?'#4f7a3a':'#5f8a44'),x+Math.cos(a)*0.1*k,y+0.2*k,z+Math.sin(a)*0.1*k);l.rotation.z=Math.cos(a)*0.6;l.rotation.x=-Math.sin(a)*0.6}}
 place('plant_white',{x:-0.35,z:-3.45,h:1.0});place('flower_pot2',{x:2.15,z:-3.4,h:0.75,ry:1});const RG0=new THREE.Group();S.add(RG0);place('round_rug',{par:RG0,x:-1.45,y:0.03,z:-2.55,w:1.3});
 
-const DL0=new THREE.Group();S.add(DL0);const SHO0=new THREE.Group();place('light_desk',{par:DL0,x:1.85,y:1.085,z:1.3,h:0.5,ry:-2.4});
+const DL0=new THREE.Group();S.add(DL0);const SHO0=new THREE.Group();place('light_desk',{par:DL0,x:1.02,y:1.085,z:1.08,h:0.42,ry:-2.4});
 const Y=1.085,BC=V(0,Y,1.66);
 const CTB=M('#8a5530'),CTT=M('#a8693a');add(B(4.2,1.0,1.3),CTB,0,0.5,1.7);add(B(4.4,0.08,1.42),CTT,0,1.04,1.7);
 for(let i=0;i<3;i++)add(B(4.2,0.04,0.02),beam,0,0.25+i*0.28,2.36);
