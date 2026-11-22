@@ -32,9 +32,9 @@ const DL0=new THREE.Group();S.add(DL0);place('pair_of_shoes',{x:-2.7,y:2.33,z:-1
 const Y=1.085,BC=V(0,Y,1.66);
 const CTB=M('#8a5530'),CTT=M('#a8693a');add(B(4.2,1.0,1.3),CTB,0,0.5,1.7);add(B(4.4,0.08,1.42),CTT,0,1.04,1.7);
 for(let i=0;i<3;i++)add(B(4.2,0.04,0.02),beam,0,0.25+i*0.28,2.36);
-const MATB=M('#3d5a3a'),MATL=M('#577a52');add(B(1.36,0.006,1.0),MATB,0,Y-0.002,1.66);
-for(let i=0;i<7;i++)add(B(0.004,0.008,1.0),MATL,-0.6+i*0.2,Y-0.001,1.66);
-for(let i=0;i<5;i++)add(B(1.36,0.008,0.004),MATL,0,Y-0.001,1.26+i*0.2);
+const MATB=M('#3d5a3a'),MATL=M('#577a52'),MATG=new THREE.Group();S.add(MATG);MATG.add(add(B(1.36,0.006,1.0),MATB,0,Y-0.002,1.66));
+for(let i=0;i<7;i++)MATG.add(add(B(0.004,0.008,1.0),MATL,-0.6+i*0.2,Y-0.001,1.66));
+for(let i=0;i<5;i++)MATG.add(add(B(1.36,0.008,0.004),MATL,0,Y-0.001,1.26+i*0.2));
 
 add(B(0.05,0.02,0.32),M('#c0c4c8'),0.9,Y+0.01,1.25).rotation.y=0.5;
 {const bz=1.08;[['#a3302a',-0.6],['#2c3e6b',-0.47],['#c9982a',-0.34]].forEach(([h,x])=>{const o=pot(h);o.scale.setScalar(0.75);o.position.set(x,Y,bz);S.add(o)});
