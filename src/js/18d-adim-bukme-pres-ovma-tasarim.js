@@ -45,14 +45,15 @@ function bCoil(){const m=K.m3,ku=m&&m.kulp,cm=M(K.p.sheet||'#d9c8b0',0.75),N=6;l
  const toAttach=()=>{phase='att';toolUp&&toolUp();const k0=c.scale.clone();tween(0.35,q=>{c.scale.set(k0.x,k0.y*(1-0.35*q),k0.z)});const t=tw();mark.position.set(t.x-BC.x,0,t.z-BC.z);mark.visible=true;tipStep('Kulbu kupanın yanına sürükle')};
  K.skipFn=()=>{K.work.remove(grp);K.work.remove(mark);if(ku)ku.visible=true}}
 /* Nazar: cam katmanları */
-function bLayer(){const L=[{r:0.112,c:'#ffffff',ad:'Beyaz'},{r:0.072,c:'#7fc8f0',ad:'Açık mavi'},{r:0.036,c:'#151313',ad:'Siyah'}];let i=0,cur=null,off=null,sc=[];const top=K.top;K.hy=top+0.02;
+function bLayer(){const L=[{r:0.112,c:'#ffffff',ad:'Beyaz'},{r:0.072,c:'#7fc8f0',ad:'Açık mavi'},{r:0.036,c:'#151313',ad:'Siyah'}];let i=0,cur=null,off=null,sc=[];const NZ=K.p.id==='nazar';if(NZ&&!K.m3)grow3D(1);const EY=NZ&&K.m3?K.m3.g.children.slice(1):[];EY.forEach(c=>c.visible=false);const top=K.top;
+ const EYon=()=>{if(!EY.length)return;D.forEach(m=>K.work.remove(m));EY.forEach(c=>c.visible=true)};K.hy=top+0.02;
  const D=L.map((l,k)=>{const m=put(K.work,Cy(l.r,l.r,0.008,24),M(l.c,0.15),BC.x+0.42,top+0.01,BC.z-0.18+k*0.17);m.userData.home=m.position.clone();return m});
  const ring=new THREE.Mesh(new THREE.TorusGeometry(L[0].r,0.003,4,32),new THREE.MeshBasicMaterial({color:'#ffd23a'}));ring.rotation.x=Math.PI/2;ring.position.set(BC.x,top+0.006,BC.z);K.work.add(ring);
  const tip=()=>{if(i<L.length){ring.geometry.dispose();ring.geometry=new THREE.TorusGeometry(L[i].r,0.003,4,32);tipStep(`${L[i].ad} katmanı ${i+1}/${L.length} · ortaya sürükle`)}};tip();
  K.pd=p=>{const m=D[i];if(m&&Math.hypot(m.position.x-p.x,m.position.z-p.z)<0.14){cur=m;off=V(m.position.x-p.x,0,m.position.z-p.z);sfx.pick()}};
  K.pm=p=>{if(!cur)return;cur.position.set(p.x+off.x,top+0.03,p.z+off.z)};
- K.pu=()=>{if(!cur)return;const m=cur;cur=null;const d=Math.hypot(m.position.x-BC.x,m.position.z-BC.z);if(d<0.07){sc.push(clamp(1-d/0.07,0.3,1));const fr=m.position.clone(),to=V(BC.x,top+0.004+i*0.004,BC.z);tween(0.2,q=>m.position.lerpVectors(fr,to,q));sfx.drop();puff(to,4,L[i].c);i++;if(i>=L.length){K.work.remove(ring);fin(avg(sc),'Nazar katmanları tamam!')}else tip()}else{const fr=m.position.clone();tween(0.25,q=>m.position.lerpVectors(fr,m.userData.home,q));toast('Ortadaki halkaya bırak',700)}};
- K.skipFn=()=>{K.work.remove(ring);D.forEach((m,k)=>m.position.set(BC.x,top+0.004+k*0.004,BC.z))}}
+ K.pu=()=>{if(!cur)return;const m=cur;cur=null;const d=Math.hypot(m.position.x-BC.x,m.position.z-BC.z);if(d<0.07){sc.push(clamp(1-d/0.07,0.3,1));const fr=m.position.clone(),to=V(BC.x,top+0.004+i*0.004,BC.z);tween(0.2,q=>m.position.lerpVectors(fr,to,q));sfx.drop();puff(to,4,L[i].c);i++;if(i>=L.length){K.work.remove(ring);setTimeout(EYon,260);fin(avg(sc),'Nazar katmanları tamam!')}else tip()}else{const fr=m.position.clone();tween(0.25,q=>m.position.lerpVectors(fr,m.userData.home,q));toast('Ortadaki halkaya bırak',700)}};
+ K.skipFn=()=>{K.work.remove(ring);D.forEach((m,k)=>m.position.set(BC.x,top+0.004+k*0.004,BC.z));EYon()}}
 
 function bHold(){K.hv=0;K.holding=false;const P=new THREE.Group(),wd=M('#5a3519');[-0.44,0.44].forEach(x=>{put(P,B(0.06,0.74,0.06),wd,x,0.37,0);put(P,B(0.13,0.04,0.13),M('#4a2c14'),x,0.02,0)});put(P,B(1.0,0.07,0.1),wd,0,0.75,0);
 const sc=put(P,Cy(0.017,0.017,0.9,8),M('#9a9aa0',0.35),0,0,0),wh=new THREE.Group(),tr=put(wh,new THREE.TorusGeometry(0.1,0.012,6,20),M('#8a5530'),0,0,0);tr.rotation.x=Math.PI/2;for(let i=0;i<2;i++)put(wh,B(0.22,0.014,0.014),M('#8a5530'),0,0,0).rotation.y=i*Math.PI/2;P.add(wh);

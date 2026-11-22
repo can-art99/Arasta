@@ -169,7 +169,7 @@ const haliM=(hex)=>{const g=new THREE.Group(),um=M(hex||'#a83a2a',0.95);put(g,B(
 [{id:'sise',ad:'Cam şişe',tier:2,base:90,need:{cam:2},sheet:'#8fc4c8',wood:true,shape:ci(0.12),build:siseM,
   steps:[{t:'spin',ad:'Camı boruda çevir'},{t:'rub',k:'torch',ad:'Pürmüzle camı erit'},{t:'blow',ad:'Üfleyerek şişir',n:8},Rb('sekil','Elle şekillendir'),D]},
  {id:'nazar',ad:'Nazar boncuğu',tier:2,base:55,need:{cam:1,boya_lacivert:1},sheet:'#1f48b8',wood:true,shape:ci(0.1),build:nazarM,
-  steps:[{t:'spin',ad:'Boncuğu çubukta çevir'},{t:'rub',k:'torch',ad:'Pürmüzle camı erit'},{t:'layer',ad:'Renkli camları katman katman ekle'},Rb('sekil','Elle yuvarla'),D]},
+  steps:[{t:'layer',ad:'Renkli camları katman katman ekle'},{t:'rub',k:'torch',ad:'Pürmüzle camları erit'},{t:'spin',ad:'Boncuğu çubukta çevir'},Rb('sekil','Elle yuvarla'),D]},
  {id:'cezve',ad:'Bakır cezve',tier:2,base:140,need:{bakir:2,kereste:1},sheet:'#c87a4a',wood:true,shape:ci(0.2),build:cezveM,
   steps:[T('Bakır levhayı kes'),{t:'hammer',kind:'dent',hits:1,ad:'Çekiçle döv',pts:G4(12,0.17)},T('Sapı kes',{part:'sap',n:1,shape:rr(0.05,0.26),at:[-0.45,0],col:'#5a3519',wood:true}),{t:'asm',part:'sap',ad:'Sapı yerleştir',slots:[[0.31,0,Math.PI/2]],pose:'flat'},{t:'hammer',kind:'rivet',hits:3,ad:'Pirinç bileziği geçirip çak',pts:[[0.22,0],[0.29,0]]},{t:'spin',ad:'Tornada gövdeyi biçimlendir'},{t:'rub',k:'torch',ad:'İçini ısıtıp kalayla'},Rb('parlat','Parlatma'),D]},
  {id:'btepsi',ad:'Bakır tepsi',tier:2,base:130,need:{bakir:2},sheet:'#c87a4a',wood:true,shape:rr(0.48,0.32),build:btepsiM,after:['cezve',1],
