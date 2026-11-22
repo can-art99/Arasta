@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261122.2232';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261122.2234';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1177,7 +1177,7 @@ function gSync(){COLL.forEach(o=>{const c=o.userData.coll,op=gOpen(c.src);if(!op
 function buyPatch(p){if(gOpen(p.ad)||switching)return;if(!p.__ok){const L0=GLK[p.ad],o=GOUT[p.ad]||[],ub=usedBy(o);unlockSheet(p.ad,L0[1],L0[0],`${o.length?`<div style="margin:4px 0">Buradan toplanır: <b>${matL(o)}</b></div>`:'<div style="margin:4px 0">Bahçene arkadaş: ara sıra sana malzeme getirir.</div>'}${ub.length?`<div style="font-size:12.5px;margin-top:6px;opacity:.85">Kullanıldığı ürünler: ${ub.slice(0,8).join(', ')}${ub.length>8?'…':''}</div>`:''}`,()=>{p.__ok=1;buyArm='g'+p.ad;buyT=tt+3;buyPatch(p);p.__ok=0});return}const L=GLK[p.ad];if(G.tier<L[0]){toast(`${p.ad} ${L[0]}. kademede açılır`,1500);return}if(G.gold<L[1]){toast(`${p.ad} için ${L[1]} altın gerekli`,1500);return}if(!armBuy('g'+p.ad,`${p.ad} açılsın mı? ${L[1]} altın`))return;G.gold-=L[1];G.gu[p.ad]=1;buyArm=null;sfx.coin();sfx.plant();toast(`${p.ad} açıldı!`,1500);gSync();save();refresh()}
 /* ---------- ekipmanlar ---------- */
 const EQ=[{id:'makas',ad:'Makas',e:'✂️',d:'Deri, kumaş ve iplik keser',m:'scissors2'},{id:'testere',ad:'El testeresi',e:'🪚',d:'Ahşap ve boynuz gibi sert malzemeyi keser',m:'saw2'},{id:'bicak',ad:'Kesim bıçağı',e:'🔪',d:'Kil, sabun ve mum keser; deriyi inceltir, oyar',m:'knife'},
- {id:'igne',ad:'İğne iplik',e:'🪡',d:'Dikiş ve delik açma'},{id:'tutkalf',ad:'Tutkal fırçası',e:'🖌️',d:'Tutkal ve çamur sürme',m:'m_brushL'},{id:'zimpara',ad:'Zımpara takozu',e:'🧱',d:'Yüzey zımparası'},{id:'rende',ad:'Rende',e:'🪵',d:'Ahşap yüzeyi düzleştirir',m:'m_grater'},{id:'cila',ad:'Cila bezi',e:'🧽',d:'Cila, parlatma, şekillendirme'},
+ {id:'igne',ad:'İğne iplik',e:'🪡',d:'Dikiş ve delik açma'},{id:'tutkalf',ad:'Tutkal tüpü',e:'🧴',d:'Tutkal sürme ve yapıştırma',m:'m_glue'},{id:'zimpara',ad:'Zımpara takozu',e:'🧱',d:'Yüzey zımparası'},{id:'rende',ad:'Rende',e:'🪵',d:'Ahşap yüzeyi düzleştirir',m:'m_grater'},{id:'cila',ad:'Cila bezi',e:'🧽',d:'Cila, parlatma, şekillendirme'},
  {id:'firca',ad:'Boya fırçası',e:'🎨',d:'Tasarım boyaması',m:'m_brushP'},{id:'pres',ad:'El presi',e:'🗜️',d:'Pres, katlama, ütü, doldurma'},
  {id:'kompresor',ad:'Hava kompresörü',e:'💨',d:'Top ve şişme ürünleri şişirir',buy:[250,20]},{id:'havya',ad:'Havya ve pürmüz',e:'🔥',d:'Cam ve plastiği ısıtıp şekillendirir, lehimler',buy:[300,30],m:'solder'}];
 const EQLV=['','Basit','Usta','Ustalık'],EQDUR=[0,20,35,50],EQREN=[0,15,30,50],EQUP=[0,0,[120,15],[280,40]],EQICON={};
