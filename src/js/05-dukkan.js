@@ -9,8 +9,8 @@ add(B(1.4,0.12,0.18),beam,-1.4,2.36,-3.88);add(B(0.12,2.36,0.18),beam,-2.06,1.18
 const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.7,1.3,5,4,1,true),new THREE.MeshBasicMaterial({color:'#ffd68a',transparent:true,opacity:0.07,depthWrite:false,blending:THREE.AdditiveBlending}));
 shaft.position.set(0.6,1.4,-1.6);shaft.rotation.set(1.1,0.785,0);S.add(shaft);
 const shelfItems=[()=>shoeModel('#6e3d1f','Bağcıklı'),()=>cuzdanModel('#a3302a'),()=>cantaModel('#2c3e6b','Kısa sap'),()=>kemerModel('#262220'),()=>atkiModel('#a3302a'),()=>shoeModel('#262220','Tokalı')];
-const VBD=[];[-2.7,2.7].forEach((x,si)=>{for(let k=0;k<3;k++){const bd=add(B(0.45,0.06,2.6),M('#6e4122'),x,0.9+k*0.7,-1.4);if(x>0)VBD.push(bd);
-if(x>0)continue;for(let j=0;j<3;j++){const it=shelfItems[(j+k+si*2)%shelfItems.length]();it.g.scale.setScalar(0.85);it.g.position.set(x,0.93+k*0.7,-2.3+j*0.85);it.g.rotation.y=x<0?-1.2:1.2;S.add(it.g)}}});
+const VBD=[],VBDL=[],LSI=[];[-2.7,2.7].forEach((x,si)=>{for(let k=0;k<3;k++){const bd=add(B(0.45,0.06,2.6),M('#6e4122'),x,0.9+k*0.7,-1.4);(x>0?VBD:VBDL).push(bd);
+if(x>0)continue;for(let j=0;j<3;j++){const it=shelfItems[(j+k+si*2)%shelfItems.length]();it.g.scale.setScalar(0.85);it.g.position.set(x,0.93+k*0.7,-2.3+j*0.85);it.g.rotation.y=x<0?-1.2:1.2;S.add(it.g);LSI.push([it.g,k,j])}}});
 
 const VIT=new THREE.Group();S.add(VIT);const VSL=[];for(let k=0;k<3;k++)for(let j=0;j<3;j++)VSL.push(V(2.7,0.93+k*0.7,-2.3+j*0.85));
 add(B(0.05,0.32,1.0),M('#5a3519'),2.92,2.95,-1.45);
