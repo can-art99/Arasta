@@ -63,6 +63,14 @@ let ES1=null,ES2=null,ESL=null;
 /* dekor artıları: her seçili dekorun b alanı toplanır */
 function dB(k){let v=0;try{Object.keys(DECO).forEach(c=>{const o=decoSel(c);if(o&&o.b&&o.b[k])v+=o.b[k]})}catch(e){}return v}
 function decoBonTxt(b){const T={cust:'müşteriler %N daha sık gelir',q:'üretim kalitesi +%N',hag:'pazarlıkta %N daha yüksek fiyat',rep:'teslimatta %N şansla +1 itibar',tip:'4★ ve üstünde %N bahşiş',vit:'vitrin ürünleri %N daha çok ilgi görür',cut:'kesim adımları +%N'};return Object.entries(b).map(([k,v])=>T[k].replace('N',Math.round(v*100))).join(' · ')}
+/* tavan lambası: dokununca aç/kapa (ışık hafifçe azalır, ampul söner) */
+var LAMPON=true;const LMC=new Map();
+function lampLook(){const on=LAMPON;const dim=(m)=>{if(!LMC.has(m))LMC.set(m,m.color.clone());const c0=LMC.get(m);m.color.copy(c0);if(!on)m.color.multiplyScalar(0.35)};
+ try{dim(bulbL.material)}catch(e){}if(ESL)['tav.fener','tav.metal'].forEach(k=>{const g=ESL[k];if(g)g.traverse(o=>{if(!o.isMesh)return;[].concat(o.material).forEach(m=>{const c0=LMC.get(m)||m.color;const hsl={};c0.getHSL(hsl);if(hsl.l>0.55||/Light|lamp|glass/i.test(m.name||''))dim(m)})})});
+ if(lamp.visible)lamp.intensity=1.4*(on?1:0.72)}
+function lampToggle(){LAMPON=!LAMPON;if(G.deco)G.deco.lamp=LAMPON?1:0;lampLook();sf('click',0.5)||sfx.tap();save()}
+{let lp=null;canvas.addEventListener('pointerdown',e=>{lp=(view==='home'&&G.phase!=='craft'&&!switching)?{x:e.clientX,y:e.clientY,t:performance.now()}:null});
+ canvas.addEventListener('pointerup',e=>{if(!lp||Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>8||performance.now()-lp.t>450){lp=null;return}lp=null;setRay(e);const tv=decoSel('tav').id,G0=tv==='sarkit'?CL0:ESL&&ESL['tav.'+tv];if(G0&&ray.intersectObject(G0,true)[0])lampToggle()})}
 function decoPat(){try{return decoSel('ekm').pat||0}catch(e){return 0}}const DKIC={};
 function decoIcon(o){if(!o.m)return null;if(DKIC[o.m])return DKIC[o.m];if(!GLC[o.m]){glb(o.m,()=>{if(modalMode==='deko')openDeco()});return null}try{DKIC[o.m]=snap(o.leaf?leafOf(o.m):GLC[o.m].scene.clone(true))}catch(e){}return DKIC[o.m]||null}
 function decoExtra(){if(!ES1){ES1=new THREE.Group();ES1.visible=false;S.add(ES1);place('drafting_table',{par:ES1,x:2.25,z:-0.7,w:1.05,ry:-Math.PI/2});ES2=new THREE.Group();ES2.visible=false;S.add(ES2);place('picture_frame',{par:ES2,x:2.35,y:1.75,z:-3.66,h:0.42,ry:-Math.PI/2})}ES1.visible=false;ES2.visible=decoSel('cer2').id==='cerceve';
@@ -78,7 +86,7 @@ function decoExtra(){if(!ES1){ES1=new THREE.Group();ES1.visible=false;S.add(ES1)
   mk('tav.fener','lamp_lantern',{x:0,y:2.5,z:0.6,h:0.75});mk('tav.metal','lamp_ceil',{x:0,y:2.3,z:0.6,h:0.95});
   mk('mlm.mimar','lamp_desk2',{x:1.85,y:1.085,z:1.3,h:0.4,ry:-0.9,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>{if(/Metal/.test(m.name))m.color.set('#2f5a9a')})})});mk('mlm.abajur','lamp_round',{x:1.85,y:1.085,z:1.3,h:0.42,ry:-2.4})}
  const SEL={};['tav','mlm','zem','hal','ekm','mzk','vit','mat'].forEach(k=>SEL[k]=decoSel(k).id);CL0.visible=SEL.tav==='sarkit';DL0.visible=SEL.mlm==='klasik';FLPK.forEach(m=>m.visible=SEL.zem==='tahta');MATG.visible=!decoSel('mat').m;RG0.visible=SEL.hal==='yuvarlak';
- Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('#')[0].split('.');g.visible=SEL[a]===b});doorApply();vitLayout(SEL.vit)}
+ Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('#')[0].split('.');g.visible=SEL[a]===b});doorApply();vitLayout(SEL.vit);LAMPON=!(G.deco&&G.deco.lamp===0);lampLook()}
 /* vitrin raf düzeni: ürün yerleri seçilen rafa göre */
 var VSC=1.05;let VLAY=null;function vitLayout(id){if(VLAY===id)return;VLAY=id;VSC=id==='std'?1.05:0.72;VBD.forEach(b=>b.visible=id==='std');VBDL.forEach(b=>b.visible=id==='std');if(typeof SHO0!=='undefined')SHO0.visible=id==='std';const Z=[-2.25,-1.3,-0.35],LV={std:null,kitap:[0.91,1.34,1.77],raf:[0.725,1.385,2.057]}[id];
  VSL.forEach((p,i)=>{const k=Math.floor(i/3),j=i%3;if(!LV)p.set(2.7,0.93+k*0.7,-2.3+j*0.85);else p.set(id==='kitap'?2.79:2.82,LV[k]+0.01,Z[j])});

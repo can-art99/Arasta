@@ -123,7 +123,7 @@ ui.sheet.querySelectorAll('[data-d]').forEach(e=>{const d=G.deliv[+e.dataset.d];
 if(modalMode&&modalMode.startsWith('st:')){const s=ST.find(x=>'st:'+x.id===modalMode);ui.sheet.querySelectorAll('[data-j]').forEach(e=>{const j=s.jobs[+e.dataset.j];if(j)e.textContent=fmtT(j.end-NOW())})}}
 let secT=0;
 const NIGHT=new THREE.Color('#34405e'),WDAY=new THREE.Color('#ffe6a8'),WNIGHT=new THREE.Color('#3e4c78');
-function dayLight(){dayLight0();dayLightWx()}
+function dayLight(){dayLight0();dayLightWx();if(lamp.visible)lamp.intensity=1.4*(typeof LAMPON!=='undefined'&&!LAMPON?0.72:1)}
 function dayLight0(){const f=clamp((G.tm-480)/240,0,1),k=(view==='bench'||view==='vitrin')?'home':view;LIGHTS[k].forEach(([l,i])=>{if(l===sun||l===gSun||l===pSun)l.intensity=i*(1-0.7*f);else if(l===hemi)l.intensity=i*(1-0.35*f)});
 S.background.set(BGS[k]);if(k==='bahce'||k==='pazar')S.background.lerp(NIGHT,0.8*f);winM.color.copy(WDAY).lerp(WNIGHT,f)}
 let warned=false;

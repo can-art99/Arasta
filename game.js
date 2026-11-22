@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261123.0012';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261123.0021';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -907,6 +907,14 @@ let ES1=null,ES2=null,ESL=null;
 /* dekor artıları: her seçili dekorun b alanı toplanır */
 function dB(k){let v=0;try{Object.keys(DECO).forEach(c=>{const o=decoSel(c);if(o&&o.b&&o.b[k])v+=o.b[k]})}catch(e){}return v}
 function decoBonTxt(b){const T={cust:'müşteriler %N daha sık gelir',q:'üretim kalitesi +%N',hag:'pazarlıkta %N daha yüksek fiyat',rep:'teslimatta %N şansla +1 itibar',tip:'4★ ve üstünde %N bahşiş',vit:'vitrin ürünleri %N daha çok ilgi görür',cut:'kesim adımları +%N'};return Object.entries(b).map(([k,v])=>T[k].replace('N',Math.round(v*100))).join(' · ')}
+/* tavan lambası: dokununca aç/kapa (ışık hafifçe azalır, ampul söner) */
+var LAMPON=true;const LMC=new Map();
+function lampLook(){const on=LAMPON;const dim=(m)=>{if(!LMC.has(m))LMC.set(m,m.color.clone());const c0=LMC.get(m);m.color.copy(c0);if(!on)m.color.multiplyScalar(0.35)};
+ try{dim(bulbL.material)}catch(e){}if(ESL)['tav.fener','tav.metal'].forEach(k=>{const g=ESL[k];if(g)g.traverse(o=>{if(!o.isMesh)return;[].concat(o.material).forEach(m=>{const c0=LMC.get(m)||m.color;const hsl={};c0.getHSL(hsl);if(hsl.l>0.55||/Light|lamp|glass/i.test(m.name||''))dim(m)})})});
+ if(lamp.visible)lamp.intensity=1.4*(on?1:0.72)}
+function lampToggle(){LAMPON=!LAMPON;if(G.deco)G.deco.lamp=LAMPON?1:0;lampLook();sf('click',0.5)||sfx.tap();save()}
+{let lp=null;canvas.addEventListener('pointerdown',e=>{lp=(view==='home'&&G.phase!=='craft'&&!switching)?{x:e.clientX,y:e.clientY,t:performance.now()}:null});
+ canvas.addEventListener('pointerup',e=>{if(!lp||Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>8||performance.now()-lp.t>450){lp=null;return}lp=null;setRay(e);const tv=decoSel('tav').id,G0=tv==='sarkit'?CL0:ESL&&ESL['tav.'+tv];if(G0&&ray.intersectObject(G0,true)[0])lampToggle()})}
 function decoPat(){try{return decoSel('ekm').pat||0}catch(e){return 0}}const DKIC={};
 function decoIcon(o){if(!o.m)return null;if(DKIC[o.m])return DKIC[o.m];if(!GLC[o.m]){glb(o.m,()=>{if(modalMode==='deko')openDeco()});return null}try{DKIC[o.m]=snap(o.leaf?leafOf(o.m):GLC[o.m].scene.clone(true))}catch(e){}return DKIC[o.m]||null}
 function decoExtra(){if(!ES1){ES1=new THREE.Group();ES1.visible=false;S.add(ES1);place('drafting_table',{par:ES1,x:2.25,z:-0.7,w:1.05,ry:-Math.PI/2});ES2=new THREE.Group();ES2.visible=false;S.add(ES2);place('picture_frame',{par:ES2,x:2.35,y:1.75,z:-3.66,h:0.42,ry:-Math.PI/2})}ES1.visible=false;ES2.visible=decoSel('cer2').id==='cerceve';
@@ -922,7 +930,7 @@ function decoExtra(){if(!ES1){ES1=new THREE.Group();ES1.visible=false;S.add(ES1)
   mk('tav.fener','lamp_lantern',{x:0,y:2.5,z:0.6,h:0.75});mk('tav.metal','lamp_ceil',{x:0,y:2.3,z:0.6,h:0.95});
   mk('mlm.mimar','lamp_desk2',{x:1.85,y:1.085,z:1.3,h:0.4,ry:-0.9,cb:w=>w.traverse(x=>{if(x.isMesh)[].concat(x.material).forEach(m=>{if(/Metal/.test(m.name))m.color.set('#2f5a9a')})})});mk('mlm.abajur','lamp_round',{x:1.85,y:1.085,z:1.3,h:0.42,ry:-2.4})}
  const SEL={};['tav','mlm','zem','hal','ekm','mzk','vit','mat'].forEach(k=>SEL[k]=decoSel(k).id);CL0.visible=SEL.tav==='sarkit';DL0.visible=SEL.mlm==='klasik';FLPK.forEach(m=>m.visible=SEL.zem==='tahta');MATG.visible=!decoSel('mat').m;RG0.visible=SEL.hal==='yuvarlak';
- Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('#')[0].split('.');g.visible=SEL[a]===b});doorApply();vitLayout(SEL.vit)}
+ Object.entries(ESL).forEach(([k,g])=>{const [a,b]=k.split('#')[0].split('.');g.visible=SEL[a]===b});doorApply();vitLayout(SEL.vit);LAMPON=!(G.deco&&G.deco.lamp===0);lampLook()}
 /* vitrin raf düzeni: ürün yerleri seçilen rafa göre */
 var VSC=1.05;let VLAY=null;function vitLayout(id){if(VLAY===id)return;VLAY=id;VSC=id==='std'?1.05:0.72;VBD.forEach(b=>b.visible=id==='std');VBDL.forEach(b=>b.visible=id==='std');if(typeof SHO0!=='undefined')SHO0.visible=id==='std';const Z=[-2.25,-1.3,-0.35],LV={std:null,kitap:[0.91,1.34,1.77],raf:[0.725,1.385,2.057]}[id];
  VSL.forEach((p,i)=>{const k=Math.floor(i/3),j=i%3;if(!LV)p.set(2.7,0.93+k*0.7,-2.3+j*0.85);else p.set(id==='kitap'?2.79:2.82,LV[k]+0.01,Z[j])});
@@ -1692,7 +1700,7 @@ ui.sheet.querySelectorAll('[data-d]').forEach(e=>{const d=G.deliv[+e.dataset.d];
 if(modalMode&&modalMode.startsWith('st:')){const s=ST.find(x=>'st:'+x.id===modalMode);ui.sheet.querySelectorAll('[data-j]').forEach(e=>{const j=s.jobs[+e.dataset.j];if(j)e.textContent=fmtT(j.end-NOW())})}}
 let secT=0;
 const NIGHT=new THREE.Color('#34405e'),WDAY=new THREE.Color('#ffe6a8'),WNIGHT=new THREE.Color('#3e4c78');
-function dayLight(){dayLight0();dayLightWx()}
+function dayLight(){dayLight0();dayLightWx();if(lamp.visible)lamp.intensity=1.4*(typeof LAMPON!=='undefined'&&!LAMPON?0.72:1)}
 function dayLight0(){const f=clamp((G.tm-480)/240,0,1),k=(view==='bench'||view==='vitrin')?'home':view;LIGHTS[k].forEach(([l,i])=>{if(l===sun||l===gSun||l===pSun)l.intensity=i*(1-0.7*f);else if(l===hemi)l.intensity=i*(1-0.35*f)});
 S.background.set(BGS[k]);if(k==='bahce'||k==='pazar')S.background.lerp(NIGHT,0.8*f);winM.color.copy(WDAY).lerp(WNIGHT,f)}
 let warned=false;
@@ -2848,7 +2856,7 @@ let dragging=null,drawing=false,tap=null,pinch=null;const RZ={z:1,t:1},V2T=new T
 const PT=new Map(),ZM={z:1,t:1,px:0,pz:0};
 const zoomable=()=>view==='bahce'||view==='islik'||view==='pazar'||view==='depo'||(view==='home'&&G.phase!=='craft'&&G.phase!=='result');
 function clampPan(){const r=view==='home'?0.4:Math.max(0.3,0.3+(ZM.t-1)*2.4);ZM.px=clamp(ZM.px,-r,r);ZM.pz=clamp(ZM.pz,-r*1.3,r*1.3)}
-function setZoom(t){ZM.t=view==='home'?clamp(t,0.85,1.35):clamp(t,0.72,2.5);clampPan()}
+function setZoom(t){ZM.t=view==='home'?clamp(t,cam.aspect<1?0.55:0.75,1.35):clamp(t,0.72,2.5);clampPan()}
 $('zi').onclick=()=>setZoom(ZM.t*1.35);$('zo').onclick=()=>setZoom(ZM.t/1.35);
 canvas.addEventListener('wheel',e=>{if(G.phase==='result'||(G.phase==='craft'&&G.step==='design')){RZ.t=clamp(RZ.t*(e.deltaY<0?1.12:0.89),1,3.2);return}if(zoomable()){e.preventDefault();setZoom(ZM.t*(e.deltaY<0?1.12:0.89))}},{passive:false});
 function floatTxt(cx,cy,html){const r=frame.getBoundingClientRect(),d=document.createElement('div');d.className='flt';d.innerHTML=html;d.style.left=(cx-r.left)+'px';d.style.top=(cy-r.top)+'px';$('ui').appendChild(d);setTimeout(()=>d.remove(),900)}
@@ -2941,7 +2949,7 @@ custTick(dt);Q.forEach((c,i)=>{c.g.visible=G.phase!=='craft'&&view!=='vitrin';if
 ALLC.forEach(c=>{if(c.proc)procAnim(c);else if(c.stat){const S0=c.stat,w=c.cur==='walk',k=Math.sin(tt*9);S0.m.position.y=S0.y+(w?Math.abs(k)*0.045:Math.sin(tt*1.6)*0.006);S0.m.rotation.z=w?k*0.05:0}else if(c.mix)c.mix.update(dt)});MIX.forEach(m=>m.update(dt));wxTick(dt);if(SPL){const a=Math.sin(tt*0.07)*0.7,r=8.6+Math.sin(tt*0.11)*0.6;camCur.l.set(OP,-1.3,0.2);camCur.p.set(OP+Math.sin(a)*r,4.7+Math.sin(tt*0.09)*0.25,0.4+Math.cos(a)*r)}catTick(dt);wandTick(dt);frmTick(dt);cobTick(dt);collFx(dt);BOB.forEach(b=>{const k=tt*b.sp+b.ph;if(b.br){b.o.scale.y=b.s0*(1+Math.sin(k)*0.025)}else{b.o.rotation.order='YXZ';b.o.rotation.y=b.r0+Math.sin(k*0.11)*0.25;if(b.sp>=3){b.o.position.y=Math.max(0,Math.sin(k))*0.03;b.o.rotation.x=0}else{b.o.position.y=0;b.o.rotation.x=Math.pow(Math.max(0,Math.sin(k*0.7)),2)*(b.sp<1?0.22:0.45)}}});if(DOORH){const tg=(G.open&&!G.night)||ALLC.some(c=>c.walking&&!c.wand&&!c.cirak&&!c.frm&&!c.cob)?-1.55:0;DOORH.rotation.y+=(tg-DOORH.rotation.y)*Math.min(1,dt*4)}
 islikSfx(dt);if(view==='islik')ST.forEach(s=>{if(s.wheel&&s.jobs.length)s.wheel.rotation[s.id==='cikrik'?'z':'y']+=dt*4;s.m.position.y=0.06+(s.ready?Math.abs(Math.sin(tt*5))*0.07:0)});
 AWN.visible=camCur.p.y<2.05;toolTick();if(lamp.visible)lamp.intensity=1.35+Math.sin(tt*2.3)*0.05;
-if(!zoomable()&&(ZM.t!==1||ZM.px||ZM.pz)){ZM.t=1;ZM.px=ZM.pz=0}ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1,fk=view==='depo'?Math.min(2.05,Math.max(1,0.98/cam.aspect)):view==='pazar'?Math.min(1.45,Math.max(1,0.8/cam.aspect)):1;cam.position.copy(camCur.p).sub(camCur.l).multiplyScalar(fk/zz).add(camCur.l);
+if(!zoomable()&&(ZM.t!==1||ZM.px||ZM.pz)){ZM.t=1;ZM.px=ZM.pz=0}ZM.z+=(ZM.t-ZM.z)*Math.min(1,dt*10);const zz=zoomable()?ZM.z:1,fk=view==='depo'?Math.min(2.05,Math.max(1,0.98/cam.aspect)):view==='pazar'?Math.min(1.45,Math.max(1,0.8/cam.aspect)):1;const hW=view==='home'&&zz<1;cam.position.copy(camCur.p).sub(camCur.l).multiplyScalar(fk/(hW?1:zz)).add(camCur.l);{const fv=hW?2*Math.atan(Math.tan(31*Math.PI/180)/zz)*180/Math.PI:62;if(Math.abs(cam.fov-fv)>0.05){cam.fov=fv;cam.updateProjectionMatrix()}}
 cam.position.x+=ZM.px+Math.sin(tt*0.35)*0.05*sway;cam.position.y+=Math.sin(tt*0.9)*0.01*sway;cam.position.z+=ZM.pz;look.copy(camCur.l);look.x+=ZM.px;look.z+=ZM.pz;const dsg=G.phase==='craft'&&G.step==='design';if((G.phase==='result'||dsg)&&K&&K.model){RZ.z+=(RZ.t-RZ.z)*Math.min(1,dt*10);if(Math.abs(RZ.z-1)>0.002){const P=K.model.g.position.clone();P.y+=0.08;const f=1-1/RZ.z;cam.position.lerp(P,f*0.9);look.lerp(P,Math.min(1,Math.max(0,f*1.3)));const sz=R.getSize(V2T);if(!dsg)cam.setViewOffset(sz.x,sz.y,0,sz.y*0.25*clamp(f*2.2,0,1),sz.x,sz.y);else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else if(cam.view&&cam.view.enabled)cam.clearViewOffset()}else{RZ.z=RZ.t=1;if(cam.view&&cam.view.enabled)cam.clearViewOffset();const h=document.getElementById('zhint');if(h&&!h.classList.contains('hide'))h.classList.add('hide')}if(SHK>1e-5)cam.position.y+=Math.sin(tt*75)*SHK;cam.lookAt(look);
 busy=PT.size>0||tweens.length>0||!!(K&&(K.tick||K.pdn))||!!(K&&(K.drag||K.holding))||switching||(G.phase==='craft'&&['rhythm','hold','pump','rub','trace'].includes(G.step))||ALLC.some(c=>c.walking&&!c.wand&&!c.cirak&&!c.frm);shT+=dt;if((busy&&hotNow)||shT>(G.phase==='craft'?0.1:view==='bahce'||view==='pazar'?0.25:0.4)){shT=0;R.shadowMap.needsUpdate=true}zoneTick();R.render(S,cam);drawFx();drawLabels()}
 glb('backpack',()=>{ICON.sirt=snap(PRODS.find(p=>p.id==='sirt').build('#8a4a26').g);vitrinSync()});
