@@ -464,4 +464,12 @@ body.uf #vitB{display:none!important}
 .rsb i u{position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);font:600 9px/1 'Baloo 2',sans-serif;text-decoration:none;color:#a08f7a}
 .rsb.rsn i em{font-size:8.5px;letter-spacing:-.3px}
 .rsl{font-size:11px;color:#a08f7a;text-align:center;margin:2px 0 4px}
+.qcm{display:flex;align-items:center;gap:10px;width:100%;background:var(--cr,#f6ecd8);border:2.5px solid var(--ln);border-radius:16px;padding:8px 12px;box-shadow:0 3px 0 var(--ln);margin-bottom:6px;pointer-events:auto}
+.qcl{display:flex;flex-direction:column;min-width:64px}.qcl b{font-size:20px;color:#2f6f5e;line-height:1}.qcl small{font-size:11px;color:#7a6a58;line-height:1.15;margin-top:2px}
+.qcb{position:relative;flex:1;height:22px;border-radius:11px;background:#eadcc4;border:2px solid #c9b48f;overflow:hidden}
+.qcz{position:absolute;top:0;bottom:0;background:#7fd0a0;opacity:.85}
+.qcf{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#e8c37a55,#d9a23a99)}
+.qcn{position:absolute;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#3a2a1c;border-radius:2px;left:0}
+.qch{min-width:62%!important;font-size:17px;padding:12px 16px}
+.rqc{text-align:center;font-size:13px;margin:2px 0 6px;font-weight:600}.rqc.ok{color:#2f7a63}.rqc.md{color:#b07a10}.rqc.no{color:#c0412e}
 

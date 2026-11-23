@@ -39,3 +39,46 @@ PRODS.push(
   T('Pirinç rozeti kes',{part:'rozet',n:1,shape:()=>circleShape(0.035),at:[0.42,0.24],col:'#c9a23a',metal:true}),A('rozet','Rozeti ön yüze tak',[[0,0.135]]),{t:'hammer',kind:'nail',hits:1,ad:'Rozet çivilerini çak',pts:[[-0.028,0.135],[0.028,0.135]]},
   Rb('cila','Balmumu cila sür'),Rb('parlat','Sedefleri parlat'),D]}
 );}
+
+/* ---------- Nargile ve işlemeli tabanca ---------- */
+const RS=1.4,R2=(x,z)=>[x*RS,z*RS];const revShape=()=>{const s=new THREE.Shape(),P=[[0.30,0.075],[0.30,0.035],[0.04,0.035],[0.04,0.0],[0.0,-0.015],[-0.02,-0.005],[-0.05,-0.02],[-0.06,-0.03],[-0.10,-0.15],[-0.16,-0.14],[-0.14,0.03],[-0.11,0.085],[-0.06,0.095],[0.0,0.075]].map(([x,y])=>[(x-0.07)*RS,(y+0.03)*RS]);s.moveTo(P[0][0],P[0][1]);P.slice(1).forEach(q=>s.lineTo(q[0],q[1]));s.lineTo(P[0][0],P[0][1]);return s};
+const gripShape=()=>{const s=new THREE.Shape(),P=[[0.055,0.03],[0.015,-0.09],[-0.045,-0.08],[-0.025,0.09],[0.02,0.1]];s.moveTo(P[0][0],P[0][1]);P.slice(1).forEach(q=>s.lineTo(q[0],q[1]));s.lineTo(P[0][0],P[0][1]);return s};
+/* geçici modeller (glb yüklenince yerlerine model gelir) */
+function nargileModel(hex){const g=new THREE.Group(),gl=new THREE.MeshStandardMaterial({color:hex||'#3f7f9a',transparent:true,opacity:0.6,roughness:0.15}),cu=M('#b8733a',0.35),cl=M('#a4532e',0.8);
+ const lt=new THREE.LatheGeometry([[0,0],[0.09,0.005],[0.13,0.06],[0.12,0.13],[0.05,0.19],[0.035,0.22]].map(q=>new THREE.Vector2(q[0],q[1])),20);put(g,lt,gl,0,0,0);
+ put(g,Cy(0.018,0.022,0.3,10),cu,0,0.36,0);put(g,Cy(0.09,0.09,0.012,18),cu,0,0.47,0);put(g,Cy(0.045,0.03,0.05,12),cl,0,0.5,0);
+ hkHose(g,V(-0.08,0.15,0.06),1);return {g,um:gl}}
+function tabancaModel(hex){const g=new THREE.Group(),st=M('#3a3f46',0.35),wd=M(hex&&hex!=='#3a3f46'?hex:'#5a3420',0.6);const b=flat(revShape(),0.025,st);b.position.y=0.0125;g.add(b);
+ const gr=flat(gripShape(),0.03,wd);gr.position.set(-0.185*RS,0.01,0.03*RS);g.add(gr);const c=put(g,Cy(0.045*RS,0.045*RS,0.04,12),M('#5d636b',0.3),-0.07*RS,0.025,-0.075*RS);return {g,um:wd}}
+/* nargile hortumu + marpuç (model ölçeğinde s=1 için metre) */
+function hkHose(par,a,s){const P=[a,a.clone().add(V(-0.05*s,-0.02*s,0.05*s)),a.clone().add(V(-0.11*s,-0.1*s,0.09*s)),a.clone().add(V(-0.13*s,-a.y+0.012*s,0.02*s)),a.clone().add(V(-0.07*s,-a.y+0.012*s,-0.08*s)),a.clone().add(V(0.01*s,-a.y+0.012*s,-0.11*s))];
+ const cv=new THREE.CatmullRomCurve3(P),h=new THREE.Mesh(new THREE.TubeGeometry(cv,48,0.009*s,8,false),M('#5a2e1a',0.85));h.castShadow=true;par.add(h);
+ for(let i=1;i<12;i++){const q=cv.getPointAt(i/12),tg=cv.getTangentAt(i/12),r=new THREE.Mesh(new THREE.TorusGeometry(0.0095*s,0.0022*s,5,10),M('#c9a23a',0.35));r.position.copy(q);r.lookAt(q.clone().add(tg));par.add(r)}
+ const e=cv.getPointAt(1),t=cv.getTangentAt(1),mp=new THREE.Group();mp.position.copy(e);mp.lookAt(e.clone().add(t));par.add(mp);
+ const a1=new THREE.Mesh(Cy(0.011*s,0.011*s,0.03*s,10),M('#c9a23a',0.3));a1.rotation.x=Math.PI/2;a1.position.z=0.015*s;mp.add(a1);
+ const a2=new THREE.Mesh(Cy(0.009*s,0.006*s,0.06*s,10),M('#3a2213',0.5));a2.rotation.x=Math.PI/2;a2.position.z=0.06*s;mp.add(a2);
+ const a3=new THREE.Mesh(Cy(0.005*s,0.004*s,0.015*s,8),M('#e8e2d0',0.3));a3.rotation.x=Math.PI/2;a3.position.z=0.097*s;mp.add(a3)}
+/* glb nargile: renksiz geliyor; cam, bakır, lüle, süs taşları boyanır, hortum/marpuç ve kor eklenir */
+function hkPost(g,hex){const m=g.children[0];if(!m)return;const glass=new THREE.MeshStandardMaterial({color:hex||'#3f7f9a',transparent:true,opacity:0.55,roughness:0.12,metalness:0.1,side:THREE.DoubleSide,depthWrite:false}),cu=M('#b8733a',0.3),gd=M('#d9a83a',0.3),cl=M('#a4532e',0.85);cu.metalness=0.5;gd.metalness=0.6;
+ m.traverse(o=>{if(!o.isMesh)return;o.geometry.computeBoundingBox();const b=o.geometry.boundingBox;
+  if(b.min.y<-1.5)o.material=glass;else if(b.max.y<-0.45)o.material=gd;else if(b.max.x<-0.5&&b.min.z>0.5)o.material=cu;else if(b.min.y>=2.5)o.material=cl;else o.material=cu;o.castShadow=true});
+ hkHose(m,V(-1.08,-0.12,1.08),10.5);
+ [[0,0],[0.14,0.08],[-0.12,0.1],[0.02,-0.15]].forEach(([x,z])=>{const k=new THREE.Mesh(B(0.16,0.09,0.16),new THREE.MeshStandardMaterial({color:'#2a1a14',emissive:'#ff5a1a',emissiveIntensity:0.9,roughness:0.9}));k.position.set(x+0.05,3.32,z-0.08);k.rotation.y=x*7;m.add(k)})}
+{const T=(ad,o)=>Object.assign({t:'trace',ad},o||{}),Rb=(k,ad)=>({t:'rub',k,ad}),D={t:'design'},Y=(k,ad,o)=>Object.assign({t:'rhythm',k,ad},o||{}),A=(part,ad,slots)=>({t:'asm',part,ad,slots,pose:'flat'}),ci=r=>()=>circleShape(r);
+PRODS.push(
+{id:'nargile',ust:1,hard:true,ad:'Nargile',tier:5,base:1100,need:{cam:2,bakir:2,deri:1,kil:1},sheet:'#3f7f9a',shape:ci(0.16),build:nargileModel,
+ steps:[T('Cam fanusun tabanını kes',{glass:true}),Rb('torch','Fanusu pürmüzle ısıt'),Rb('zimpara','Fanus ağzını zımparala'),
+  T('Bakır gövde borusunu kes',{part:'govde',n:1,shape:ci(0.05),at:[-0.45,0],col:'#b8733a',metal:true}),Object.assign(A('govde','Gövdeyi fanusun ağzına oturt',[[0,0]]),{lift:0.02}),{t:'screw',ad:'Conta somunlarını sık',pts:[[-0.03,0],[0.03,0]]},
+  T('Bakır tablayı kes',{part:'tabla',n:1,shape:ci(0.11),at:[-0.45,0],col:'#c98a4a',metal:true}),Object.assign(A('tabla','Tablayı gövdeye geçir',[[0,0]]),{lift:0.02}),{t:'hammer',kind:'dent',hits:1,ad:'Tabla kenarını döv',pts:[[0.09,0],[-0.09,0],[0,0.09],[0,-0.09]]},
+  T('Lüleyi kilden kes',{part:'lule',n:1,shape:ci(0.05),at:[-0.45,0],col:'#a4532e'}),A('lule','Lüleyi tablaya oturt',[[0,0]]),{t:'drill',ad:'Lüleye hava deliklerini aç',pts:[[0,0],[0.022,0],[-0.022,0],[0,0.022],[0,-0.022]]},
+  {t:'hammer',kind:'rivet',hits:2,ad:'Hortum ağzını perçinle',pts:[[-0.12,0.1]]},Y('dik','Hortumu deriyle sar',{pts:[[-0.16,0.13],[-0.2,0.16],[-0.24,0.19],[-0.28,0.2],[-0.32,0.19],[-0.36,0.16]]}),Rb('parlat','Bakırı parlat'),
+  {t:'cekis',ad:'Çekiş kontrolü'},D]},
+{id:'tabanca',ust:1,hard:true,ad:'İşlemeli tabanca',tier:5,base:1500,need:{celik:2,demir:1,kereste:1,sedef:1},sheet:'#6a7078',shape:revShape,build:tabancaModel,vrot:[1.35,0,0],
+ steps:[T('Çelik gövde plakasını kes',{metal:true}),{t:'forge',ad:'Gövdeyi ocakta kızdır'},{t:'hammer',kind:'dent',hits:2,ad:'Namluyu örste döv',pts:[R2(-0.02,-0.085),R2(0.05,-0.085),R2(0.12,-0.085),R2(0.19,-0.085)]},{t:'dip',ad:'Suya daldırıp sertleştir'},
+  {t:'drill',ad:'Namlu kanalını aç',pts:[R2(0.215,-0.085)]},T('Topu çelikten kes',{part:'top',n:1,shape:ci(0.045*RS),at:[0.45,0.3],col:'#5d636b',metal:true}),Object.assign(A('top','Topu gövdeye yerleştir',[R2(-0.07,-0.075)]),{lift:0.02}),
+  {t:'drill',ad:'Topa altı yuva aç',pts:[0,1,2,3,4,5].map(i=>R2(-0.07+Math.cos(i*Math.PI/3)*0.026,-0.075+Math.sin(i*Math.PI/3)*0.026))},
+  T('Ceviz kabzayı kes',{part:'kabza',n:1,shape:gripShape,at:[0.45,0.3],col:'#5a3420',wood:true}),A('kabza','Kabzayı gövdeye oturt',[R2(-0.185,0.03)]),{t:'screw',ad:'Kabza vidalarını sık',pts:[R2(-0.18,0.0),R2(-0.19,0.07)]},
+  {t:'kakma',ad:'Kabzaya sedef kak',slots:[{p:R2(-0.185,0.03),k:'c',s:0.8},{p:R2(-0.17,-0.03),k:'d',s:0.7,r:1.4},{p:R2(-0.2,0.09),k:'d',s:0.7,r:-1.7}]},Rb('zimpara','Kabzayı zımparala'),
+  {t:'path',grav:1,ad:'Gövdeye gravür işle',paths:[[0,1,2,3,4,5,6,7,8].map(i=>R2(-0.02+i*0.025,-0.07+Math.sin(i*0.9)*0.008)),[0,1,2,3,4].map(i=>R2(-0.13+i*0.02,-0.1+Math.cos(i*1.3)*0.008))]},Rb('parlat','Çeliği parlat'),
+  {t:'tetik',ad:'Tetik kontrolü'},D]}
+);}

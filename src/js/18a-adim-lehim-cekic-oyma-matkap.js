@@ -17,11 +17,12 @@ function mkTool(kind){const g=new THREE.Group(),dk=M('#2a2420',0.7),st=M('#c8ccd
  g.visible=false;K.work.add(g);return g}
 
 /* Gözlük: havya ucunu dolaştırarak lehim */
-function bPath(){const st=K.st,tool=mkTool('havya'),N=36,P=[];(st.paths||[]).forEach(pp=>pp.forEach(q=>P.push({v:V(BC.x+q[0],K.top+0.002,BC.z+q[1]),on:false})));
+function bPath(){const st=K.st,GV=!!st.grav,tool=mkTool(GV?'gouge':'havya'),N=36,P=[];(st.paths||[]).forEach(pp=>pp.forEach(q=>P.push({v:V(BC.x+q[0],K.top+0.002,BC.z+q[1]),on:false})));
  const dm=new THREE.MeshBasicMaterial({color:'#fff6d8'}),gh=new THREE.Group();P.forEach((q,i)=>{if(i%2)return;const d=put(gh,Cy(0.004,0.004,0.002,6),dm,q.v.x,q.v.y,q.v.z);d.castShadow=false});K.work.add(gh);
  let n=0,dev=0,dn=0,sm=0;const mv=p=>{tool.visible=true;tool.position.set(p.x,K.top+0.004,p.z);let best=null,bd=9;P.forEach(q=>{const d=Math.hypot(q.v.x-p.x,q.v.z-p.z);if(d<bd){bd=d;best=q}});dev+=Math.min(bd,0.06);dn++;
-  if(best&&bd<0.03&&!best.on){best.on=true;n++;const b=put(K.work,new THREE.SphereGeometry(0.008,6,5),new THREE.MeshStandardMaterial({color:'#c8ccd0',roughness:0.3,emissive:'#ff7a20',emissiveIntensity:1.6}),best.v.x,best.v.y+0.003,best.v.z);tween(1.2,k=>b.material.emissiveIntensity=1.6*(1-k));if(tt-sm>0.25){sm=tt;puff(V(p.x,K.top+0.03,p.z),2,'#d8d8d8');noise(0.1,0.02,2500,0.5,0,1200)}}
-  tipStep(`Lehim · %${Math.round(n/P.length*100)}`);if(n/P.length>=0.9)end()};
+  if(best&&bd<0.03&&!best.on&&GV){best.on=true;n++;const gm=put(K.work,Cy(0.0045,0.0045,0.0015,6),M('#1e2024',0.5),best.v.x,best.v.y+0.001,best.v.z);gm.castShadow=false;if(Math.random()<0.4)sparkle(best.v.clone().add(V(0,0.01,0)),2,['#ffffff','#dfe6ee'],0.018,0.02);if(tt-sm>0.12){sm=tt;noise(0.05,0.03,6500,3);tone(5200+Math.random()*800,0.02,'triangle',0.012)}}
+  else if(best&&bd<0.03&&!best.on){best.on=true;n++;const b=put(K.work,new THREE.SphereGeometry(0.008,6,5),new THREE.MeshStandardMaterial({color:'#c8ccd0',roughness:0.3,emissive:'#ff7a20',emissiveIntensity:1.6}),best.v.x,best.v.y+0.003,best.v.z);tween(1.2,k=>b.material.emissiveIntensity=1.6*(1-k));if(tt-sm>0.25){sm=tt;puff(V(p.x,K.top+0.03,p.z),2,'#d8d8d8');noise(0.1,0.02,2500,0.5,0,1200)}}
+  tipStep(`${GV?'Gravür':'Lehim'} · %${Math.round(n/P.length*100)}`);if(n/P.length>=0.9)end()};
  const end=()=>{const s=clamp(1-(dev/Math.max(dn,1)-0.006)/0.03,0.35,1);K.work.remove(gh);tool.visible=false;fin(s,'Lehim tamam!')};
  K.pd=mv;K.pm=mv;K.pu=()=>{tool.visible=false};K.skipFn=()=>{K.work.remove(gh);K.work.remove(tool)};tipStep('Havyanın ucunu çizgide gezdir')}
 
