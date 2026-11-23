@@ -33,6 +33,8 @@ const SB={};let sbTried=false,SBL=null;
 function loadSounds(){if(sbTried||!AC)return;sbTried=true;const dec=(n,b)=>AC.decodeAudioData(b.slice(0),buf=>{SB[n.replace(/\.[^.]+$/,'')]=buf},()=>{});const go=l=>{SBL=l;l.forEach(n=>{let k=0;const w=()=>{if(SBRAW[n]){dec(n,SBRAW[n]);return}if(++k<40)setTimeout(w,250);else fetch(AU('sounds/'+n)).then(r=>r.arrayBuffer()).then(b=>dec(n,b)).catch(()=>{})};w()})};if(SBLIST)go(SBLIST);else fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(go).catch(()=>{})}
 function playB(n,vol,loop,bus){const s=AC.createBufferSource(),g=AC.createGain();s.buffer=SB[n];s.loop=!!loop;if(!loop)s.playbackRate.value=0.95+Math.random()*0.1;g.gain.value=vol;s.connect(g);g.connect(BUS(bus||'e'));s.start();return {s,g}}
 /* Kayıt dosyası varsa çal, yoksa false döner (sentez yedeğe düşer) */
+/* bıçak: makas tıkırtısı olmadan yumuşak kesik sesi */
+function sKnife(){noise(0.13,0.07,1700,1.1);noise(0.07,0.04,3400,2.5,0.05)}
 function sGem(){sf('elmas',0.6)||sfx.fan()}
 function sAch(){sf('basari',0.6)||sfx.fan()}
 function sf(n,v){if(SB[n]&&AC&&G.snd){playB(n,v||0.6);return true}return false}
