@@ -118,9 +118,10 @@ setTimeout(()=>{try{ustStairs();ustSign();ustS()}catch(e){}},300);
 let UCOL=[];const UCSL=[[0.05,-1.6,-0.2],[-0.95,-2.35,0.35]];
 function ustFigs(){const s=ustS(),want=UF&&s.open?s.ord.slice(0,2):[];
  UCOL=UCOL.filter(f=>{if(want.some(o=>o.id===f.id))return true;UGRP.remove(f.w);const i=MIX.indexOf(f.mx);if(i>=0)MIX.splice(i,1);return false});
- const src=['m_Suit','c_advent'].map(n=>CHR.find(g=>g.nm===n)).filter(Boolean);if(!src.length||!THREE.SkeletonUtils)return;
+ ustKing();const src=['m_Suit','c_advent'].map(n=>CHR.find(g=>g.nm===n)).concat(UKING?[UKING]:[]).filter(Boolean);if(!src.length||!THREE.SkeletonUtils)return;
  want.forEach(o=>{if(UCOL.some(f=>f.id===o.id))return;const used=UCOL.map(f=>f.slot),slot=[0,1].find(k=>!used.includes(k));if(slot==null)return;
-  const g=src.find(x=>!UCOL.some(f=>f.src===x))||src[0],m=THREE.SkeletonUtils.clone(g.scene),w=new THREE.Group(),sc=1.72/g.h;m.scale.multiplyScalar(sc);m.position.y=-g.y0*sc;if(Math.abs(g.cx||0)>0.3||Math.abs(g.cz||0)>0.3){m.position.x=-g.cx*sc;m.position.z=-g.cz*sc}
+  const fr=src.filter(x=>!UCOL.some(f=>f.src===x)),g=fr.length?fr[o.id%fr.length]:src[0],m=THREE.SkeletonUtils.clone(g.scene),w=new THREE.Group(),sc=1.72/g.h;m.scale.multiplyScalar(sc);m.position.y=-g.y0*sc;if(Math.abs(g.cx||0)>0.3||Math.abs(g.cz||0)>0.3){m.position.x=-g.cx*sc;m.position.z=-g.cz*sc}
   m.traverse(q=>{if(q.isMesh){q.frustumCulled=false;q.castShadow=true}});w.add(m);const L=UCSL[slot];w.position.set(L[0],0,L[1]);w.rotation.y=L[2];UGRP.add(w);
   const mx=new THREE.AnimationMixer(m),cl=g.animations.find(c=>c.name==='idle')||g.animations[0];if(cl){const a=mx.clipAction(cl);a.time=Math.random()*cl.duration;a.play()}MIX.push(mx);
   UCOL.push({id:o.id,slot,src:g,w,mx});w.scale.setScalar(0.01);tween(0.45,k=>w.scale.setScalar(Math.max(0.01,1-Math.pow(1-k,3))))})}
+let UKING=null,UKL=false;function ustKing(){if(UKL||!THREE.GLTFLoader)return;UKL=true;new THREE.GLTFLoader().load(AU('models/m_King.glb'),g=>{g.nm='m_King';prepModel(g.scene);const bb=new THREE.Box3().setFromObject(g.scene);g.h=bb.max.y-bb.min.y;g.y0=bb.min.y;g.cx=(bb.min.x+bb.max.x)/2;g.cz=(bb.min.z+bb.max.z)/2;UKING=g;try{ustFigs()}catch(e){}},undefined,()=>{})}
