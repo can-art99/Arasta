@@ -15,5 +15,6 @@ function dkBind(){const b=$('dkB');if(!b)return;b.onclick=()=>{const dk=G.dk||0,
 const TREW={2:{g:300,e:10,k:['t',2]},3:{g:1000,e:20,k:['z',1]},4:{g:3000,e:35,k:['z',2]},5:{g:8000,e:60,k:['k',1]}};
 const KADN={t:'Tahta',z:'Zümrüt',k:'Kızıl usta'};
 const trTxt=r=>`+${r.g} altın · +${r.e} 💎 · ${r.k[1]} ${KADN[r.k[0]]} sandık anahtarı`;
-function tierReward(a,b){let g=0,e=0;const ks={};for(let t=a;t<=b;t++){const r=TREW[t];if(!r)continue;g+=r.g;e+=r.e;ks[r.k[0]]=(ks[r.k[0]]||0)+r.k[1]}G.gold+=g;if(G.st)G.st.earned+=g;G.elmas=(G.elmas||0)+e;const K2=chK();Object.entries(ks).forEach(([k,n])=>K2[k]=(K2[k]||0)+n);hud();save();
- return `+${g} altın · +${e} 💎<br>`+Object.entries(ks).map(([k,n])=>`${n} ${KADN[k]} sandık anahtarı`).join(', ')}
+const tGot=t=>Array.isArray(G.tC)&&G.tC.includes(t);
+function tierReady(){const o=[];for(let t=2;t<=(G.tier||1);t++)if(TREW[t]&&!tGot(t))o.push(t);return o}
+function tClaim(t){const r=TREW[t];if(!r||(G.tier||1)<t||tGot(t))return;if(!Array.isArray(G.tC))G.tC=[];G.tC.push(t);G.gold+=r.g;if(G.st)G.st.earned+=r.g;G.elmas=(G.elmas||0)+r.e;const K2=chK();K2[r.k[0]]=(K2[r.k[0]]||0)+r.k[1];sfx.coin();sfx.fan();toast(`Kademe ${t} ödülü<br><b>${trTxt(r)}</b>`,2600);save();hud();openRepPass()}
