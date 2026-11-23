@@ -393,3 +393,8 @@ body.dt #card{margin-top:50px}
 .rpbar{height:8px;border-radius:5px;background:#e3d7bf;overflow:hidden;margin-top:6px}.rpbar i{display:block;height:100%;background:#c98a1a}
 .rpk{display:block;font-size:11.5px;margin-top:4px;font-weight:600}
 #repP,#tierP{pointer-events:auto;cursor:pointer}#repP:active,#tierP:active{filter:brightness(.92)}
+.rpc.rpm2{flex-basis:56%;max-width:210px;align-self:center}
+.rpc.rpm2 .rpn{background:#c98a1a;font-size:15px}
+.rpc.rpm2.rdy{opacity:1;background:#fff4d6;border-color:#2f7a63;box-shadow:0 3px 0 #2f7a63;animation:rpPulse 1.6s ease-in-out infinite}
+@keyframes rpPulse{50%{transform:translateY(-2px)}}
+#top #repP{position:relative;overflow:visible}#top #repP.dot:after{content:'';position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#e0482f;border:2px solid #fff}
