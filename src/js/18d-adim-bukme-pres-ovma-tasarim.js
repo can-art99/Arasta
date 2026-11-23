@@ -86,7 +86,7 @@ L.push(btn('Bitir','g',finish,!K.color||(!!K.color.id&&!K.painted)));actions(L);
 const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 function finish(){if(!K.color||(K.color.id&&!K.painted))return;const o=G.order;if(K.color.id)G.inv['boya_'+K.color.id]--;K.rx=K.ry=0;applySpin();G.step=null;actions([]);tip(null);
 if(o.rep){repFinish(o);return}
-if(o.free){const work=avg(K.scores),stars=clamp(Math.round(work*5)-(K.skips?1:0),1,5),it={id:++G.sid,pid:K.p.id,col:K.color.id||null,style:K.style,stars};if(mqRoll(stars)){it.mq=1;G.st.mq=(G.st.mq||0)+1}it.price=sugg(it);K.res={item:it};
+if(o.free){const work=avg(K.scores),stars=clamp(Math.round(work*5)-(K.skips?1:0),1,5),it={id:++G.sid,pid:K.p.id,col:K.color.id||null,style:K.style,stars};if(mqRoll(stars)){it.mq=1;G.st.mq=(G.st.mq||0)+1}it.price=sugg(it);K.res={item:it,ux:uxCheck(stars)};
 Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';finCam(()=>{sway=1;showFree()});tween(1.1,k=>{g.position.lerpVectors(fr,V(2.3,1.6,-1.0),k);g.scale.setScalar(1.6-0.8*k)});return}
 const work=avg(K.scores),colorOk=!o.color||K.color.id===o.color.id,styleOk=!o.style||K.style===o.style,late=K.late,B0=o.budget,L=[];let pay=B0;
 const cut=(t,f)=>{const v=Math.round(B0*f);if(v>0){L.push([t,-v]);pay-=v}};
@@ -96,7 +96,7 @@ if(o.hurry&&!late){const v=Math.round(B0*0.2);L.push(['Acele bonusu',v]);pay+=v}
 pay=Math.max(Math.round(B0*0.15),pay);K.res={stars,pay,L,colorOk,styleOk,late,mq};
 Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';finCam(()=>{sway=1;showResult()});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar(1.6-0.6*k)})}
 function showFree(){G.phase='result';refresh();const it=K.res.item,pct=v=>'%'+Math.round(v*100);sfx.good();
-openSheet('result',`<h3>${pr(it).ad} vitrine kondu</h3>${it.mq?'<div class="mqB">✨ Usta işi! Değeri %50 fazla ✨</div>':''}${K.cbM>=3?`<div class="cbB">🔥 En uzun kombo: x${K.cbM}</div>`:''}<div class="stars">${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></div><div style="margin-top:8px">`+K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('')+
+openSheet('result',`<h3>${pr(it).ad} vitrine kondu</h3>${uxHtml(K.res.ux)}${it.mq?'<div class="mqB">✨ Usta işi! Değeri %50 fazla ✨</div>':''}${K.cbM>=3?`<div class="cbB">🔥 En uzun kombo: x${K.cbM}</div>`:''}<div class="stars">${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></div><div style="margin-top:8px">`+K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('')+
 `</div><div class="tot">Vitrin fiyatı: ${it.price} altın</div><p>Fiyatı Vitrin'de ürüne dokunarak değiştirebilirsin.</p><div style="text-align:center"><button class="btn g" id="freeOk">Tamam</button></div>`);$('freeOk').onclick=freeDone}
 function freeDone(){show(ui.modal,false);modalMode=null;const it=K.res.item,w=K.work,g=K.model.g;if(G.stock.length<vitCap())G.stock.push(it);else{G.store=G.store||[];G.store.push(it);storeSync();setTimeout(()=>toast('Vitrin dolu, ürün depo rafına kondu',1800),600)}
 cupRec(it.pid,it.stars);if(it.stars>=3){const e=G.cat[it.pid]||(G.cat[it.pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,it.stars)}
