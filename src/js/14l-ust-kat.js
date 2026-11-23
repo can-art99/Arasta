@@ -48,8 +48,10 @@ function ustStairs(){if(USTR)return;USTR=new THREE.Group();USTR.position.set(-2.
  put(USTR,B(0.06,2.5,1.1),dk,0.42,1.25,0.0).rotation.x=-0.42;put(USTR,B(0.06,2.5,1.1),dk,-0.42,1.25,0.0).rotation.x=-0.42;
  const sg=new THREE.Group();sg.position.set(0.55,1.0,0.55);USTR.add(sg);USTR.userData.sign=sg}
 function ustSign(){if(!USTR)return;const sg=USTR.userData.sign;sg.clear();const s=ustS(),c=document.createElement('canvas');c.width=192;c.height=64;const x=c.getContext('2d');x.fillStyle=s.open?'#2f7a63':'#7a5a3a';x.fillRect(0,0,192,64);x.fillStyle='#fff';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText(s.open?'⬆ Üst kat':'🔒 Üst kat',96,42);const t=new THREE.CanvasTexture(c);const m=put(sg,new THREE.PlaneGeometry(0.42,0.14),new THREE.MeshBasicMaterial({map:t,transparent:true}),0,0,0);m.rotation.y=0.6}
-/* kat değiştirme */
-function ustSwap(on){if(on===UF)return;UF=on;document.body.classList.toggle('uf',on);if(on){ustBuild();UHID=[];S.children.forEach(c=>{if(c===UGRP||c===craft||c.isLight||c.isPoints||c.isLineSegments||!c.visible)return;const b=new THREE.Box3().setFromObject(c);if(b.isEmpty())return;const ct=b.getCenter(V(0,0,0));if(Math.abs(ct.x)<3.4&&ct.z>-4.5&&ct.z<4.9&&ct.y<5){c.visible=false;UHID.push(c)}});UGRP.visible=true;ustVitSync()}
+/* kat değiştirme: kraft grubunu içeren kapsayıcıları değil, kardeşlerini gizle */
+function hasCraft(o){let q=craft;while(q){if(q===o)return true;q=q.parent}return false}
+function ustHide(o){if(o===craft||o===UGRP||!o.visible)return;if(hasCraft(o)){o.children.forEach(ustHide);return}o.visible=false;UHID.push(o)}
+function ustSwap(on){if(on===UF)return;UF=on;document.body.classList.toggle('uf',on);if(on){ustBuild();UHID=[];S.children.forEach(c=>{if(c===UGRP||c===craft||c.isLight||c.isPoints||c.isLineSegments||!c.visible)return;const b=new THREE.Box3().setFromObject(c);if(b.isEmpty())return;const ct=b.getCenter(V(0,0,0));if(Math.abs(ct.x)<3.4&&ct.z>-4.5&&ct.z<4.9&&ct.y<5)ustHide(c)});UGRP.visible=true;ustVitSync()}
  else{UGRP.visible=false;UHID.forEach(c=>c.visible=true);UHID=[];Q.forEach(c=>{if(c.g&&!c.at&&c.hidden)c.g.visible=false})}
  R.shadowMap.needsUpdate=true}
 function ustGo(on){if(switching||G.phase!=='idle'&&on){if(on)toast('Önce sıradaki müşteriyle ilgilen',1500);return}switching=true;sfx.swoosh();ui.fade.style.opacity=1;setTimeout(()=>{ustSwap(on);switching=false;ui.fade.style.opacity=0;refresh();if(on){const s=ustS();toast(`Seçkin atölye<br><small>${s.ord.length?s.ord.length+' koleksiyoner siparişi bekliyor':'Şaheser üret, seçkin vitrine koy'}</small>`,1800)}},350)}
@@ -86,7 +88,7 @@ function ustResult(){G.phase='result';refresh();const it=K.res.item,o=G.order,s=
  (co?(ok?`<div class="tot">${co.ad} ödüyor: ${pay.toLocaleString('tr-TR')} altın</div>`:`<div class="uxF">${co.ad} en az 4★ istiyor<br><small>Ürün seçkin vitrine konur, sipariş açık kalır</small></div>`):`<div class="tot">Seçkin vitrin fiyatı: ${it.price.toLocaleString('tr-TR')} altın</div>`)+
  `<div style="text-align:center"><button class="btn g" id="ustOk">${ok?'Koleksiyonere teslim et':'Seçkin vitrine koy'}</button></div>`);$('ustOk').onclick=()=>ustDone(ok,co)}
 function ustDone(ok,co){show(ui.modal,false);modalMode=null;const it=K.res.item,s=ustS(),w=K.work,g=K.model.g;
- if(ok){const pay=K.res.ustPay;G.gold+=pay;G.st.earned+=pay;G.st.deliv++;chDeliv();G.rep+=it.stars>=5?8:5;s.ord=s.ord.filter(x=>x!==co);sfx.cash();setTimeout(()=>gemRoll(GEM_P.bes,'Koleksiyoner elmas hediye etti!'),1500);toast(`+${pay.toLocaleString('tr-TR')} altın · +${it.stars>=5?8:5} itibar`,2000)}
+ if(ok){const pay=K.res.ustPay;G.gold+=pay;G.st.earned+=pay;G.st.deliv++;chDeliv();G.rep+=it.stars>=5?8:5;s.ord=s.ord.filter(x=>x!==co);G.st.ckol=(G.st.ckol||0)+1;sfx.cash();setTimeout(()=>gemRoll(GEM_P.bes,'Koleksiyoner elmas hediye etti!'),1500);toast(`+${pay.toLocaleString('tr-TR')} altın · +${it.stars>=5?8:5} itibar`,2000)}
  else if(s.stock.length<UST.vcap){s.stock.push(it);toast('Seçkin vitrine kondu',1400)}else{(G.store=G.store||[]).push(it);storeSync();toast('Seçkin vitrin dolu, ürün depo rafına kondu',1800)}
  if(it.stars>=3){const e=G.cat[it.pid]||(G.cat[it.pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,it.stars)}
  tween(0.3,k=>g.scale.setScalar(Math.max(0.01,0.8*(1-k))),()=>craft.remove(w));G.phase='idle';G.order=null;ustVitSync();levelUp();save();refresh()}
