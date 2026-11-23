@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261123.0829';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261123.0856';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1637,7 +1637,7 @@ if($('owO'))$('owO').onclick=()=>{G.owner=false;try{localStorage.removeItem('ara
 const rb=$('rstB');if(rb)rb.onclick=()=>{if(!rstArm){rstArm=true;renderMenu();return}G.cloud=null;try{localStorage.removeItem(SK)}catch(e){}save=()=>{};location.reload()}}
  {const rc=$('rstC');if(rc)rc.onclick=async()=>{rc.disabled=true;rc.textContent='Siliniyor…';let r;try{r=await rpc('arasta_save_del',{p_code:G.cloud})}catch(e){r='net'}if(r!=='ok'){toast('Buluttan silinemedi, bağlantını kontrol et',2200);rc.disabled=false;rc.textContent='Buluttan da sil';return}G.cloud=null;try{localStorage.removeItem(SK)}catch(e){}save=()=>{};location.reload()}}
  {const rx=$('rstX');if(rx)rx.onclick=()=>{rstArm=false;renderMenu()}}
-const mOK=()=>G.phase!=='result'&&!(G.phase==='craft'&&modalMode);$('menuB').onclick=()=>{if(mOK()){menuTab='hub';renderMenu()}};$('setB').onclick=()=>{if(mOK()){menuTab='ayar';renderMenu()}};
+const mOK=()=>G.phase!=='result'&&!(G.phase==='craft'&&modalMode);$('menuB').onclick=()=>{if(mOK()){menuTab='hub';renderMenu()}};$('setB').onclick=()=>{if(mOK()){menuTab='ayar';renderMenu()}};$('repP').onclick=ui.tier.onclick=()=>{if(mOK()){sfx.tap();openRepPass()}};
 const VL=VSL.map((p,i)=>{const l=label('vitrin',V(p.x,p.y-0.03,p.z),'',true);l.el.classList.add('stl');l.off=true;l.el.onclick=()=>{const it=G.stock[i];if(it)openItem(it)};return l});
 function vitLabels(){VL.forEach((l,i)=>{const it=G.stock[i];l.off=!it;if(it){l.el.classList.add('vtag');l.el.innerHTML=`<b>${CN}${it.price}</b><small>${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></small>`}})}
 function vitrinSync(){VIT.clear();G.stock.slice(0,9).forEach((it,i)=>{const p=pr(it),m=p.build(it.col?paintOf(it.col).hex:p.sheet,it.style,{cila:true});m.g.scale.setScalar(typeof VSC!=='undefined'?VSC:1.05);m.g.position.copy(VSL[i]);m.g.rotation.y=-Math.PI/2+0.35;m.g.userData.sid=it.id;
@@ -2090,6 +2090,21 @@ function kademeRows(){const t=G.tier||1,nx=TIERS[t+1],pk=TPERK[t]||{},dk=G.dk||0
  if(d){const lk=t<d.t;h+=`<div class="row"><div class="n">${d.ad}<small>${lk?`Kademe ${d.t}'te açılır`:`${d.c} altın · Altının: ${G.gold}`}</small></div><button class="btn g" id="dkB" ${lk||G.gold<d.c?'disabled':''}>Büyüt</button></div>`}
  return h}
 function dkBind(){const b=$('dkB');if(!b)return;b.onclick=()=>{const dk=G.dk||0,d=DUK[dk];if(!d||G.tier<d.t||G.gold<d.c)return;G.gold-=d.c;G.dk=dk+1;sfx.coin();sfx.fan();toast(`Dükkân büyüdü: ${d.ad}!<br>Müşteriler artık %${G.dk*4} fazla öder`,2400);save();hud();checkAch();renderMenu()}}
+
+/* ---------- İtibar yolu: kademeleri pass gibi kaydırarak gösteren pencere ---------- */
+const TGEM={1:0,2:5,3:5,4:10,5:15},TAD={1:'Çırak',2:'Kalfa',3:'Usta',4:'Usta-i kâmil',5:'Pîr'};
+const TEXTRA={1:['Dükkân, bahçe ve atölye'],2:['Kervansaray','Çırak, çiftçi ve çoban yardımcıları'],3:['Takas tezgâhında 2 teklif','Dükkân büyütme (1-2. seviye)'],4:['Müşteriler %8 fazla öder','Müşteriler %10 daha sabırlı','Dükkân büyütme 3. seviye'],5:['Müşteriler %15 fazla öder','Müşteriler %20 daha sabırlı','Atölye %15 daha hızlı','Dükkân büyütme son seviye']};
+function tierItems(t){const pr=PRODS.filter(p=>p.tier===t&&!p.gem),st=ST.filter(s=>s.tier===t&&t>1),mk=MARKET.filter(m=>(m.t||1)===t&&t>1),gl=Object.entries(GLK).filter(([k,v])=>v[0]===t);return{pr,st,mk,gl}}
+function openRepPass(){const cur=G.tier||1,rep=G.rep||0,max=5;
+ const cards=[];for(let t=1;t<=max;t++){const it=tierItems(t),done=t<=cur,now=t===cur,th=TIERS[t],nx=TIERS[t+1];
+  let pg='';if(now&&nx){const a=rep-th,b=nx-th;pg=`<div class="rpbar"><i style="width:${Math.min(100,a/b*100)}%"></i></div><small class="rpk">Kademe ${t+1} için ${Math.max(0,nx-rep)} itibar kaldı</small>`}else if(now)pg=`<small class="rpk">En üst kademedesin</small>`;else if(!done)pg=`<small class="rpk">${th-rep} itibar kaldı</small>`;
+  const ics=it.pr.slice(0,8).map(p=>`<img src="${ICON[p.id]}" alt="" title="${esc(p.ad)}">`).join('')+(it.pr.length>8?`<span class="rpm">+${it.pr.length-8}</span>`:'');
+  const li=[...TEXTRA[t]];if(it.st.length)li.push('Atölye: '+it.st.map(s=>s.ad).join(', '));if(it.gl.length)li.push('Bahçe: '+it.gl.map(([k])=>k).join(', '));if(it.mk.length)li.push('Pazar: '+it.mk.map(m=>MATS[m.k]?MATS[m.k].ad:m.k).join(', '));
+  cards.push(`<div class="rpc ${done?'dn':''} ${now?'nw':''}" ${now?'id="rpNow"':''}><div class="rph"><span class="rpn">${t}</span><div><b>${TAD[t]}</b><small>${th} itibar</small></div><span class="rps">${now?'Şu an':done?'✓':'🔒'}</span></div>${TGEM[t]?`<div class="rpg">+${TGEM[t]} 💎 ${done?'alındı':'ödül'}</div>`:''}${ics?`<div class="rpi">${ics}</div><small class="rpl">${it.pr.length} yeni ürün</small>`:''}<ul>${li.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${pg}</div>`)}
+ const pct=Math.min(100,((cur-1)+(TIERS[cur+1]?Math.min(1,(rep-TIERS[cur])/(TIERS[cur+1]-TIERS[cur])):0))/(max-1)*100);
+ openSheet('reppass',`<h3>İtibar yolu</h3><p style="margin:2px 0 8px;font-size:13px;opacity:.85">İtibarın <b>${rep}</b> · Kademe ${cur} (${TAD[cur]}). Kaydırarak geçmiş ve gelecek kademelere bak.</p><div class="rptr"><i style="width:${pct}%"></i>${[1,2,3,4,5].map(t=>`<span data-rt="${t}" class="${t<=cur?'on':''}" style="left:${(t-1)/(max-1)*100}%">${t}</span>`).join('')}</div><div class="rpw" id="rpW">${cards.join('')}</div><div class="pk" style="justify-content:center;margin-top:10px"><button class="btn g" id="rpX">Kapat</button></div>`);
+ $('rpX').onclick=()=>{sfx.tap();closeSheet()};ui.sheet.querySelectorAll('[data-rt]').forEach(d=>d.onclick=()=>{const w=$('rpW'),c=w&&w.children[+d.dataset.rt-1];if(c)w.scrollTo({left:c.offsetLeft-(w.clientWidth-c.clientWidth)/2,behavior:'smooth'})});
+ requestAnimationFrame(()=>{const w=$('rpW'),n=$('rpNow');if(w&&n)w.scrollLeft=n.offsetLeft-(w.clientWidth-n.clientWidth)/2})}
 
 /* ---------- ortam sesleri ---------- */
 function vox(pts,type,vol,delay,lp){const a=AC;if(!a||!G.snd||document.hidden)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain(),d=pts[pts.length-1][0];o.type=type||'sine';o.frequency.setValueAtTime(pts[0][1],t);pts.slice(1).forEach(([q,f])=>o.frequency.linearRampToValueAtTime(f,t+q));g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(0.06,d*0.25));g.gain.setValueAtTime(vol,t+d*0.7);g.gain.exponentialRampToValueAtTime(0.0001,t+d);let n=o;if(lp){const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;o.connect(f);n=f}n.connect(g);g.connect(BUS('a'));o.start(t);o.stop(t+d+0.05)}

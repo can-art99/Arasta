@@ -374,4 +374,23 @@ body.dt #card{margin-top:50px}
 .loot .it.x{border-color:#c98a1a;background:#fff3d6;grid-column:span 2}
 /* telefonda alt eylem butonları daha kompakt */
 @media (max-width:500px){#actions .btn{font-size:14px;padding:5px 13px;min-height:36px}#actions{gap:7px}}
+.rptr{position:relative;height:22px;margin:6px 14px 12px;}
+.rptr:before{content:'';position:absolute;left:0;right:0;top:9px;height:4px;border-radius:3px;background:#d8ccb4}
+.rptr>i{position:absolute;left:0;top:9px;height:4px;border-radius:3px;background:var(--gr,#2f7a63)}
+.rptr span{cursor:pointer;position:absolute;top:0;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:#efe6d2;border:2px solid var(--ln);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.rptr span.on{background:#2f7a63;color:#fff}
+.rpw{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 8px;-webkit-overflow-scrolling:touch}
+.rpc{flex:0 0 74%;max-width:280px;scroll-snap-align:center;background:var(--cr);border:2px solid var(--ln);border-radius:14px;padding:10px;box-shadow:0 2px 0 var(--ln);opacity:.72}
+.rpc.dn{opacity:1;background:#eef3e6}
+.rpc.nw{opacity:1;background:#fff4d6;border-color:#c98a1a;box-shadow:0 3px 0 #c98a1a}
+.rph{display:flex;align-items:center;gap:8px}.rph b{display:block;font-size:15px}.rph small{font-size:11px;opacity:.7}
+.rpn{width:30px;height:30px;border-radius:50%;background:#2f7a63;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.rpc:not(.dn) .rpn{background:#9a8f7c}
+.rps{margin-left:auto;font-size:12px;font-weight:700}
+.rpg{margin:8px 0 4px;font-size:13px;font-weight:700;color:#1f5f78}
+.rpi{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.rpi img{width:34px;height:34px;border-radius:8px;background:#fff8;border:1px solid #0001}
+.rpm{font-size:12px;align-self:center;opacity:.7}.rpl{font-size:11px;opacity:.7}
+.rpc ul{margin:6px 0 4px;padding-left:16px;font-size:12px;line-height:1.4}
+.rpbar{height:8px;border-radius:5px;background:#e3d7bf;overflow:hidden;margin-top:6px}.rpbar i{display:block;height:100%;background:#c98a1a}
+.rpk{display:block;font-size:11.5px;margin-top:4px;font-weight:600}
 
