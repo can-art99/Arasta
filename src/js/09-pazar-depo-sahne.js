@@ -149,7 +149,7 @@ const l=label('depo',V(x,y+0.02,-2.62),'',true);l.el.classList.add('dn');l.off=t
 place('round_rug',{x:OD,y:0.03,z:0.4,w:2.4});place('wall_art',{x:-0.12,y:1.3,z:-3.9,h:0.95,ry:Math.PI});const DHIT=new THREE.Mesh(B(6.2,3.0,0.7),HID);DHIT.position.set(OD,1.75,-2.9);S.add(DHIT);
 
 /* ---------- depo/vitrin kapasite ve düzen ---------- */
-const CAPS={d:{ad:'Malzeme deposu',v:[100,150,250,400],c:[150,300,600]},s:{ad:'Depo ürün rafı',v:[2,4,6],c:[100,250]},v:{ad:'Vitrin',v:[3,6,9],c:[150,300]}};
+const CAPS={d:{ad:'Malzeme deposu',v:[100,150,250,400,650],c:[150,300,600,2000]},s:{ad:'Depo ürün rafı',v:[2,4,6,10],c:[100,250,1200]},v:{ad:'Vitrin',v:[3,6,9,12],c:[150,300,1500]}};
 function capLv(k){if(!G.cap)G.cap={d:0,s:0,v:0};return G.cap[k]||0}
 const OWNER_H='4be73331840233a38bc7128e8f5f66203778469ca1f25f3d2a46de116ba045fc';const capOf=k=>G.owner?99999:CAPS[k].v[capLv(k)],invTotal=()=>Object.values(G.inv).reduce((a,b)=>a+(b>0?b:0),0);
 function depoFull(n){if(invTotal()+(n||1)>capOf('d')){toast(`Depo dolu (${invTotal()}/${capOf('d')})<br>Depoda genişlet ya da malzeme kullan`,1900);sfx.bad&&sfx.bad();return true}return false}
