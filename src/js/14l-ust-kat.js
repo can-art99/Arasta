@@ -47,7 +47,19 @@ function ustStairs(){if(USTR)return;USTR=new THREE.Group();USTR.position.set(-2.
  put(USTR,Cy(0.05,0.05,3.3,10),dk,0,1.65,0);put(USTR,Cy(0.09,0.09,0.06,10),br,0,0.03,0);
  for(let i=0;i<12;i++){const a=-0.6+i*0.55,y=0.16+i*0.25,st=new THREE.Group();st.position.y=y;st.rotation.y=a;USTR.add(st);put(st,B(0.46,0.05,0.2),wd,0.26,0,0);put(st,Cy(0.012,0.012,0.6,6),br,0.48,0.3,0);put(st,B(0.06,0.06,0.2),dk,0.02,-0.01,0)}
  for(let i=0;i<12;i++){const a=-0.6+i*0.55;put(USTR,new THREE.SphereGeometry(0.022,8,6),M('#c9a23a',0.3),Math.cos(a)*0.48,0.16+i*0.25+0.6,-Math.sin(a)*0.48)}
- const sg=new THREE.Group();sg.position.set(0.32,1.35,0.42);USTR.add(sg);USTR.userData.sign=sg}
+ const sg=new THREE.Group();sg.position.set(0.32,1.35,0.42);USTR.add(sg);USTR.userData.sign=sg;ustMezz()}
+/* merdivenin çıktığı köşede üst katın döşemesi: ortası açık, içinden üst katın ışığı görünür */
+function ustMezz(){const g=new THREE.Group();g.position.set(0,0,0);S.add(g);USTR.userData.mz=g;const cx=-2.42,cz=-3.42,x0=-2.93,x1=-1.55,z0=-3.93,z1=-2.5,yb=3.22,th=0.18,hr=0.6;
+ const sh=new THREE.Shape();sh.moveTo(x0,-z0);sh.lineTo(x1,-z0);sh.lineTo(x1,-z1);sh.lineTo(x0,-z1);sh.lineTo(x0,-z0);const ho=new THREE.Path();ho.absarc(cx,-cz,hr,0,Math.PI*2,true);sh.holes.push(ho);
+ const ge=new THREE.ExtrudeGeometry(sh,{depth:th,bevelEnabled:false,curveSegments:28});ge.rotateX(-Math.PI/2);const sl=new THREE.Mesh(ge,M('#4f2e19',0.8));sl.position.y=yb;sl.castShadow=sl.receiveShadow=true;g.add(sl);
+ const tr=M('#3a2213',0.7),gd=M('#b8892f',0.35);put(g,B(x1-x0+0.04,0.06,0.06),tr,(x0+x1)/2,yb-0.02,z1+0.02);put(g,B(0.06,0.06,z1-z0+0.04),tr,x1+0.02,yb-0.02,(z0+z1)/2);
+ for(let i=0;i<3;i++)put(g,B(0.08,0.12,z1-z0),M('#45281a',0.8),x0+0.35+i*0.45,yb-0.06,(z0+z1)/2);
+ const rim=new THREE.Mesh(new THREE.CylinderGeometry(hr,hr,th+0.02,28,1,true),new THREE.MeshStandardMaterial({color:'#6a3d20',roughness:0.8,side:THREE.BackSide,emissive:'#3a1d08',emissiveIntensity:0.6}));rim.position.set(cx,yb+th/2,cz);g.add(rim);
+ const gl=put(g,new THREE.CircleGeometry(hr,28),glow('#ffcf8a'),cx,yb+th+0.12,cz);gl.rotation.x=Math.PI/2;
+ const tor=new THREE.Mesh(new THREE.TorusGeometry(hr,0.025,6,28),gd);tor.rotation.x=Math.PI/2;tor.position.set(cx,yb-0.005,cz);g.add(tor);
+ for(let i=0;i<=6;i++){put(g,Cy(0.014,0.014,0.42,6),gd,x0+0.1+i*(x1-x0-0.2)/6,yb+th+0.21,z1-0.03)}for(let i=0;i<=5;i++)put(g,Cy(0.014,0.014,0.42,6),gd,x1-0.03,yb+th+0.21,z0+0.1+i*(z1-z0-0.2)/5);
+ put(g,B(x1-x0,0.04,0.05),tr,(x0+x1)/2,yb+th+0.43,z1-0.03);put(g,B(0.05,0.04,z1-z0),tr,x1-0.03,yb+th+0.43,(z0+z1)/2);
+ const pl=new THREE.PointLight('#ffc878',0.35,2.2);pl.position.set(cx,yb-0.25,cz);g.add(pl)}
 function ustSign(){if(!USTR)return;const sg=USTR.userData.sign;sg.clear();const s=ustS(),c=document.createElement('canvas');c.width=256;c.height=96;const x=c.getContext('2d');x.fillStyle='#5c3520';x.beginPath();x.roundRect?x.roundRect(4,4,248,88,14):x.rect(4,4,248,88);x.fill();x.strokeStyle='#c9a23a';x.lineWidth=5;x.stroke();x.fillStyle='#f6e7c4';x.font='bold 40px Georgia,serif';x.textAlign='center';x.fillText(s.open?'Üst kat':'Üst kat 🔒',128,62);const t=new THREE.CanvasTexture(c);put(sg,B(0.01,0.3,0.01),M('#3a2213'),0,0.2,0);const m=put(sg,new THREE.PlaneGeometry(0.5,0.19),new THREE.MeshBasicMaterial({map:t,transparent:true}),0,0,0.01);m.rotation.y=0.35}
 /* kat değiştirme: kraft grubunu içeren kapsayıcıları değil, kardeşlerini gizle */
 function hasCraft(o){let q=craft;while(q){if(q===o)return true;q=q.parent}return false}
