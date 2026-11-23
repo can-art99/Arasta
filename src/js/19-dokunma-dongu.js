@@ -14,7 +14,7 @@ canvas.addEventListener('wheel',e=>{if(G.phase==='result'||(G.phase==='craft'&&G
 function floatTxt(cx,cy,html){const r=frame.getBoundingClientRect(),d=document.createElement('div');d.className='flt';d.innerHTML=html;d.style.left=(cx-r.left)+'px';d.style.top=(cy-r.top)+'px';$('ui').appendChild(d);setTimeout(()=>d.remove(),900)}
 function stationTap(s){if(G.phase==='craft'||G.phase==='result'||switching)return;if(!stOwned(s)){buyStation(s);return}
 if(s.ready&&G.tier>=s.tier){if(depoFull(Object.values(s.ready).reduce((a,b)=>a+b,0)))return;giveAll(s.ready);G.st.proc++;sfx.pick();toast('+ '+Object.entries(s.ready).map(([k,n])=>n+' '+MATS[k].ad).join(', '),1400);s.ready=null;refresh()}else openStation(s)}
-function worldTap(e){if(SPL)return;setRay(e);
+function worldTap(e){if(SPL)return;setRay(e);if(view==='home'&&ustTap())return;
 if(view==='islik'){if(CIR&&G.cirak&&ray.intersectObject(CIR.g,true)[0]){otoNow('cirak');return}const h=ray.intersectObjects(ST.map(s=>s.g),true)[0];if(h){let o=h.object;while(o&&!o.userData.st)o=o.parent;if(o)stationTap(o.userData.st)}}
 else if(view==='pazar'){const h=ray.intersectObjects(STALLS,true)[0];if(h){let o=h.object;while(o&&!o.userData.tab)o=o.parent;if(o)marketTab(o.userData.tab)}}
 else if(view==='depo'){depoTap()}

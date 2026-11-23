@@ -109,7 +109,7 @@ function qRestore(){const L=G.qsL;G.qsL=null;if(!L)return;const el=Math.max(0,(D
  const keep=(v,mx)=>Math.max(el<600?Math.min(mx,25):0,v-el);c.accMax=d.accMax||75;c.deadMax=d.deadMax||300;c.acc=keep(d.acc!=null?d.acc:c.accMax,c.accMax);c.dead=keep(d.dead!=null?d.dead:c.deadMax,c.deadMax);c.wait=keep(d.wait!=null?d.wait:120,120);
  if((d.act?c.dead:c.acc)<=0&&i===0)return;c.g.visible=true;Q.push(c);if(i===0&&d.act&&Q.length===1){G.order=o;G.phase='active';G.bubOn=false}seat(c)});cust=Q[0]||null;hud();refresh()}
 addEventListener('pagehide',()=>{try{save()}catch(e){}});document.addEventListener('visibilitychange',()=>{if(document.hidden)try{save()}catch(e){}});
-function custTick(dt){if(!G.started)return;if(G.qsL&&ALLC!==undefined){qRestore()}if(G.open&&!G.night){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:(22+Math.random()*24)*(1-dB('cust'))*(1-0.06*(G.dk||0));spawn()}}
+function custTick(dt){if(!G.started||UF)return;if(G.qsL&&ALLC!==undefined){qRestore()}if(G.open&&!G.night){spawnT-=dt;if(spawnT<=0){spawnT=G.first?9e9:(22+Math.random()*24)*(1-dB('cust'))*(1-0.06*(G.dk||0));spawn()}}
 for(let i=Q.length-1;i>=0;i--){const c=Q[i];if(!c.at)continue;
 const mine=G.order&&G.order===c.order;
 if(i>0||(!mine&&G.phase!=='idle')){c.wait-=dt;if(c.wait<=0){G.st.lost++;toast('Sırada bekleyen müşteri sıkılıp gitti',1800);sfx.bad();leave(c)}}

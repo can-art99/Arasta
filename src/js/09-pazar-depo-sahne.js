@@ -69,7 +69,7 @@ function lampLook(){const on=LAMPON;const dim=(m)=>{if(!LMC.has(m))LMC.set(m,m.c
  try{dim(bulbL.material)}catch(e){}if(ESL)['tav.fener','tav.metal'].forEach(k=>{const g=ESL[k];if(g)g.traverse(o=>{if(!o.isMesh)return;[].concat(o.material).forEach(m=>{const c0=LMC.get(m)||m.color;const hsl={};c0.getHSL(hsl);if(hsl.l>0.55||/Light|lamp|glass/i.test(m.name||''))dim(m)})})});
  if(lamp.visible)lamp.intensity=1.4*(on?1:0.72)}
 function lampToggle(){LAMPON=!LAMPON;if(G.deco)G.deco.lamp=LAMPON?1:0;lampLook();sf('click',0.5)||sfx.tap();save()}
-{let lp=null;canvas.addEventListener('pointerdown',e=>{lp=(view==='home'&&G.phase!=='craft'&&!switching)?{x:e.clientX,y:e.clientY,t:performance.now()}:null});
+{let lp=null;canvas.addEventListener('pointerdown',e=>{lp=(view==='home'&&!UF&&G.phase!=='craft'&&!switching)?{x:e.clientX,y:e.clientY,t:performance.now()}:null});
  canvas.addEventListener('pointerup',e=>{if(!lp||Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>8||performance.now()-lp.t>450){lp=null;return}lp=null;setRay(e);const tv=decoSel('tav').id,G0=tv==='sarkit'?CL0:ESL&&ESL['tav.'+tv];if(G0&&ray.intersectObject(G0,true)[0])lampToggle()})}
 function decoPat(){try{return decoSel('ekm').pat||0}catch(e){return 0}}const DKIC={};
 function decoIcon(o){if(!o.m)return null;if(DKIC[o.m])return DKIC[o.m];if(!GLC[o.m]){glb(o.m,()=>{if(modalMode==='deko')openDeco()});return null}try{DKIC[o.m]=snap(o.leaf?leafOf(o.m):GLC[o.m].scene.clone(true))}catch(e){}return DKIC[o.m]||null}

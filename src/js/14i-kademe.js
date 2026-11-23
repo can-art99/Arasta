@@ -1,7 +1,7 @@
 /* ---------- Kademe 4-5 ayrıcalıkları ve dükkân büyütme (geç oyun altın harcaması) ---------- */
 /* kademe ayrıcalıkları (birikimli değerler): pay=ödeme, pat=sabır, spd=atölye hızı, gem=elmas şansı */
 const TPERK={1:{li:['Dükkân, bahçe ve atölye']},2:{li:['Kervansaray','Çırak, çiftçi ve çoban yardımcıları']},3:{li:['Takas tezgâhında 2 teklif','Dükkân büyütme (1-2. seviye)']},
- 4:{pay:0.08,pat:0.1,li:['Dükkân büyütme 3. seviye']},5:{pay:0.15,pat:0.2,spd:0.15,li:['Dükkân büyütme son seviye']},
+ 4:{pay:0.08,pat:0.1,li:['Dükkân büyütme 3. seviye']},5:{pay:0.15,pat:0.2,spd:0.15,li:['Dükkân büyütme son seviye','Üst kat: seçkin atölye açılabilir (15.000 altın)']},
  6:{pay:0.18,pat:0.25,spd:0.15,gem:0.25,li:[]},7:{pay:0.21,pat:0.3,spd:0.2,gem:0.25,li:[]},8:{pay:0.24,pat:0.3,spd:0.2,gem:0.5,li:[]},
  9:{pay:0.27,pat:0.35,spd:0.25,gem:0.5,li:[]},10:{pay:0.3,pat:0.4,spd:0.25,gem:1,li:['Çarşının en itibarlı esnafı']}};
 const tpk=t=>TPERK[Math.min(TMAX,t||1)]||{};
