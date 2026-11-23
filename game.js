@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261123.1531';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261123.1554';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1307,11 +1307,11 @@ restock();
 
 const ui={gold:$('gold'),rep:$('rep'),tier:$('tierP'),card:$('card'),tip:$('tip'),bub:$('bubble'),act:$('actions'),modal:$('modal'),sheet:$('sheet'),toast:$('toast'),fade:$('fade')};
 const show=(el,on)=>el.classList.toggle('hide',!on);
-let toastT=0;function toast(t,ms){ui.toast.innerHTML=t;show(ui.toast,true);clearTimeout(toastT);toastT=setTimeout(()=>show(ui.toast,false),ms||1600)}
+let toastT=0;function toast(t,ms){ui.toast.innerHTML=t;ui.toast.classList.toggle('tcr',G.phase==='craft');show(ui.toast,true);clearTimeout(toastT);toastT=setTimeout(()=>show(ui.toast,false),ms||1600)}
 function say(t){if(!t){show(ui.bub,false);return}ui.bub.innerHTML=t;show(ui.bub,view==='home')}
 function tip(t){if(!t){show(ui.tip,false);return}ui.tip.innerHTML=t;show(ui.tip,true)}
 function btn(label,cls,fn,dis){const b=document.createElement('button');b.className='btn '+(cls||'');b.innerHTML=label;if(fn)b.onclick=fn;if(dis)b.disabled=true;return b}
-function actions(list){ui.act.innerHTML='';list.forEach(b=>ui.act.appendChild(b))}
+function actions(list){ui.act.innerHTML='';ui.act.classList.remove('ug');list.forEach(b=>ui.act.appendChild(b))}
 const paintOf=id=>PAINTS.find(p=>p.id===id);
 const anyPaint=()=>PAINTS.some(p=>G.inv['boya_'+p.id]>0);
 function hasNeed(p){return Object.entries(p.need).every(([k,n])=>k==='boya'?anyPaint():G.inv[k]>=n)}
@@ -1341,7 +1341,7 @@ document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList
 {const vb=$('vitB');show(vb,view==='home'&&!busy);vb.textContent=`Vitrin ${G.stock.length}/${G.owner?'∞':vitCap()}`}
 if(view==='vitrin'){if(G.phase==='ordering'&&G.order&&G.order.buy)buyActions();else actions([btn('Yeni ürün yap','l',openFree,G.phase!=='idle'),btn('Dükkâna dön','g',()=>go('home'))])}
 else if(G.phase==='active'&&view==='home'){const m=matchStock(G.order),L=hasNeed(G.order.p)?[btn(G.order.rep?'Tamire başla':'Tezgâha geç','g',startCraft)]:[btn('Malzeme eksik','l',()=>toast('Eksikleri Pazar, Bahçe ve Atölye\'den tamamla',2000)),btn('İptal et','r',cancelOrder)];if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));actions(L)}
-else if(G.phase==='idle'&&view==='home'&&UF)actions(ustActs());else if(G.phase==='idle'&&view==='home')actions(G.night&&!Q.length?[btn('Günü bitir','g',endDay),btn('Serbest üret','l',openFree),btn('Tamir et','l',openRepairList)]:[btn('Serbest üret','l',openFree),btn('Tamir et'+((G.store||[]).some(x=>x.worn)?' •':''),'l',openRepairList),btn('Usta çağır · 3 💎','l',callMaster)].concat((G.tier||1)>=5||(G.ust&&G.ust.open)?[btn((G.ust&&G.ust.open?'⬆ Üst kat':'🔒 Üst kat')+(G.ust&&G.ust.ord&&G.ust.ord.length?' · 🎩'+G.ust.ord.length:''),'l',()=>G.ust&&G.ust.open?ustGo(true):ustUnlock())]:[]));
+else if(G.phase==='idle'&&view==='home'&&UF){actions(ustActs());ui.act.classList.add('ug')}else if(G.phase==='idle'&&view==='home')actions((G.night&&!Q.length?[btn('Günü bitir','g',endDay),btn('Serbest üret','l',openFree),btn('Tamir et','l',openRepairList)]:[btn('Serbest üret','l',openFree),btn('Tamir et'+((G.store||[]).some(x=>x.worn)?' •':''),'l',openRepairList),btn('Usta çağır · 3 💎','l',callMaster)]).concat((G.tier||1)>=5||(G.ust&&G.ust.open)?[ustBtn()]:[]));
 else if(G.phase==='idle')actions([]);
 else if(G.phase==='active')actions([]);}
 let switching=false;
@@ -2227,11 +2227,12 @@ function ustBuild(){if(UGRP.children.length)return;const g=UGRP,P=(geo,m,x,y,z)=
  for(let i=0;i<4;i++)put(UDOWN,B(0.86,0.03,0.2),wd2,0,0.0-i*0.12,-0.35+i*0.22);
  put(UDOWN,B(0.05,0.9,0.05),gold,0.45,0.45,0.55)}
 /* alt katta yukarı çıkan merdiven */
-function ustStairs(){if(USTR)return;USTR=new THREE.Group();USTR.position.set(-2.5,0,-3.35);S.add(USTR);const wd=M('#5c3520',0.7),dk=M('#3a2213',0.7);
- for(let i=0;i<9;i++)put(USTR,B(0.8,0.06,0.22),wd,0,0.18+i*0.27,0.45-i*0.11);
- put(USTR,B(0.06,2.5,1.1),dk,0.42,1.25,0.0).rotation.x=-0.42;put(USTR,B(0.06,2.5,1.1),dk,-0.42,1.25,0.0).rotation.x=-0.42;
- const sg=new THREE.Group();sg.position.set(0.55,1.0,0.55);USTR.add(sg);USTR.userData.sign=sg}
-function ustSign(){if(!USTR)return;const sg=USTR.userData.sign;sg.clear();const s=ustS(),c=document.createElement('canvas');c.width=192;c.height=64;const x=c.getContext('2d');x.fillStyle=s.open?'#2f7a63':'#7a5a3a';x.fillRect(0,0,192,64);x.fillStyle='#fff';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText(s.open?'⬆ Üst kat':'🔒 Üst kat',96,42);const t=new THREE.CanvasTexture(c);const m=put(sg,new THREE.PlaneGeometry(0.42,0.14),new THREE.MeshBasicMaterial({map:t,transparent:true}),0,0,0);m.rotation.y=0.6}
+function ustStairs(){if(USTR)return;USTR=new THREE.Group();USTR.position.set(-2.42,0,-3.42);S.add(USTR);const wd=M('#6a3d20',0.65),dk=M('#3a2213',0.7),br=M('#b8892f',0.35);
+ put(USTR,Cy(0.05,0.05,3.3,10),dk,0,1.65,0);put(USTR,Cy(0.09,0.09,0.06,10),br,0,0.03,0);
+ for(let i=0;i<12;i++){const a=-0.6+i*0.55,y=0.16+i*0.25,st=new THREE.Group();st.position.y=y;st.rotation.y=a;USTR.add(st);put(st,B(0.46,0.05,0.2),wd,0.26,0,0);put(st,Cy(0.012,0.012,0.6,6),br,0.48,0.3,0);put(st,B(0.06,0.06,0.2),dk,0.02,-0.01,0)}
+ for(let i=0;i<12;i++){const a=-0.6+i*0.55;put(USTR,new THREE.SphereGeometry(0.022,8,6),M('#c9a23a',0.3),Math.cos(a)*0.48,0.16+i*0.25+0.6,-Math.sin(a)*0.48)}
+ const sg=new THREE.Group();sg.position.set(0.32,1.35,0.42);USTR.add(sg);USTR.userData.sign=sg}
+function ustSign(){if(!USTR)return;const sg=USTR.userData.sign;sg.clear();const s=ustS(),c=document.createElement('canvas');c.width=256;c.height=96;const x=c.getContext('2d');x.fillStyle='#5c3520';x.beginPath();x.roundRect?x.roundRect(4,4,248,88,14):x.rect(4,4,248,88);x.fill();x.strokeStyle='#c9a23a';x.lineWidth=5;x.stroke();x.fillStyle='#f6e7c4';x.font='bold 40px Georgia,serif';x.textAlign='center';x.fillText(s.open?'Üst kat':'Üst kat 🔒',128,62);const t=new THREE.CanvasTexture(c);put(sg,B(0.01,0.3,0.01),M('#3a2213'),0,0.2,0);const m=put(sg,new THREE.PlaneGeometry(0.5,0.19),new THREE.MeshBasicMaterial({map:t,transparent:true}),0,0,0.01);m.rotation.y=0.35}
 /* kat değiştirme: kraft grubunu içeren kapsayıcıları değil, kardeşlerini gizle */
 function hasCraft(o){let q=craft;while(q){if(q===o)return true;q=q.parent}return false}
 function ustHide(o){if(o===craft||o===UGRP||!o.visible)return;if(hasCraft(o)){o.children.forEach(ustHide);return}o.visible=false;UHID.push(o)}
@@ -2239,7 +2240,8 @@ function ustSwap(on){if(on===UF)return;UF=on;document.body.classList.toggle('uf'
  else{UGRP.visible=false;UHID.forEach(c=>c.visible=true);UHID=[];Q.forEach(c=>{if(c.g&&!c.at&&c.hidden)c.g.visible=false})}
  R.shadowMap.needsUpdate=true}
 function ustGo(on){if(switching||G.phase!=='idle'&&on){if(on)toast('Önce sıradaki müşteriyle ilgilen',1500);return}switching=true;sfx.swoosh();ui.fade.style.opacity=1;setTimeout(()=>{ustSwap(on);switching=false;ui.fade.style.opacity=0;refresh();if(on){const s=ustS();toast(`Seçkin atölye<br><small>${s.ord.length?s.ord.length+' koleksiyoner siparişi bekliyor':'Şaheser üret, seçkin vitrine koy'}</small>`,1800)}},350)}
-function ustActs(){const s=ustS();return [btn('⬇ Alt kat','l',()=>ustGo(false)),btn('Şaheser üret','g',ustFree),btn('Koleksiyoner'+(s.ord.length?' · '+s.ord.length:''),'l',ustBoard),btn('Seçkin vitrin','l',ustVitSheet)]}
+function ustActs(){const s=ustS();return [btn('Şaheser üret','g',ustFree),btn('Koleksiyoner'+(s.ord.length?' · '+s.ord.length:''),'l',ustBoard),btn('Seçkin vitrin','l',ustVitSheet),btn('Alt kata in','l',()=>ustGo(false))]}
+function ustBtn(){const s=ustS();return btn((s.open?'Üst kat':'🔒 Üst kat')+(s.open&&s.ord.length?' · '+s.ord.length+' sipariş':''),s.open&&s.ord.length?'g':'l',()=>s.open?ustGo(true):ustUnlock())}
 /* dokunma */
 function ustTap(){if(view!=='home'||G.phase==='craft'||switching)return false;if(UF){if(UDOWN&&ray.intersectObject(UDOWN,true)[0]){ustGo(false);return true}if(UVIT&&ray.intersectObject(UVIT,true)[0]){ustVitSheet();return true}return false}
  if(USTR&&USTR.visible&&ray.intersectObject(USTR,true)[0]){const s=ustS();if(s.open)ustGo(true);else ustUnlock();return true}return false}
@@ -2268,8 +2270,8 @@ function ustStart(p,o){if(!p||!hasNeed(p)||G.phase!=='idle')return;const s=ustS(
 /* kraft bitince (serbest üretim yolundan) */
 function ustResult(){G.phase='result';refresh();const it=K.res.item,o=G.order,s=ustS(),co=o.coll&&s.ord.find(x=>x.id===o.coll),pct=v=>'%'+Math.round(v*100);sfx.good();
  it.price=Math.round(itemVal(it)*1.1/10)*10;const ok=co&&it.stars>=4,pay=co?Math.round(co.budget*(it.stars>=5?1:0.85)*(it.mq?1.25:1)/10)*10:0;K.res.ustPay=ok?pay:0;
- openSheet('result',`<h3>${pr(it).ad} hazır</h3>${it.mq?'<div class="mqB">✨ Usta işi! ✨</div>':''}${K.cbM>=3?`<div class="cbB">🔥 En uzun kombo: x${K.cbM}</div>`:''}<div class="stars">${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></div><div style="margin-top:8px">`+K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('')+`</div>`+
- (co?(ok?`<div class="tot">${co.ad} ödüyor: ${pay.toLocaleString('tr-TR')} altın</div>`:`<div class="uxF">${co.ad} en az 4★ istiyor<br><small>Ürün seçkin vitrine konur, sipariş açık kalır</small></div>`):`<div class="tot">Seçkin vitrin fiyatı: ${it.price.toLocaleString('tr-TR')} altın</div>`)+
+ tip(null);openSheet('result',`<h3>${pr(it).ad} hazır</h3>${it.mq?'<div class="mqB">✨ Usta işi! ✨</div>':''}`+resSum(it.stars)+
+ (co?(ok?`<div class="rtot"><span>${co.ad} ödüyor</span><b>${pay.toLocaleString('tr-TR')} altın</b></div>`:`<div class="uxF">${co.ad} en az 4★ istiyor<br><small>Ürün seçkin vitrine konur, sipariş açık kalır</small></div>`):`<div class="rtot"><span>Seçkin vitrin fiyatı</span><b>${it.price.toLocaleString('tr-TR')} altın</b></div>`)+
  `<div style="text-align:center"><button class="btn g" id="ustOk">${ok?'Koleksiyonere teslim et':'Seçkin vitrine koy'}</button></div>`);$('ustOk').onclick=()=>ustDone(ok,co)}
 function ustDone(ok,co){show(ui.modal,false);modalMode=null;const it=K.res.item,s=ustS(),w=K.work,g=K.model.g;
  if(ok){const pay=K.res.ustPay;G.gold+=pay;G.st.earned+=pay;G.st.deliv++;chDeliv();G.rep+=it.stars>=5?8:5;s.ord=s.ord.filter(x=>x!==co);G.st.ckol=(G.st.ckol||0)+1;sfx.cash();setTimeout(()=>gemRoll(GEM_P.bes,'Koleksiyoner elmas hediye etti!'),1500);toast(`+${pay.toLocaleString('tr-TR')} altın · +${it.stars>=5?8:5} itibar`,2000)}
@@ -2993,17 +2995,16 @@ if(o.hurry&&!late){const v=Math.round(B0*0.2);L.push(['Acele bonusu',v]);pay+=v}
 pay=Math.max(Math.round(B0*0.15),pay);K.res={stars,pay,L,colorOk,styleOk,late,mq};
 Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';finCam(()=>{sway=1;showResult()});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar(1.6-0.6*k)})}
 function showFree(){if(G.order&&G.order.ust){ustResult();return}G.phase='result';refresh();const it=K.res.item,pct=v=>'%'+Math.round(v*100);sfx.good();
-openSheet('result',`<h3>${pr(it).ad} vitrine kondu</h3>${uxHtml(K.res.ux)}${it.mq?'<div class="mqB">✨ Usta işi! Değeri %50 fazla ✨</div>':''}${K.cbM>=3?`<div class="cbB">🔥 En uzun kombo: x${K.cbM}</div>`:''}<div class="stars">${'★'.repeat(it.stars)}<i>${'★'.repeat(5-it.stars)}</i></div><div style="margin-top:8px">`+K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('')+
-`</div><div class="tot">Vitrin fiyatı: ${it.price} altın</div><p>Fiyatı Vitrin'de ürüne dokunarak değiştirebilirsin.</p><div style="text-align:center"><button class="btn g" id="freeOk">Tamam</button></div>`);$('freeOk').onclick=freeDone}
+tip(null);openSheet('result',`<h3>${pr(it).ad} vitrine kondu</h3>${uxHtml(K.res.ux)}${it.mq?'<div class="mqB">✨ Usta işi! Değeri %50 fazla ✨</div>':''}`+resSum(it.stars)+
+`<div class="rtot"><span>Vitrin fiyatı · Vitrin'de değiştirebilirsin</span><b>${it.price} altın</b></div><div style="text-align:center"><button class="btn g" id="freeOk">Tamam</button></div>`);$('freeOk').onclick=freeDone}
 function freeDone(){show(ui.modal,false);modalMode=null;const it=K.res.item,w=K.work,g=K.model.g;if(G.stock.length<vitCap())G.stock.push(it);else{G.store=G.store||[];G.store.push(it);storeSync();setTimeout(()=>toast('Vitrin dolu, ürün depo rafına kondu',1800),600)}
 cupRec(it.pid,it.stars);if(it.stars>=3){const e=G.cat[it.pid]||(G.cat[it.pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,it.stars)}
 tween(0.3,k=>g.scale.setScalar(Math.max(0.01,0.8*(1-k))),()=>craft.remove(w));G.phase='idle';G.order=null;vitrinSync();levelUp();save();refresh();if(Q[0]&&Q[0].at)present(Q[0])}
 function showResult(){G.phase='result';refresh();const r=K.res,o=G.order;G.bubOn=true;if(r.stars>=4){sfx.good();anim(Q[0],'clap',true)}else sfx.bad();
 say(r.late?'Çok geç kaldınız ama...':r.stars>=5?'Muhteşem olmuş, elinize sağlık!':r.stars>=4?'Çok güzel, teşekkürler!':!r.colorOk?'Bu renk istediğim değildi!':!r.styleOk?'Ben başka bir model istemiştim...':K.skips?'Bu yarım kalmış gibi...':r.stars>=3?'Fena değil.':'Hmm, biraz özensiz...');
 const pct=v=>'%'+Math.round(v*100);
-let h=`<h3>${o.p.ad} hazır</h3>${r.mq?'<div class="mqB">✨ Usta işi! ✨</div>':''}${K.cbM>=3?`<div class="cbB">🔥 En uzun kombo: x${K.cbM}</div>`:''}<div class="stars">${'★'.repeat(r.stars)}<i>${'★'.repeat(5-r.stars)}</i></div><div style="margin-top:8px">`+K.names.map((n,i)=>`<div class="brk"><span>${n}</span><b>${pct(K.scores[i])}</b></div>`).join('')+
-`<div class="brk" style="margin-top:6px"><span>Anlaşılan fiyat</span><b>${o.budget}</b></div>`+r.L.map(l=>`<div class="brk"><span>${l[0]}</span><b class="${l[1]<0?'cutc':'bonc'}">${l[1]>0?'+':'−'}${Math.abs(l[1])}</b></div>`).join('')+
-`</div><div class="tot">Ödeme: ${r.pay} altın</div><div style="text-align:center"><button class="btn g" id="deliver">Teslim et</button></div>`;
+tip(null);let h=`<h3>${o.p.ad} hazır</h3>${r.mq?'<div class="mqB">✨ Usta işi! ✨</div>':''}`+resSum(r.stars)+`<div class="rl"><div class="brk"><span>Anlaşılan fiyat</span><b>${o.budget}</b></div>`+r.L.map(l=>`<div class="brk"><span>${l[0]}</span><b class="${l[1]<0?'cutc':'bonc'}">${l[1]>0?'+':'−'}${Math.abs(l[1])}</b></div>`).join('')+
+`</div><div class="rtot"><span>Ödeme</span><b>${r.pay} altın</b></div><div style="text-align:center"><button class="btn g" id="deliver">Teslim et</button></div>`;
 openSheet('result',h);$('deliver').onclick=deliver}
 function deliver(){show(ui.modal,false);modalMode=null;const r=K.res,c=Q[0],pid=G.order.p.id,ord=G.order;cupRec(pid,r.stars);G.reg=G.reg||[];if(ord.reg){const rg=G.reg.find(x=>x.ad===ord.reg);if(rg)rg.vis++;if(r.stars>=4){const tip=Math.round(r.pay*0.15);G.gold+=tip;setTimeout(()=>toast(`${ord.reg} bahşiş bıraktı: +${tip}`,1600),1400)}}else if(r.stars>=5&&G.reg.length<8&&Math.random()<0.5&&Q[0]&&Q[0].sex){const sx=Q[0].sex,nm=(sx==='f'?RN_F:RN_M).filter(n=>!G.reg.some(x=>x.ad===n));if(nm.length){const ad=pick(nm);G.reg.push({ad,fav:pid,vis:1,sex:sx});setTimeout(()=>toast(`${ad} müdavimin oldu!`,1800),1500)}}G.gold+=r.pay;G.st.earned+=r.pay;sfx.cash();G.st.deliv++;chDeliv();if(r.stars>=4&&dB('tip')){const tp=Math.round(r.pay*dB('tip'));if(tp>0){G.gold+=tp;setTimeout(()=>toast(`Müzik keyfi bahşişi: +${tp} altın`,1500),2600)}}if(r.stars>=3&&Math.random()<dB('rep'))G.rep+=1;if(r.stars===5)G.st.five++;if(r.mq)G.st.mq=(G.st.mq||0)+1;setTimeout(()=>gemRoll(r.stars===5?GEM_P.bes:GEM_P.teslim,'Müşteri elmas hediye etti!'),1800);G.rep=Math.max(0,G.rep+({5:3,4:2,3:1}[r.stars]||-2));if(ord.vip&&r.stars>=3){const vr=Math.round(20*r.stars/5);G.rep+=vr;setTimeout(()=>toast('Usta müşteri memnun kaldı: +'+vr+' itibar',2000),1300)}
 if(r.stars>=3){const e=G.cat[pid]||(G.cat[pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,r.stars)}
@@ -3071,6 +3072,13 @@ const comboPct=()=>K&&K.cbM>=3?Math.min(0.25,(K.cbM-2)*0.05):0;
 /* usta işi: sadece 5 yıldız; temel %4, her kombo adımı +%2, en fazla %20 */
 function mqRoll(stars){if(stars<5||!K||K.skips)return false;const p=Math.min(0.2,0.04+0.02*(K.cbM||0));return Math.random()<p}
 function cbPop(n){let el=document.getElementById('cbPop');if(!el){el=document.createElement('div');el.id='cbPop';document.body.appendChild(el)}el.textContent='🔥 x'+n;el.classList.remove('on');void el.offsetWidth;el.classList.add('on')}
+/* kraft sonucu özeti: yıldız, ortalama, adım sayısı, kombo, adım çubukları, zayıf adımlar; tüm liste açılır */
+function resSum(stars){const sc=K.scores||[],nm=K.names||[],n=sc.length,av=n?Math.round(avg(sc)*100):0,col=v=>v>=0.9?'#3f9a7c':v>=0.7?'#d9a23a':'#d0503c';
+ const weak=sc.map((v,i)=>[v,nm[i]]).filter(x=>x[0]<0.8).sort((a,b)=>a[0]-b[0]).slice(0,2);
+ return `<div class="rsum"><div class="stars">${'★'.repeat(stars)}<i>${'★'.repeat(5-stars)}</i></div><div class="rsg"><div><b>%${av}</b><small>ortalama</small></div><div><b>${n}</b><small>adım</small></div><div><b>${K.cbM>=2?'x'+K.cbM:'–'}</b><small>en uzun kombo</small></div></div>
+ <div class="rsb">${sc.map((v,i)=>`<i title="${esc(nm[i]||'')}" style="height:${Math.max(10,Math.round(v*100))}%;background:${col(v)}"></i>`).join('')}</div>
+ ${weak.length?`<div class="rsw">Geliştirilebilir: ${weak.map(w=>`<b>${esc(w[1])}</b> %${Math.round(w[0]*100)}`).join(' · ')}</div>`:'<div class="rsw" style="color:#2f7a63">Bütün adımlar temiz!</div>'}
+ <details class="rsd"><summary>Tüm adımlar</summary>${sc.map((v,i)=>`<div class="brk"><span>${esc(nm[i]||'')}</span><b style="color:${col(v)}">%${Math.round(v*100)}</b></div>`).join('')}</details></div>`}
 
 /* ---------- Üst kat adımları: kakma (sedef yerleştirme) ve akort ---------- */
 /* ortak: parıltı efekti (yıldız sprite, toplamalı karışım) */

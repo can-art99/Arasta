@@ -113,11 +113,11 @@ restock();
 
 const ui={gold:$('gold'),rep:$('rep'),tier:$('tierP'),card:$('card'),tip:$('tip'),bub:$('bubble'),act:$('actions'),modal:$('modal'),sheet:$('sheet'),toast:$('toast'),fade:$('fade')};
 const show=(el,on)=>el.classList.toggle('hide',!on);
-let toastT=0;function toast(t,ms){ui.toast.innerHTML=t;show(ui.toast,true);clearTimeout(toastT);toastT=setTimeout(()=>show(ui.toast,false),ms||1600)}
+let toastT=0;function toast(t,ms){ui.toast.innerHTML=t;ui.toast.classList.toggle('tcr',G.phase==='craft');show(ui.toast,true);clearTimeout(toastT);toastT=setTimeout(()=>show(ui.toast,false),ms||1600)}
 function say(t){if(!t){show(ui.bub,false);return}ui.bub.innerHTML=t;show(ui.bub,view==='home')}
 function tip(t){if(!t){show(ui.tip,false);return}ui.tip.innerHTML=t;show(ui.tip,true)}
 function btn(label,cls,fn,dis){const b=document.createElement('button');b.className='btn '+(cls||'');b.innerHTML=label;if(fn)b.onclick=fn;if(dis)b.disabled=true;return b}
-function actions(list){ui.act.innerHTML='';list.forEach(b=>ui.act.appendChild(b))}
+function actions(list){ui.act.innerHTML='';ui.act.classList.remove('ug');list.forEach(b=>ui.act.appendChild(b))}
 const paintOf=id=>PAINTS.find(p=>p.id===id);
 const anyPaint=()=>PAINTS.some(p=>G.inv['boya_'+p.id]>0);
 function hasNeed(p){return Object.entries(p.need).every(([k,n])=>k==='boya'?anyPaint():G.inv[k]>=n)}
@@ -147,7 +147,7 @@ document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList
 {const vb=$('vitB');show(vb,view==='home'&&!busy);vb.textContent=`Vitrin ${G.stock.length}/${G.owner?'∞':vitCap()}`}
 if(view==='vitrin'){if(G.phase==='ordering'&&G.order&&G.order.buy)buyActions();else actions([btn('Yeni ürün yap','l',openFree,G.phase!=='idle'),btn('Dükkâna dön','g',()=>go('home'))])}
 else if(G.phase==='active'&&view==='home'){const m=matchStock(G.order),L=hasNeed(G.order.p)?[btn(G.order.rep?'Tamire başla':'Tezgâha geç','g',startCraft)]:[btn('Malzeme eksik','l',()=>toast('Eksikleri Pazar, Bahçe ve Atölye\'den tamamla',2000)),btn('İptal et','r',cancelOrder)];if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));actions(L)}
-else if(G.phase==='idle'&&view==='home'&&UF)actions(ustActs());else if(G.phase==='idle'&&view==='home')actions(G.night&&!Q.length?[btn('Günü bitir','g',endDay),btn('Serbest üret','l',openFree),btn('Tamir et','l',openRepairList)]:[btn('Serbest üret','l',openFree),btn('Tamir et'+((G.store||[]).some(x=>x.worn)?' •':''),'l',openRepairList),btn('Usta çağır · 3 💎','l',callMaster)].concat((G.tier||1)>=5||(G.ust&&G.ust.open)?[btn((G.ust&&G.ust.open?'⬆ Üst kat':'🔒 Üst kat')+(G.ust&&G.ust.ord&&G.ust.ord.length?' · 🎩'+G.ust.ord.length:''),'l',()=>G.ust&&G.ust.open?ustGo(true):ustUnlock())]:[]));
+else if(G.phase==='idle'&&view==='home'&&UF){actions(ustActs());ui.act.classList.add('ug')}else if(G.phase==='idle'&&view==='home')actions((G.night&&!Q.length?[btn('Günü bitir','g',endDay),btn('Serbest üret','l',openFree),btn('Tamir et','l',openRepairList)]:[btn('Serbest üret','l',openFree),btn('Tamir et'+((G.store||[]).some(x=>x.worn)?' •':''),'l',openRepairList),btn('Usta çağır · 3 💎','l',callMaster)]).concat((G.tier||1)>=5||(G.ust&&G.ust.open)?[ustBtn()]:[]));
 else if(G.phase==='idle')actions([]);
 else if(G.phase==='active')actions([]);}
 let switching=false;
