@@ -148,7 +148,7 @@ function haggleOrder(){const o=G.order,c=Q[0];if(!o||o.haggled||G.phase!=='order
 haggle({line:`Bütçem ${o.budget} altın, ne dersin?`,offer:o.budget,max:o.hmax,ask:r5(o.budget*1.25),lo:o.budget,hi:r5(o.budget*1.8),
  onDeal:p=>{o.budget=p;o.haggled=true;acceptOrder(`Anlaştık, ${p} altın!`)},onBreak:()=>{o.haggled=true;lose(c,'Pazarlık bozuldu, müşteri gitti',1)},onBack:()=>{o.haggled=true;orderActions()}})}
 function rmStock(it){G.stock=G.stock.filter(x=>x!==it);vitrinSync()}
-function levelUp(){try{rmCheck()}catch(e){}const nt=tierOf(G.rep);if(nt>G.tier){G.tier=nt;restock();repDot();setTimeout(()=>{toast(`Kademe ${nt} açıldı!<br>${TPERK[nt]?TPERK[nt].txt:'Yeni araçlar ve malzemeler'}<br>🎁 Ödülünü ⭐ itibara dokunup al`,3600);sfx.fan()},1500)}checkUnl()}
+function levelUp(){try{rmCheck()}catch(e){}const nt=tierOf(G.rep);if(nt>G.tier){G.tier=nt;restock();repDot();setTimeout(()=>{toast(`Kademe ${nt} açıldı!<br>${perkLi(nt).join('<br>')||'Yeni araçlar ve malzemeler'}<br>🎁 Ödülünü ⭐ itibara dokunup al`,3600);sfx.fan()},1500)}checkUnl()}
 function cancelOrder(){const c=Q[0];if(!c||G.phase!=='active')return;if(!armBuy('cancel','Sipariş iptal edilsin mi? İtibar −3'))return;buyArm=null;say('Peki, başka zaman...');G.bubOn=true;lose(c,'Sipariş iptal edildi',3)}
 function stockDeliver(it){const o=G.order,c=Q[0];if(!o||!c||!G.stock.includes(it))return;rmStock(it);const st=it.stars;let pay=Math.round(o.budget*(0.6+0.08*st));if(o.hurry)pay+=Math.round(o.budget*0.2);if(st===5)pay+=15;
 G.gold+=pay;G.st.earned+=pay;G.st.deliv++;if(st===5)G.st.five++;G.rep=Math.max(0,G.rep+(st>=3?st:-1));if(G.first){G.first=false;spawnT=5}G.phase='leaving';G.order=null;G.n++;levelUp();
