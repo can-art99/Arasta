@@ -15,13 +15,14 @@ function ustBuild(){if(UGRP.children.length)return;const g=UGRP,P=(geo,m,x,y,z)=
  const cin=ustTex((c,w,h)=>{c.fillStyle='#1f8a8a';c.fillRect(0,0,w,h);c.fillStyle='#f2efe6';for(let i=0;i<8;i++){c.beginPath();c.arc(i*32+16,h/2,11,0,Math.PI*2);c.fill()}c.fillStyle='#1a4f7a';for(let i=0;i<8;i++){c.beginPath();c.moveTo(i*32+16,h/2-8);c.lineTo(i*32+24,h/2);c.lineTo(i*32+16,h/2+8);c.lineTo(i*32+8,h/2);c.fill()}c.fillStyle='#c9302a';for(let i=0;i<8;i++){c.beginPath();c.arc(i*32+16,h/2,3,0,Math.PI*2);c.fill()}c.fillStyle='#0e5a5a';c.fillRect(0,0,w,3);c.fillRect(0,h-3,w,3)},256,32);
  [[0,1.25,-3.9,6,0.3,0.04,12],[-2.9,1.25,0,0.04,0.3,9,18],[2.9,1.25,0,0.04,0.3,9,18]].forEach(([x,y,z,w,h,d,rp])=>{const t=cin.clone();t.needsUpdate=true;t.repeat.set(rp,1);if(w<0.1)t.rotation=0;const m=new THREE.MeshStandardMaterial({map:t,roughness:0.6});P(B(w,h,d),m,x,y,z)});
  for(let i=0;i<6;i++)P(B(6,0.14,0.18),wd,0,3.3,-3.6+i*1.5);
- [-1.3].forEach(x=>{P(B(0.9,1.1,0.04),glow('#ffe6a8'),x,2.0,-3.9);const a=put(g,new THREE.CircleGeometry(0.45,16,0,Math.PI),glow('#ffd88a'),x,2.55,-3.9);
+ let _n0=g.children.length;[-1.3].forEach(x=>{P(B(0.9,1.1,0.04),glow('#ffe6a8'),x,2.0,-3.9);const a=put(g,new THREE.CircleGeometry(0.45,16,0,Math.PI),glow('#ffd88a'),x,2.55,-3.9);
   P(B(1.04,0.08,0.1),wd,x,1.42,-3.87);P(B(0.08,1.2,0.1),wd,x-0.5,2.0,-3.87);P(B(0.08,1.2,0.1),wd,x+0.5,2.0,-3.87);P(B(0.04,1.1,0.06),wd,x,2.0,-3.86);P(B(0.9,0.04,0.06),wd,x,2.2,-3.86);
   for(let k=0;k<7;k++){const t=k/6*Math.PI;P(B(0.1,0.1,0.1),wd,x+Math.cos(t)*0.5,2.55+Math.sin(t)*0.5,-3.87)}});
+const WINP=g.children.slice(_n0);
  /* sedir (pencerenin altında, sol duvar boyunca devam eder) */
- P(B(2.3,0.42,0.7),wd2,-1.5,0.21,-3.5);P(B(2.24,0.1,0.66),M('#8a1f2a',0.8),-1.5,0.47,-3.5);
+ _n0=g.children.length; P(B(2.3,0.42,0.7),wd2,-1.5,0.21,-3.5);P(B(2.24,0.1,0.66),M('#8a1f2a',0.8),-1.5,0.47,-3.5);
  for(let i=0;i<3;i++){const c=P(B(0.66,0.5,0.16),M(i%2?'#a8322f':'#2c3e6b',0.85),-2.25+i*0.75,0.75,-3.78);c.rotation.x=0.12}
- P(B(0.7,0.42,3.0),wd2,-2.55,0.21,-1.6);P(B(0.66,0.1,2.9),M('#8a1f2a',0.8),-2.55,0.47,-1.6);
+ const SEDP=g.children.slice(_n0);P(B(0.7,0.42,3.0),wd2,-2.55,0.21,-1.6);P(B(0.66,0.1,2.9),M('#8a1f2a',0.8),-2.55,0.47,-1.6);
  /* halı */
  const rug=ustTex((c,w,h)=>{c.fillStyle='#7a1a22';c.fillRect(0,0,w,h);c.strokeStyle='#d9b44a';c.lineWidth=8;c.strokeRect(10,10,w-20,h-20);c.strokeStyle='#1d2f5a';c.lineWidth=14;c.strokeRect(26,26,w-52,h-52);c.fillStyle='#d9b44a';c.beginPath();c.moveTo(w/2,h*0.25);c.lineTo(w*0.72,h/2);c.lineTo(w/2,h*0.75);c.lineTo(w*0.28,h/2);c.fill();c.fillStyle='#1d2f5a';c.beginPath();c.arc(w/2,h/2,16,0,Math.PI*2);c.fill()},256,160);
  const rg=put(g,new THREE.PlaneGeometry(2.6,1.7),new THREE.MeshStandardMaterial({map:rug,roughness:0.95}),0.1,0.03,-1.3);rg.rotation.x=-Math.PI/2;
@@ -35,8 +36,8 @@ function ustBuild(){if(UGRP.children.length)return;const g=UGRP,P=(geo,m,x,y,z)=
  const gl=put(UVIT,B(1.62,2.0,0.02),new THREE.MeshStandardMaterial({color:'#cfe8f0',transparent:true,opacity:0.16,roughness:0.1}),0,1.15,0.27);gl.castShadow=false;
  UVIT.userData.items=new THREE.Group();UVIT.add(UVIT.userData.items);
  /* avize */
- put(g,Cy(0.01,0.01,0.6,4),M('#3a2a1a'),0.1,3.0,0.2);put(g,Cy(0.35,0.2,0.08,12),gold,0.1,2.68,0.2);for(let i=0;i<8;i++){const t=i/8*Math.PI*2;put(g,new THREE.SphereGeometry(0.045,8,6),glow('#ffe9b0'),0.1+Math.cos(t)*0.33,2.74,0.2+Math.sin(t)*0.33)}
- const al=new THREE.PointLight('#ffcf8a',0.6,7);al.position.set(0.1,2.5,0.2);g.add(al);
+ _n0=g.children.length;put(g,Cy(0.01,0.01,0.6,4),M('#3a2a1a'),0.1,3.0,0.2);put(g,Cy(0.35,0.2,0.08,12),gold,0.1,2.68,0.2);for(let i=0;i<8;i++){const t=i/8*Math.PI*2;put(g,new THREE.SphereGeometry(0.045,8,6),glow('#ffe9b0'),0.1+Math.cos(t)*0.33,2.74,0.2+Math.sin(t)*0.33)}
+ const AVP=g.children.slice(_n0);const al=new THREE.PointLight('#ffcf8a',0.6,7);al.position.set(0.1,2.5,0.2);g.add(al);ustModels(g,WINP,SEDP,AVP);
  /* aşağı inen merdiven ağzı (sol arka köşe) */
  UDOWN=new THREE.Group();UDOWN.position.set(-2.45,0,-3.3);g.add(UDOWN);put(UDOWN,B(0.9,0.02,1.1),M('#120a05',1),0,0.035,0);
  [[0,0.45,0.55,0.9,0.05,0.05],[0.45,0.45,0,0.05,0.05,1.1],[0.45,0.22,0.55,0.05,0.45,0.05],[0.45,0.22,-0.5,0.05,0.45,0.05]].forEach(([x,y,z,w,h,d])=>put(UDOWN,B(w,h,d),wd,x,y,z));
@@ -132,8 +133,14 @@ function sitBone(m,re){let r=null;m.traverse(o=>{if(!r&&o.isBone&&re.test(o.name
 function sitAim(b,dir){b.getWorldQuaternion(_sw);_sb.set(0,1,0).applyQuaternion(_sw).normalize();_sq.setFromUnitVectors(_sb,dir);_sw.premultiply(_sq);b.parent.getWorldQuaternion(_sp);b.quaternion.copy(_sp.invert().multiply(_sw));b.updateMatrixWorld(true)}
 function sitInit(F){const m=F.m,L={};['L','R'].forEach(k=>{L[k]={u:sitBone(m,new RegExp('^UpperLeg\\.?'+k+'$')),l:sitBone(m,new RegExp('^LowerLeg\\.?'+k+'$')),f:sitBone(m,new RegExp('^Foot\\.?'+k+'$'))}});
  if(!L.L.u||!L.L.l||!L.L.f||!L.R.u||!L.R.l||!L.R.f)return;F.w.updateMatrixWorld(true);['L','R'].forEach(k=>{const g=L[k];g.l.getWorldPosition(_sa);g.f.getWorldPosition(_sb);g.len=_sa.distanceTo(_sb)});
- F.legs=L;L.L.u.getWorldPosition(_sa);F.hip=_sa.y-F.w.position.y;F.w.position.y=0.6-F.hip;sitPose(F)}
+ F.legs=L;L.L.u.getWorldPosition(_sa);F.hip=_sa.y-F.w.position.y;F.w.position.y=USEAT+0.08-F.hip;sitPose(F)}
 /* ayak kemiği bacak zincirinin çocuğu değil (IK hedefi), bu yüzden baldırın ucuna ayrıca taşınır */
 function sitPose(F){if(!F.legs||!F.w.parent)return;F.w.updateMatrixWorld(true);const s=Math.sin(F.ry),c=Math.cos(F.ry);
  ['L','R'].forEach((k,i)=>{const g=F.legs[k],sp=(i?-1:1)*0.1,th=new THREE.Vector3(s+c*sp,-0.06,c-s*sp).normalize(),sh=new THREE.Vector3(s*0.12,-1,c*0.12).normalize();sitAim(g.u,th);sitAim(g.l,sh);
   if(g.f.parent!==g.l){g.l.getWorldPosition(_sa);_sa.addScaledVector(sh,g.len);g.f.parent.worldToLocal(_sa);g.f.position.copy(_sa);g.f.updateMatrixWorld(true)}})}
+/* üst kat oda modelleri: yüklenince yerlerindeki basit parçalar gizlenir */
+let USEAT=0.52;
+function ustModels(g,WINP,SEDP,AVP){const hide=a=>a.forEach(o=>o.visible=false);
+ place('m_uwin',{par:g,h:1.62,x:-1.3,y:1.36,z:-3.78,cb:w=>{w.traverse(o=>{if(o.isMesh){const ms=Array.isArray(o.material)?o.material:[o.material];o.material=ms.map(m=>/Windows/.test(m.name)?glow('#ffe6a8'):(m=m.clone(),/Wood/.test(m.name)&&m.color.set(/Light/.test(m.name)?'#6b3c1f':'#4a2a16'),/Stone/.test(m.name)&&m.color.set('#cbb894'),m));if(o.material.length===1)o.material=o.material[0]}});hide(WINP)}});
+ place('m_sedir',{par:g,w:2.3,x:-1.5,y:0,z:-3.52,cb:w=>{w.updateMatrixWorld(true);const rc=new THREE.Raycaster(V(-1.5,3,-3.4),V(0,-1,0)),h=rc.intersectObject(w,true)[0];if(h)USEAT=h.point.y;w.traverse(o=>{if(o.isMesh){const ms=Array.isArray(o.material)?o.material:[o.material];o.material=ms.map((m,i)=>{m=m.clone();m.color.set(i?'#5a1a1e':'#7e2228');m.roughness=0.8;return m});if(o.material.length===1)o.material=o.material[0]}});hide(SEDP);UCOL.forEach(f=>{if(f.legs)f.w.position.y=USEAT+0.08-f.hip})}});
+ place('m_avize',{par:g,h:0.95,x:0.1,y:2.44,z:-0.4,cb:w=>{w.traverse(o=>{if(o.isMesh){const ms=Array.isArray(o.material)?o.material:[o.material];o.material=ms.map(m=>/FFEB3B/i.test(m.name)?glow('#ffd36a'):/DD9944/i.test(m.name)?M('#b8862c',0.35):/FFFFFF/i.test(m.name)?M('#f3ead8',0.6):m);if(o.material.length===1)o.material=o.material[0];o.castShadow=false}});hide(AVP)}})}
