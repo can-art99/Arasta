@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261123.1618';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261123.1625';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1341,7 +1341,7 @@ document.querySelectorAll('#nav button').forEach(b=>{b.disabled=busy;b.classList
 {const vb=$('vitB');show(vb,view==='home'&&!busy);vb.textContent=`Vitrin ${G.stock.length}/${G.owner?'∞':vitCap()}`}
 if(view==='vitrin'){if(G.phase==='ordering'&&G.order&&G.order.buy)buyActions();else actions([btn('Yeni ürün yap','l',openFree,G.phase!=='idle'),btn('Dükkâna dön','g',()=>go('home'))])}
 else if(G.phase==='active'&&view==='home'){const m=matchStock(G.order),L=hasNeed(G.order.p)?[btn(G.order.rep?'Tamire başla':'Tezgâha geç','g',startCraft)]:[btn('Malzeme eksik','l',()=>toast('Eksikleri Pazar, Bahçe ve Atölye\'den tamamla',2000)),btn('İptal et','r',cancelOrder)];if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));actions(L)}
-else if(G.phase==='idle'&&view==='home'&&UF){actions(ustActs());ui.act.classList.add('ug')}else if(G.phase==='idle'&&view==='home')actions((G.night&&!Q.length?[btn('Günü bitir','g',endDay),btn('Serbest üret','l',openFree),btn('Tamir et','l',openRepairList)]:[btn('Serbest üret','l',openFree),btn('Tamir et'+((G.store||[]).some(x=>x.worn)?' •':''),'l',openRepairList),btn('Usta çağır · 3 💎','l',callMaster)]));
+else if(G.phase==='idle'&&view==='home'&&UF)actions(ustActs());else if(G.phase==='idle'&&view==='home')actions((G.night&&!Q.length?[btn('Günü bitir','g',endDay),btn('Serbest üret','l',openFree),btn('Tamir et','l',openRepairList)]:[btn('Serbest üret','l',openFree),btn('Tamir et'+((G.store||[]).some(x=>x.worn)?' •':''),'l',openRepairList),btn('Usta çağır · 3 💎','l',callMaster)]));
 else if(G.phase==='idle')actions([]);
 else if(G.phase==='active')actions([]);}
 let switching=false;
@@ -2240,7 +2240,7 @@ function ustSwap(on){if(on===UF)return;UF=on;document.body.classList.toggle('uf'
  else{UGRP.visible=false;UHID.forEach(c=>c.visible=true);UHID=[];Q.forEach(c=>{if(c.g&&!c.at&&c.hidden)c.g.visible=false})}
  R.shadowMap.needsUpdate=true}
 function ustGo(on){if(switching||G.phase!=='idle'&&on){if(on)toast('Önce sıradaki müşteriyle ilgilen',1500);return}switching=true;sfx.swoosh();ui.fade.style.opacity=1;setTimeout(()=>{ustSwap(on);switching=false;ui.fade.style.opacity=0;refresh();if(on){const s=ustS();toast(`Seçkin atölye<br><small>${s.ord.length?s.ord.length+' koleksiyoner siparişi bekliyor':'Şaheser üret, seçkin vitrine koy'}</small>`,1800)}},350)}
-function ustActs(){const s=ustS();return [btn('Şaheser üret','g',ustFree),btn('Koleksiyoner'+(s.ord.length?' · '+s.ord.length:''),'l',ustBoard),btn('Seçkin vitrin','l',ustVitSheet)]}
+function ustActs(){const s=ustS();return [btn('Şaheser üret','l',ustFree),btn('Seçkin vitrin','l',ustVitSheet),btn('Koleksiyoner'+(s.ord.length?`<i class="abd">${s.ord.length}</i>`:''),'l',ustBoard)]}
 /* kat geçiş butonu: yuvarlak, hep aynı yerde; altta yukarı ok, üstte aşağı ok */
 const ARW=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${d?'<path d="M12 5v14M6 13l6 6 6-6"/>':'<path d="M12 19V5M6 11l6-6 6 6"/>'}</svg>`;
 function ustFlB(){let b=$('flB');const s=ustS(),vis=view==='home'&&G.phase==='idle'&&!switching&&((G.tier||1)>=UST.t||s.open);if(!b){b=document.createElement('button');b.id='flB';$('ui').appendChild(b);b.onclick=()=>{sfx.tap();if(UF)ustGo(false);else if(ustS().open)ustGo(true);else ustUnlock()}}
