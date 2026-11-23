@@ -56,7 +56,12 @@ function ustSwap(on){if(on===UF)return;UF=on;document.body.classList.toggle('uf'
  else{UGRP.visible=false;UHID.forEach(c=>c.visible=true);UHID=[];Q.forEach(c=>{if(c.g&&!c.at&&c.hidden)c.g.visible=false})}
  R.shadowMap.needsUpdate=true}
 function ustGo(on){if(switching||G.phase!=='idle'&&on){if(on)toast('Önce sıradaki müşteriyle ilgilen',1500);return}switching=true;sfx.swoosh();ui.fade.style.opacity=1;setTimeout(()=>{ustSwap(on);switching=false;ui.fade.style.opacity=0;refresh();if(on){const s=ustS();toast(`Seçkin atölye<br><small>${s.ord.length?s.ord.length+' koleksiyoner siparişi bekliyor':'Şaheser üret, seçkin vitrine koy'}</small>`,1800)}},350)}
-function ustActs(){const s=ustS();return [btn('Şaheser üret','g',ustFree),btn('Koleksiyoner'+(s.ord.length?' · '+s.ord.length:''),'l',ustBoard),btn('Seçkin vitrin','l',ustVitSheet),btn('Alt kata in','l',()=>ustGo(false))]}
+function ustActs(){const s=ustS();return [btn('Şaheser üret','g',ustFree),btn('Koleksiyoner'+(s.ord.length?' · '+s.ord.length:''),'l',ustBoard),btn('Seçkin vitrin','l',ustVitSheet)]}
+/* kat geçiş butonu: yuvarlak, hep aynı yerde; altta yukarı ok, üstte aşağı ok */
+const ARW=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${d?'<path d="M12 5v14M6 13l6 6 6-6"/>':'<path d="M12 19V5M6 11l6-6 6 6"/>'}</svg>`;
+function ustFlB(){let b=$('flB');const s=ustS(),vis=view==='home'&&G.phase==='idle'&&!switching&&((G.tier||1)>=UST.t||s.open);if(!b){b=document.createElement('button');b.id='flB';$('ui').appendChild(b);b.onclick=()=>{sfx.tap();if(UF)ustGo(false);else if(ustS().open)ustGo(true);else ustUnlock()}}
+ b.style.display=vis?'':'none';if(!vis)return;const k=(UF?'d':'u')+(s.open?1:0)+(s.ord.length&&!UF?s.ord.length:0);if(b.dataset.k===k)return;b.dataset.k=k;b.classList.toggle('lk',!s.open);b.innerHTML=ARW(UF)+`<small>${UF?'Alt kat':'Üst kat'}</small>`+(!s.open?'<i class="flk">🔒</i>':s.ord.length&&!UF?`<i class="fbd">${s.ord.length}</i>`:'')}
+setInterval(()=>{try{ustFlB()}catch(e){}},500);
 function ustBtn(){const s=ustS();return btn((s.open?'Üst kat':'🔒 Üst kat')+(s.open&&s.ord.length?' · '+s.ord.length+' sipariş':''),s.open&&s.ord.length?'g':'l',()=>s.open?ustGo(true):ustUnlock())}
 /* dokunma */
 function ustTap(){if(view!=='home'||G.phase==='craft'||switching)return false;if(UF){if(UDOWN&&ray.intersectObject(UDOWN,true)[0]){ustGo(false);return true}if(UVIT&&ray.intersectObject(UVIT,true)[0]){ustVitSheet();return true}return false}
