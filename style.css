@@ -439,4 +439,5 @@ body.uf #card,body.uf #bubble,body.uf #pat{display:none!important}
 #flB .fbd{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:10px;background:#e0482f;color:#fff;font:700 11px/20px sans-serif;font-style:normal;border:2px solid #fff}
 #actions.ug .btn:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:60%}
 #actions .btn{position:relative}.abd{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;border-radius:9px;background:#e0482f;color:#fff;font:700 11px/18px sans-serif;font-style:normal;border:2px solid #fff;padding:0 3px}
+#modal:not(.hide) ~ #flB{display:none!important}
 
