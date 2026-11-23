@@ -11,3 +11,9 @@ function kademeRows(){const t=G.tier||1,nx=TIERS[t+1],pk=TPERK[t]||{},dk=G.dk||0
  if(d){const lk=t<d.t;h+=`<div class="row"><div class="n">${d.ad}<small>${lk?`Kademe ${d.t}'te açılır`:`${d.c} altın · Altının: ${G.gold}`}</small></div><button class="btn g" id="dkB" ${lk||G.gold<d.c?'disabled':''}>Büyüt</button></div>`}
  return h}
 function dkBind(){const b=$('dkB');if(!b)return;b.onclick=()=>{const dk=G.dk||0,d=DUK[dk];if(!d||G.tier<d.t||G.gold<d.c)return;G.gold-=d.c;G.dk=dk+1;sfx.coin();sfx.fan();toast(`Dükkân büyüdü: ${d.ad}!<br>Müşteriler artık %${G.dk*4} fazla öder`,2400);save();hud();checkAch();renderMenu()}}
+/* kademe ödülleri: altın + elmas + sandık anahtarı */
+const TREW={2:{g:300,e:10,k:['t',2]},3:{g:1000,e:20,k:['z',1]},4:{g:3000,e:35,k:['z',2]},5:{g:8000,e:60,k:['k',1]}};
+const KADN={t:'Tahta',z:'Zümrüt',k:'Kızıl usta'};
+const trTxt=r=>`+${r.g} altın · +${r.e} 💎 · ${r.k[1]} ${KADN[r.k[0]]} sandık anahtarı`;
+function tierReward(a,b){let g=0,e=0;const ks={};for(let t=a;t<=b;t++){const r=TREW[t];if(!r)continue;g+=r.g;e+=r.e;ks[r.k[0]]=(ks[r.k[0]]||0)+r.k[1]}G.gold+=g;if(G.st)G.st.earned+=g;G.elmas=(G.elmas||0)+e;const K2=chK();Object.entries(ks).forEach(([k,n])=>K2[k]=(K2[k]||0)+n);hud();save();
+ return `+${g} altın · +${e} 💎<br>`+Object.entries(ks).map(([k,n])=>`${n} ${KADN[k]} sandık anahtarı`).join(', ')}
