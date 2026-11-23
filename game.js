@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261123.2113';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261123.2120';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -2227,7 +2227,7 @@ function ustBuild(){if(UGRP.children.length)return;const g=UGRP,P=(geo,m,x,y,z)=
  UDOWN=new THREE.Group();UDOWN.position.set(-2.45,0,-3.3);g.add(UDOWN);put(UDOWN,B(0.9,0.02,1.1),M('#120a05',1),0,0.035,0);
  [[0,0.45,0.55,0.9,0.05,0.05],[0.45,0.45,0,0.05,0.05,1.1],[0.45,0.22,0.55,0.05,0.45,0.05],[0.45,0.22,-0.5,0.05,0.45,0.05]].forEach(([x,y,z,w,h,d])=>put(UDOWN,B(w,h,d),wd,x,y,z));
  for(let i=0;i<4;i++)put(UDOWN,B(0.86,0.03,0.2),wd2,0,0.0-i*0.12,-0.35+i*0.22);
- put(UDOWN,B(0.05,0.9,0.05),gold,0.45,0.45,0.55)}
+ put(UDOWN,B(0.05,0.9,0.05),gold,0.45,0.45,0.55);g.remove(UDOWN);UDOWN=null}
 /* alt katta yukarı çıkan merdiven */
 function ustStairs(){if(USTR)return;USTR=new THREE.Group();USTR.position.set(-2.42,0,-3.42);S.add(USTR);const wd=M('#6a3d20',0.65),dk=M('#3a2213',0.7),br=M('#b8892f',0.35);
  put(USTR,Cy(0.05,0.05,3.3,10),dk,0,1.65,0);put(USTR,Cy(0.09,0.09,0.06,10),br,0,0.03,0);
@@ -2306,7 +2306,7 @@ function ustFigs(){const s=ustS(),want=UF&&s.open?s.ord.slice(0,2):[];
  UCOL=UCOL.filter(f=>{if(want.some(o=>o.id===f.id))return true;UGRP.remove(f.w);const i=MIX.indexOf(f.mx);if(i>=0)MIX.splice(i,1);return false});
  ustKing();const src=['m_Suit','c_advent'].map(n=>CHR.find(g=>g.nm===n)).concat(UKING?[UKING]:[]).filter(Boolean);if(!src.length||!THREE.SkeletonUtils)return;
  want.forEach(o=>{if(UCOL.some(f=>f.id===o.id))return;const used=UCOL.map(f=>f.slot),slot=[0,1].find(k=>!used.includes(k));if(slot==null)return;
-  const fr=src.filter(x=>!UCOL.some(f=>f.src===x)),g=fr.length?fr[o.id%fr.length]:src[0],m=THREE.SkeletonUtils.clone(g.scene),w=new THREE.Group(),sc=1.72/g.h;m.scale.multiplyScalar(sc);m.position.y=-g.y0*sc;if(Math.abs(g.cx||0)>0.3||Math.abs(g.cz||0)>0.3){m.position.x=-g.cx*sc;m.position.z=-g.cz*sc}
+  const fr=src.filter(x=>!UCOL.some(f=>f.src===x));if(!fr.length)return;const g=fr[o.id%fr.length],m=THREE.SkeletonUtils.clone(g.scene),w=new THREE.Group(),sc=1.72/g.h;m.scale.multiplyScalar(sc);m.position.y=-g.y0*sc;if(Math.abs(g.cx||0)>0.3||Math.abs(g.cz||0)>0.3){m.position.x=-g.cx*sc;m.position.z=-g.cz*sc}
   m.traverse(q=>{if(q.isMesh){q.frustumCulled=false;q.castShadow=true}});w.add(m);const L=UCSL[slot];w.position.set(L[0],0,L[1]);w.rotation.y=L[2];UGRP.add(w);
   const mx=new THREE.AnimationMixer(m),cl=g.animations.find(c=>c.name==='idle')||g.animations[0];if(cl){const a=mx.clipAction(cl);a.time=Math.random()*cl.duration;a.play()}MIX.push(mx);
   const F={id:o.id,slot,src:g,w,mx,m,ry:L[2]};sitInit(F);UCOL.push(F);w.scale.setScalar(0.01);tween(0.45,k=>w.scale.setScalar(Math.max(0.01,1-Math.pow(1-k,3))))})}
@@ -2315,11 +2315,14 @@ let UKING=null,UKL=false;function ustKing(){if(UKL||!THREE.GLTFLoader)return;UKL
    bacak kemikleri her karede dünya yönüne göre çevrilir (uyluk öne, baldır aşağı) ve figür sedire indirilir */
 const _sa=new THREE.Vector3(),_sb=new THREE.Vector3(),_sq=new THREE.Quaternion(),_sw=new THREE.Quaternion(),_sp=new THREE.Quaternion();
 function sitBone(m,re){let r=null;m.traverse(o=>{if(!r&&o.isBone&&re.test(o.name))r=o});return r}
-function sitAim(b,c,dir){b.getWorldPosition(_sa);c.getWorldPosition(_sb);_sb.sub(_sa).normalize();_sq.setFromUnitVectors(_sb,dir);b.getWorldQuaternion(_sw);_sw.premultiply(_sq);b.parent.getWorldQuaternion(_sp);b.quaternion.copy(_sp.invert().multiply(_sw));b.updateMatrixWorld(true)}
+function sitAim(b,dir){b.getWorldQuaternion(_sw);_sb.set(0,1,0).applyQuaternion(_sw).normalize();_sq.setFromUnitVectors(_sb,dir);_sw.premultiply(_sq);b.parent.getWorldQuaternion(_sp);b.quaternion.copy(_sp.invert().multiply(_sw));b.updateMatrixWorld(true)}
 function sitInit(F){const m=F.m,L={};['L','R'].forEach(k=>{L[k]={u:sitBone(m,new RegExp('^UpperLeg\\.?'+k+'$')),l:sitBone(m,new RegExp('^LowerLeg\\.?'+k+'$')),f:sitBone(m,new RegExp('^Foot\\.?'+k+'$'))}});
- if(!L.L.u||!L.L.l||!L.L.f||!L.R.u||!L.R.l||!L.R.f)return;F.legs=L;F.w.updateMatrixWorld(true);L.L.u.getWorldPosition(_sa);F.hip=_sa.y-F.w.position.y;F.w.position.y=0.6-F.hip;sitPose(F)}
+ if(!L.L.u||!L.L.l||!L.L.f||!L.R.u||!L.R.l||!L.R.f)return;F.w.updateMatrixWorld(true);['L','R'].forEach(k=>{const g=L[k];g.l.getWorldPosition(_sa);g.f.getWorldPosition(_sb);g.len=_sa.distanceTo(_sb)});
+ F.legs=L;L.L.u.getWorldPosition(_sa);F.hip=_sa.y-F.w.position.y;F.w.position.y=0.6-F.hip;sitPose(F)}
+/* ayak kemiği bacak zincirinin çocuğu değil (IK hedefi), bu yüzden baldırın ucuna ayrıca taşınır */
 function sitPose(F){if(!F.legs||!F.w.parent)return;F.w.updateMatrixWorld(true);const s=Math.sin(F.ry),c=Math.cos(F.ry);
- ['L','R'].forEach((k,i)=>{const g=F.legs[k],sp=(i?-1:1)*0.1,th=new THREE.Vector3(s+c*sp,-0.08,c-s*sp).normalize(),sh=new THREE.Vector3(s*0.18,-1,c*0.18).normalize();sitAim(g.u,g.l,th);sitAim(g.l,g.f,sh)})}
+ ['L','R'].forEach((k,i)=>{const g=F.legs[k],sp=(i?-1:1)*0.1,th=new THREE.Vector3(s+c*sp,-0.06,c-s*sp).normalize(),sh=new THREE.Vector3(s*0.12,-1,c*0.12).normalize();sitAim(g.u,th);sitAim(g.l,sh);
+  if(g.f.parent!==g.l){g.l.getWorldPosition(_sa);_sa.addScaledVector(sh,g.len);g.f.parent.worldToLocal(_sa);g.f.position.copy(_sa);g.f.updateMatrixWorld(true)}})}
 
 /* ---------- ortam sesleri ---------- */
 function vox(pts,type,vol,delay,lp){const a=AC;if(!a||!G.snd||document.hidden)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain(),d=pts[pts.length-1][0];o.type=type||'sine';o.frequency.setValueAtTime(pts[0][1],t);pts.slice(1).forEach(([q,f])=>o.frequency.linearRampToValueAtTime(f,t+q));g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(0.06,d*0.25));g.gain.setValueAtTime(vol,t+d*0.7);g.gain.exponentialRampToValueAtTime(0.0001,t+d);let n=o;if(lp){const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;o.connect(f);n=f}n.connect(g);g.connect(BUS('a'));o.start(t);o.stop(t+d+0.05)}
