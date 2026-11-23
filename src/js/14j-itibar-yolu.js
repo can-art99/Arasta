@@ -17,5 +17,5 @@ const rmTxt=m=>[`+${m.g} altın`,m.e?`+${m.e} 💎`:'',m.k?`${m.k[1]} ${KADN[m.k
 const rmGot=m=>Array.isArray(G.rmC)&&G.rmC.includes(m.r);
 function rmReady(){return RMS().filter(m=>(G.rep||0)>=m.r&&!rmGot(m))}
 function repDot(){const p=$('repP');if(p)p.classList.toggle('dot',rmReady().length+tierReady().length>0)}
-function rmClaim(r){const m=RMS().find(x=>x.r===r);if(!m||(G.rep||0)<m.r||rmGot(m))return;if(!Array.isArray(G.rmC))G.rmC=[];G.rmC.push(m.r);G.gold+=m.g;if(G.st)G.st.earned+=m.g;if(m.e)G.elmas=(G.elmas||0)+m.e;if(m.k){const K2=chK();K2[m.k[0]]=(K2[m.k[0]]||0)+m.k[1]}sfx.coin();sfx.fan();toast(`${m.r} itibar ödülü<br><b>${rmTxt(m)}</b>`,2400);save();hud();openRepPass()}
+function rmClaim(r){const m=RMS().find(x=>x.r===r);if(!m||(G.rep||0)<m.r||rmGot(m))return;if(!Array.isArray(G.rmC))G.rmC=[];G.rmC.push(m.r);G.gold+=m.g;if(G.st)G.st.earned+=m.g;if(m.e)G.elmas=(G.elmas||0)+m.e;if(m.k){const K2=chK();K2[m.k[0]]=(K2[m.k[0]]||0)+m.k[1]}sfx.coin();if(m.e)sGem();else sfx.fan();toast(`${m.r} itibar ödülü<br><b>${rmTxt(m)}</b>`,2400);save();hud();openRepPass()}
 let rmLastN=-1;function rmCheck(){const n=rmReady().length;if(rmLastN>=0&&n>rmLastN)setTimeout(()=>toast('🎁 Yeni itibar ödülü hazır!<br>⭐ itibara dokunup al',2400),2600);rmLastN=n;repDot()}

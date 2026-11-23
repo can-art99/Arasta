@@ -22,4 +22,4 @@ const KADN={t:'Tahta',z:'Zümrüt',k:'Kızıl usta'};
 const trTxt=r=>`+${r.g} altın · +${r.e} 💎 · ${r.k[1]} ${KADN[r.k[0]]} sandık anahtarı`;
 const tGot=t=>Array.isArray(G.tC)&&G.tC.includes(t);
 function tierReady(){const o=[];for(let t=2;t<=(G.tier||1);t++)if(TREW[t]&&!tGot(t))o.push(t);return o}
-function tClaim(t){const r=TREW[t];if(!r||(G.tier||1)<t||tGot(t))return;if(!Array.isArray(G.tC))G.tC=[];G.tC.push(t);G.gold+=r.g;if(G.st)G.st.earned+=r.g;G.elmas=(G.elmas||0)+r.e;const K2=chK();K2[r.k[0]]=(K2[r.k[0]]||0)+r.k[1];sfx.coin();sfx.fan();toast(`Kademe ${t} ödülü<br><b>${trTxt(r)}</b>`,2600);save();hud();openRepPass()}
+function tClaim(t){const r=TREW[t];if(!r||(G.tier||1)<t||tGot(t))return;if(!Array.isArray(G.tC))G.tC=[];G.tC.push(t);G.gold+=r.g;if(G.st)G.st.earned+=r.g;G.elmas=(G.elmas||0)+r.e;const K2=chK();K2[r.k[0]]=(K2[r.k[0]]||0)+r.k[1];sfx.coin();if(r.e)sGem();else sfx.fan();toast(`Kademe ${t} ödülü<br><b>${trTxt(r)}</b>`,2600);save();hud();openRepPass()}

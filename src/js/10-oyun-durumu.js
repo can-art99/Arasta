@@ -17,7 +17,7 @@ const ACH=[{id:'ilk',ad:'İlk satış',desc:'Bir sipariş teslim et',get:()=>G.s
 {id:'kol20',ad:'Koleksiyoncu',desc:'20 farklı ürün kartı topla',get:()=>Object.keys(G.cat).length,goal:20,gold:150},{id:'par',ad:'Parlak vitrin',desc:'5 ürün kartını parlat (5★)',get:()=>Object.values(G.cat).filter(c=>c&&c.best>=5).length,goal:5,gold:150,gem:3},
 {id:'mud',ad:'Sadık müşteriler',desc:'3 müdavim edin',get:()=>(G.reg||[]).length,goal:3,gold:120},{id:'bah',ad:'Bereketli toprak',desc:'50 hasat yap',get:()=>G.st.harv,goal:50,gold:150},
 {id:'yar',ad:'Ekip kuruldu',desc:'2 yardımcı çalıştır (çırak, çiftçi, çoban)',get:()=>['cirak','trak','coban'].filter(k=>G[k]).length,goal:2,gold:200},{id:'tar',ad:'Tapu sahibi',desc:'Yeni Tarla\'nın tapusunu al',get:()=>G.land?1:0,goal:1,gold:150}];
-function checkAch(){ACH.forEach(a=>{if(!G.ach[a.id]&&a.get()>=a.goal){G.ach[a.id]=1;G.gold+=a.gold;if(a.gem)G.elmas=(G.elmas||0)+a.gem;hud();toast(`Başarım: ${a.ad}<br>+${a.gold} altın${a.gem?' · +'+a.gem+' 💎':''}`,2400);sfx.fan()}})}
+function checkAch(){ACH.forEach(a=>{if(!G.ach[a.id]&&a.get()>=a.goal){G.ach[a.id]=1;G.gold+=a.gold;if(a.gem)G.elmas=(G.elmas||0)+a.gem;hud();toast(`Başarım: ${a.ad}<br>+${a.gold} altın${a.gem?' · +'+a.gem+' 💎':''}`,2400);sAch()}})}
 function checkUnl(){PRODS.filter(unlocked).forEach(p=>{if(!G.unl.includes(p.id)){G.unl.push(p.id);setTimeout(()=>{toast(`Yeni ürün açıldı: ${p.ad}`,2600);sfx.fan()},2300)}})}
 const SKOF=n=>n==='1'?'kraft-save-v1':'kraft-save-v1-s'+n,SSLOT=(()=>{try{return localStorage.getItem('arasta-slot')||'1'}catch(e){return '1'}})(),SK=SKOF(SSLOT);
 function slotInfo(n){try{const d=JSON.parse(localStorage.getItem(SKOF(n)));if(!d)return null;return {ad:(d.shop&&d.shop.ad)||'Dükkânım',day:d.day||1,gold:d.gold||0,tier:d.tier||1,cloud:d.cloud||null}}catch(e){return null}}
@@ -125,7 +125,7 @@ function hasAll(o){return Object.entries(o).every(([k,n])=>G.inv[k]>=n)}
 function giveAll(o,s){Object.entries(o).forEach(([k,n])=>G.inv[k]+=n*(s||1))}
 /* Elmas: nadir para birimi. p olasılıkla 1 elmas verir */
 const GEM_P={topla:0.005,teslim:0.03,bes:0.06};
-function gemRoll(p,msg){if(Math.random()>=p*balM('gem')*(1+(typeof gemB==='function'?gemB():0)))return false;G.elmas=(G.elmas||0)+1;hud();sfx.fan&&sfx.fan();toast(`💎 ${msg}<br>Elmasın: <b>${G.elmas}</b>`,2400);return true}
+function gemRoll(p,msg){if(Math.random()>=p*balM('gem')*(1+(typeof gemB==='function'?gemB():0)))return false;G.elmas=(G.elmas||0)+1;hud();sGem();toast(`💎 ${msg}<br>Elmasın: <b>${G.elmas}</b>`,2400);return true}
 function hud(){try{repDot()}catch(e){}{const e=$('elmas');if(e)e.textContent=G.elmas||0}ui.gold.textContent=G.gold;ui.rep.textContent=G.rep;{const h=`<span class="tk">K${G.tier}</span><span class="tc">${clockTxt()}</span>${ic(WXI[wx]||'sun')}`;if(ui.tier._h!==h){ui.tier._h=h;ui.tier.innerHTML=h}}}
 function clockTxt(){if(G.night)return 'Akşam';const m=480+Math.floor(G.tm),h=Math.floor(m/60);return (h<10?'0':'')+h+':'+String(m%60).padStart(2,'0')}
 const SRCM={yun:'Bahçe › Çiftlik: koyun',sut:'Bahçe › Çiftlik: inek / keçi',tuy:'Bahçe › Çiftlik: tavuk',atkili:'Bahçe › Çiftlik: at',yag:'Bahçe › Çiftlik: domuz',bal:'Bahçe › Bostan: arı kovanı',lavanta:'Bahçe › Bostan: lavanta',ceviz:'Bahçe › Bostan: ceviz ağacı',bogurtlen:'Bahçe › Bostan: böğürtlen',boynuz:'Bahçe › Orman: geyik',tas:'Bahçe › Orman: taş ocağı',kil:'Bahçe › Orman: kil çukuru',kum:'Bahçe › Orman: kum',sogut:'Bahçe › Orman: söğüt',recine:'Bahçe › Orman: çam ağacı'};

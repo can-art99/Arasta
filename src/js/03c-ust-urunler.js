@@ -26,7 +26,7 @@ function sandikModel(hex){const g=new THREE.Group(),um=M(hex||'#5e3418',0.5),dk=
  return {g,um}}
 {const T=(ad,o)=>Object.assign({t:'trace',ad},o||{}),Rb=(k,ad)=>({t:'rub',k,ad}),D={t:'design'},Y=(k,ad,o)=>Object.assign({t:'rhythm',k,ad},o||{}),A=(part,ad,slots)=>({t:'asm',part,ad,slots,pose:'flat'}),Hd=ad=>({t:'hold',ad}),rr=(w,h)=>()=>rrect(w,h,Math.min(w,h)*0.25);
 PRODS.push(
-{id:'baglama',ust:1,hard:true,ad:'Bağlama',tier:5,base:900,need:{kereste:3,iplik:2,boynuz:1},sheet:'#b07a48',wood:true,shape:lutShape,build:baglamaModel,
+{id:'baglama',ust:1,hard:true,ad:'Bağlama',tier:5,base:900,need:{kereste:3,iplik:2,boynuz:1},sheet:'#b07a48',wood:true,shape:lutShape,build:baglamaModel,vrot:[1.25,0,0],
  steps:[T('Tekne dilimlerini kes'),{t:'chisel',ad:'Tekneyi içten oy',c:[0,0.02],r:[0.12,0.15]},Y('yapistir','Dilimleri tutkalla',{pts:[[-0.12,-0.1],[0.12,-0.1],[-0.15,0.05],[0.15,0.05],[0,0.2]]}),Hd('Tekneyi kalıpta sıkıştır'),{t:'plane',ad:'Tekneyi rendele',n:5},Rb('zimpara','Tekneyi zımparala'),
   T('Göğüs kapağını kes',{part:'kapak',n:1,shape:()=>ellShape(0.15,0.19),at:[-0.45,0],col:'#d9b98a',wood:true}),A('kapak','Kapağı tekneye oturt',[[0,0.02]]),Y('yapistir','Kapak kenarını yapıştır',{n:8,sc:0.85}),{t:'drill',ad:'Ses deliğini aç',pts:[[0,-0.06]]},
   T('Sapı kes',{part:'sap',n:1,shape:rr(0.05,0.4),at:[-0.45,0],col:'#7a4524',wood:true}),A('sap','Sapı gövdeye tak',[[0,-0.42]]),{t:'drill',ad:'Burgu deliklerini aç',pts:[[-0.03,-0.56],[0.03,-0.56],[-0.03,-0.6],[0.03,-0.6]]},

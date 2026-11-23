@@ -59,7 +59,7 @@ function ustSign(){if(!USTR)return;const sg=USTR.userData.sign;sg.clear();const 
 /* kat değiştirme: kraft grubunu içeren kapsayıcıları değil, kardeşlerini gizle */
 function hasCraft(o){let q=craft;while(q){if(q===o)return true;q=q.parent}return false}
 function ustHide(o){if(o===craft||o===UGRP||!o.visible)return;if(hasCraft(o)){o.children.forEach(ustHide);return}o.visible=false;UHID.push(o)}
-function ustSwap(on){if(on===UF)return;UF=on;document.body.classList.toggle('uf',on);if(on){ustBuild();UHID=[];S.children.forEach(c=>{if(c===UGRP||c===craft||c.isLight||c.isPoints||c.isLineSegments||!c.visible)return;const b=new THREE.Box3().setFromObject(c);if(b.isEmpty())return;const ct=b.getCenter(V(0,0,0));if(Math.abs(ct.x)<3.4&&ct.z>-4.5&&ct.z<4.9&&ct.y<5)ustHide(c)});UGRP.visible=true;ustVitSync()}
+function ustSwap(on){if(on===UF)return;UF=on;document.body.classList.toggle('uf',on);if(on){ustBuild();UHID=[];S.children.forEach(c=>{if(c===UGRP||c===craft||c.isLight||c.isPoints||c.isLineSegments||!c.visible)return;const b=new THREE.Box3().setFromObject(c);if(b.isEmpty())return;const ct=b.getCenter(V(0,0,0));if(Math.abs(ct.x)<3.4&&ct.z>-4.5&&ct.z<4.9&&ct.y<5)ustHide(c)});UGRP.visible=true;ustVitSync();ustFigs()}
  else{UGRP.visible=false;UHID.forEach(c=>c.visible=true);UHID=[];Q.forEach(c=>{if(c.g&&!c.at&&c.hidden)c.g.visible=false})}
  R.shadowMap.needsUpdate=true}
 function ustGo(on){if(switching||G.phase!=='idle'&&on){if(on)toast('Önce sıradaki müşteriyle ilgilen',1500);return}switching=true;sfx.swoosh();ui.fade.style.opacity=1;setTimeout(()=>{ustSwap(on);switching=false;ui.fade.style.opacity=0;refresh();if(on){const s=ustS();toast(`Seçkin atölye<br><small>${s.ord.length?s.ord.length+' koleksiyoner siparişi bekliyor':'Şaheser üret, seçkin vitrine koy'}</small>`,1800)}},350)}
@@ -71,7 +71,7 @@ function ustFlB(){let b=$('flB');const s=ustS(),vis=view==='home'&&G.phase==='id
 setInterval(()=>{try{ustFlB()}catch(e){}},500);
 function ustBtn(){const s=ustS();return btn((s.open?'Üst kat':'🔒 Üst kat')+(s.open&&s.ord.length?' · '+s.ord.length+' sipariş':''),s.open&&s.ord.length?'g':'l',()=>s.open?ustGo(true):ustUnlock())}
 /* dokunma */
-function ustTap(){if(view!=='home'||G.phase==='craft'||switching)return false;if(UF){if(UDOWN&&ray.intersectObject(UDOWN,true)[0]){ustGo(false);return true}if(UVIT&&ray.intersectObject(UVIT,true)[0]){ustVitSheet();return true}return false}
+function ustTap(){if(view!=='home'||G.phase==='craft'||switching)return false;if(UF){if(UDOWN&&ray.intersectObject(UDOWN,true)[0]){ustGo(false);return true}if(UVIT&&ray.intersectObject(UVIT,true)[0]){ustVitSheet();return true}if(UCOL.some(f=>ray.intersectObject(f.w,true)[0])){sfx.tap();ustBoard();return true}return false}
  if(USTR&&USTR.visible&&ray.intersectObject(USTR,true)[0]){const s=ustS();if(s.open)ustGo(true);else ustUnlock();return true}return false}
 function ustUnlock(){const s=ustS(),tk=(G.tier||1)>=UST.t,gk=G.gold>=UST.g;
  openSheet('ust',`<h3>Üst kat · Seçkin atölye</h3><p>Sadece şaheserlerin yapıldığı ayrı bir atölye: bağlama, sedef kakma sandık ve sonra açılacak 6 ürün daha. Koleksiyonerler yüksek fiyat öder, seçkin vitrinde yavaş ama değerli satış olur.</p>
@@ -81,7 +81,7 @@ function ustUnlock(){const s=ustS(),tk=(G.tier||1)>=UST.t,gk=G.gold>=UST.g;
 /* koleksiyoner siparişleri */
 function ustNewOrder(){const s=ustS(),L=ustProds();if(!L.length)return;const p=pick(L),used=new Set(s.ord.map(o=>o.ad));const nm=pick(COLN.filter(n=>!used.has(n)))||pick(COLN);
  s.ord.push({id:Date.now()+Math.floor(Math.random()*999),pid:p.id,ad:nm,budget:Math.round(p.base*(1.2+Math.random()*0.4)*payM()/50)*50,end:NOW()+5400});if(!UF)setTimeout(()=>toast(`🎩 Koleksiyoner ${nm} üst kata geldi<br><small>${p.ad} istiyor</small>`,2200),400)}
-function ustTick(){const s=ustS();if(!s.open||!G.started)return;const n=NOW();const before=s.ord.length;s.ord=s.ord.filter(o=>o.end>n);if(s.ord.length<before&&UF)toast('Bir koleksiyoner beklemekten vazgeçti',1600);
+function ustTick(){try{ustFigs()}catch(e){}const s=ustS();if(!s.open||!G.started)return;const n=NOW();const before=s.ord.length;s.ord=s.ord.filter(o=>o.end>n);if(s.ord.length<before&&UF)toast('Bir koleksiyoner beklemekten vazgeçti',1600);
  if(s.ord.length<2&&n>=(s.nx||0)){ustNewOrder();s.nx=n+3000+Math.random()*1200;save();if(UF)refresh()}
  if(s.stock.length&&Math.random()<s.stock.length*10/5400){const i=Math.floor(Math.random()*s.stock.length),it=s.stock[i];s.stock.splice(i,1);G.gold+=it.price;if(G.st){G.st.earned+=it.price;G.st.sold++}sfx.cash&&sfx.cash();toast(`Seçkin vitrinden ${pr(it).ad} satıldı<br><b>+${it.price.toLocaleString('tr-TR')} altın</b>`,2400);ustVitSync();save();hud()}}
 setInterval(()=>{try{ustTick()}catch(e){}},10000);
@@ -107,9 +107,20 @@ function ustDone(ok,co){show(ui.modal,false);modalMode=null;const it=K.res.item,
  if(it.stars>=3){const e=G.cat[it.pid]||(G.cat[it.pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,it.stars)}
  tween(0.3,k=>g.scale.setScalar(Math.max(0.01,0.8*(1-k))),()=>craft.remove(w));G.phase='idle';G.order=null;ustVitSync();levelUp();save();refresh()}
 /* seçkin vitrin */
-function ustVitSync(){if(!UVIT)return;const ig=UVIT.userData.items;ig.clear();ustS().stock.forEach((it,i)=>{const p=pr(it);if(!p)return;try{const m0=p.build(it.col?paintOf(it.col).hex:p.sheet).g,m=new THREE.Group();m.add(m0);let b=new THREE.Box3().setFromObject(m0),z=b.getSize(V(0,0,0));if(z.y<0.35*Math.max(z.x,z.z)){m0.rotation.x=z.z>z.x?-1.25:0;if(z.x>=z.z){m0.rotation.x=-1.25;m0.rotation.z=0}}m0.updateMatrixWorld(true);b=new THREE.Box3().setFromObject(m0);z=b.getSize(V(0,0,0));const k=Math.min(0.7/Math.max(z.x,0.01),0.38/Math.max(z.y,0.01),0.36/Math.max(z.z,0.01));m.scale.setScalar(k);m0.position.set(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);m.position.set(0,[1.25,1.7,2.12][i]||1.25,0.04);ig.add(m)}catch(e){}});R.shadowMap.needsUpdate=true}
+function ustVitSync(){if(!UVIT)return;const ig=UVIT.userData.items;ig.clear();ustS().stock.forEach((it,i)=>{const p=pr(it);if(!p)return;try{const m0=p.build(it.col?paintOf(it.col).hex:p.sheet).g,m=new THREE.Group();m.add(m0);let b=new THREE.Box3().setFromObject(m0),z=b.getSize(V(0,0,0));if(p.vrot)m0.rotation.set(p.vrot[0],p.vrot[1],p.vrot[2]);else if(z.y<0.35*Math.max(z.x,z.z)){m0.rotation.x=z.z>z.x?-1.25:0;if(z.x>=z.z){m0.rotation.x=-1.25;m0.rotation.z=0}}m0.updateMatrixWorld(true);b=new THREE.Box3().setFromObject(m0);z=b.getSize(V(0,0,0));const k=Math.min(0.7/Math.max(z.x,0.01),0.38/Math.max(z.y,0.01),0.36/Math.max(z.z,0.01));m.scale.setScalar(k);m0.position.set(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);m.position.set(0,[1.25,1.7,2.12][i]||1.25,0.04);ig.add(m)}catch(e){}});R.shadowMap.needsUpdate=true}
 function ustVitSheet(){const s=ustS();let h=`<h3>Seçkin vitrin <small>${s.stock.length}/${UST.vcap}</small></h3><p>Buradaki şaheserler kendiliğinden, ortalama 1–1,5 saatte bir satılır.</p>`;
  h+=s.stock.length?s.stock.map((it,i)=>`<div class="row"><img class="ic" src="${ICON[it.pid]}" alt=""><div class="n">${pr(it).ad}<small>${desc(it)} · ${'★'.repeat(it.stars)} · ${it.price.toLocaleString('tr-TR')} altın</small></div><button class="btn l" data-us="${i}">Depoya al</button></div>`).join(''):'<p class="dem">Vitrin boş. "Şaheser üret" ile doldur.</p>';
  openSheet('ustvit',h+closeBtn);wire();ui.sheet.querySelectorAll('[data-us]').forEach(b=>b.onclick=()=>{const it=s.stock.splice(+b.dataset.us,1)[0];if(it){(G.store=G.store||[]).push(it);storeSync()}ustVitSync();save();ustVitSheet()})}
 /* başlangıç */
 setTimeout(()=>{try{ustStairs();ustSign();ustS()}catch(e){}},300);
+
+/* koleksiyoner figürleri: bekleyen her sipariş için üst katta bir koleksiyoner (Takım elbiseli / Maceracı) durur; dokununca sipariş listesi açılır */
+let UCOL=[];const UCSL=[[0.05,-1.6,-0.2],[-0.95,-2.35,0.35]];
+function ustFigs(){const s=ustS(),want=UF&&s.open?s.ord.slice(0,2):[];
+ UCOL=UCOL.filter(f=>{if(want.some(o=>o.id===f.id))return true;UGRP.remove(f.w);const i=MIX.indexOf(f.mx);if(i>=0)MIX.splice(i,1);return false});
+ const src=['m_Suit','c_advent'].map(n=>CHR.find(g=>g.nm===n)).filter(Boolean);if(!src.length||!THREE.SkeletonUtils)return;
+ want.forEach(o=>{if(UCOL.some(f=>f.id===o.id))return;const used=UCOL.map(f=>f.slot),slot=[0,1].find(k=>!used.includes(k));if(slot==null)return;
+  const g=src.find(x=>!UCOL.some(f=>f.src===x))||src[0],m=THREE.SkeletonUtils.clone(g.scene),w=new THREE.Group(),sc=1.72/g.h;m.scale.multiplyScalar(sc);m.position.y=-g.y0*sc;if(Math.abs(g.cx||0)>0.3||Math.abs(g.cz||0)>0.3){m.position.x=-g.cx*sc;m.position.z=-g.cz*sc}
+  m.traverse(q=>{if(q.isMesh){q.frustumCulled=false;q.castShadow=true}});w.add(m);const L=UCSL[slot];w.position.set(L[0],0,L[1]);w.rotation.y=L[2];UGRP.add(w);
+  const mx=new THREE.AnimationMixer(m),cl=g.animations.find(c=>c.name==='idle')||g.animations[0];if(cl){const a=mx.clipAction(cl);a.time=Math.random()*cl.duration;a.play()}MIX.push(mx);
+  UCOL.push({id:o.id,slot,src:g,w,mx});w.scale.setScalar(0.01);tween(0.45,k=>w.scale.setScalar(Math.max(0.01,1-Math.pow(1-k,3))))})}
