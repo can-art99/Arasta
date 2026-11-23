@@ -12,7 +12,7 @@ function openRepPass(){const cur=G.tier||1,rep=G.rep||0,max=TMAX;
  $('rpX').onclick=()=>{sfx.tap();closeSheet()};ui.sheet.querySelectorAll('[data-rt]').forEach(d=>d.onclick=()=>{const w=$('rpW'),c=w&&w.querySelector('[data-tc="'+d.dataset.rt+'"]');if(c)w.scrollTo({left:c.offsetLeft-(w.clientWidth-c.clientWidth)/2,behavior:'smooth'})});
  ui.sheet.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>rmClaim(+b.dataset.rm));ui.sheet.querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>tClaim(+b.dataset.tr));requestAnimationFrame(()=>{const w=$('rpW'),n=w&&w.querySelector('[data-rdy]')||$('rpNow');if(w&&n)w.scrollLeft=n.offsetLeft-(w.clientWidth-n.clientWidth)/2})}
 /* ara itibar ödülleri: itibar yolunda kademelerin arasında, dokunup alınır */
-function RMS(){return[{r:50,g:100,k:['t',1]},{r:200,g:200,e:5},{r:600,g:400,k:['z',1]},{r:900,g:500,e:8},{r:1500,g:800,e:10},{r:2000,g:1000,k:['t',2]},{r:2500,g:1200,k:['z',1]},{r:3700,g:1800,e:20},{r:5500,g:2500,k:['z',2]},{r:7700,g:3500,e:30},{r:10500,g:4500,k:['k',1]},{r:14000,g:6000,e:45}]}
+function RMS(){return[{r:50,g:100,k:['t',1]},{r:200,g:200,e:3},{r:600,g:400,k:['t',1]},{r:900,g:500,e:4},{r:1500,g:700,k:['t',2]},{r:2000,g:800,e:5},{r:2500,g:1000,k:['z',1]},{r:3700,g:1500,e:6},{r:5500,g:2000,k:['z',1]},{r:7700,g:2500,e:8},{r:10500,g:3000,k:['z',2]},{r:14000,g:4000,e:10}]}
 const rmTxt=m=>[`+${m.g} altın`,m.e?`+${m.e} 💎`:'',m.k?`${m.k[1]} ${KADN[m.k[0]]} sandık anahtarı`:''].filter(Boolean).join(' · ');
 const rmGot=m=>Array.isArray(G.rmC)&&G.rmC.includes(m.r);
 function rmReady(){return RMS().filter(m=>(G.rep||0)>=m.r&&!rmGot(m))}

@@ -17,7 +17,7 @@ function kademeRows(){const t=G.tier||1,nx=TIERS[t+1],pk=TPERK[t]||{},dk=G.dk||0
  return h}
 function dkBind(){const b=$('dkB');if(!b)return;b.onclick=()=>{const dk=G.dk||0,d=DUK[dk];if(!d||G.tier<d.t||G.gold<d.c)return;G.gold-=d.c;G.dk=dk+1;sfx.coin();sfx.fan();toast(`Dükkân büyüdü: ${d.ad}!<br>Müşteriler artık %${G.dk*4} fazla öder`,2400);save();hud();checkAch();renderMenu()}}
 /* kademe ödülleri: altın + elmas + sandık anahtarı */
-const TREW={2:{g:300,e:10,k:['t',2]},3:{g:1000,e:20,k:['z',1]},4:{g:3000,e:35,k:['z',2]},5:{g:8000,e:60,k:['k',1]},6:{g:10000,e:70,k:['z',3]},7:{g:13000,e:80,k:['k',1]},8:{g:16000,e:90,k:['k',1]},9:{g:20000,e:100,k:['k',2]},10:{g:30000,e:150,k:['k',3]}};
+const TREW={2:{g:300,e:5,k:['t',1]},3:{g:800,e:8,k:['t',2]},4:{g:2000,e:12,k:['z',1]},5:{g:4000,e:15,k:['z',1]},6:{g:5000,e:18,k:['z',2]},7:{g:6500,e:20,k:['k',1]},8:{g:8000,e:25,k:['z',2]},9:{g:10000,e:30,k:['k',1]},10:{g:15000,e:40,k:['k',2]}};
 const KADN={t:'Tahta',z:'Zümrüt',k:'Kızıl usta'};
 const trTxt=r=>`+${r.g} altın · +${r.e} 💎 · ${r.k[1]} ${KADN[r.k[0]]} sandık anahtarı`;
 const tGot=t=>Array.isArray(G.tC)&&G.tC.includes(t);

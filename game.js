@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261123.1214';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261123.1349';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -1163,7 +1163,7 @@ const ACH=[{id:'ilk',ad:'İlk satış',desc:'Bir sipariş teslim et',get:()=>G.s
 {id:'zen',ad:'Dolu kasa',desc:'Toplam 1000 altın kazan',get:()=>G.st.earned,goal:1000,gold:100},{id:'top',ad:'Toplayıcı',desc:'50 malzeme topla',get:()=>G.st.coll,goal:50,gold:50},
 {id:'isl',ad:'Çalışkan atölye',desc:'Atölyede 20 üretim yap',get:()=>G.st.proc,goal:20,gold:60},{id:'cif',ad:'Çiftçi',desc:'10 hasat yap',get:()=>G.st.harv,goal:10,gold:60},
 {id:'ara',ad:'Toprak sahibi',desc:'3 arazi satın al',get:()=>G.st.plots,goal:3,gold:80},{id:'kol',ad:'Tam koleksiyon',desc:'Tüm ürünleri başarıyla üret',get:()=>Object.keys(G.cat).length,goal:PRODS.length,gold:300},
-{id:'vit',ad:'Vitrin satıcısı',desc:'Vitrinden 5 ürün sat',get:()=>G.st.sold,goal:5,gold:60},{id:'k3',ad:'Büyük usta',desc:'Kademe 3 ol',get:()=>G.tier,goal:3,gold:150},{id:'k4',ad:'Usta-i kâmil',desc:'Kademe 4 ol',get:()=>G.tier,goal:4,gold:400,gem:5},{id:'k5',ad:'Pîr',desc:'Kademe 5 ol',get:()=>G.tier,goal:5,gold:1000,gem:10},{id:'k10',ad:'Çarşı ağası',desc:'Kademe 10 ol',get:()=>G.tier,goal:10,gold:5000,gem:30},{id:'dk',ad:'Çarşının yıldızı',desc:'Dükkânı en üst seviyeye büyüt',get:()=>G.dk||0,goal:4,gold:500,gem:5},
+{id:'vit',ad:'Vitrin satıcısı',desc:'Vitrinden 5 ürün sat',get:()=>G.st.sold,goal:5,gold:60},{id:'k3',ad:'Büyük usta',desc:'Kademe 3 ol',get:()=>G.tier,goal:3,gold:150},{id:'k4',ad:'Usta-i kâmil',desc:'Kademe 4 ol',get:()=>G.tier,goal:4,gold:400,gem:5},{id:'k5',ad:'Pîr',desc:'Kademe 5 ol',get:()=>G.tier,goal:5,gold:1000,gem:10},{id:'k10',ad:'Çarşı ağası',desc:'Kademe 10 ol',get:()=>G.tier,goal:10,gold:5000,gem:20},{id:'dk',ad:'Çarşının yıldızı',desc:'Dükkânı en üst seviyeye büyüt',get:()=>G.dk||0,goal:4,gold:500,gem:5},
 {id:'yuz',ad:'Çarşının gözdesi',desc:'100 sipariş teslim et',get:()=>G.st.deliv,goal:100,gold:300,gem:5},{id:'zen2',ad:'Zengin tüccar',desc:'Toplam 10.000 altın kazan',get:()=>G.st.earned,goal:10000,gold:400,gem:5},
 {id:'tam',ad:'Eskiyi yeni eyle',desc:'5 ürün tamir et',get:()=>G.st.fix||0,goal:5,gold:80},{id:'tam2',ad:'Tamir ustası',desc:'25 ürün tamir et',get:()=>G.st.fix||0,goal:25,gold:200,gem:3},
 {id:'mez',ad:'Tokmak vuruldu',desc:'Mezatta 3 ürün sat',get:()=>G.st.mzs||0,goal:3,gold:100},{id:'tks',ad:'Takasçı',desc:'5 takas yap',get:()=>G.st.tks||0,goal:5,gold:80},
@@ -2096,7 +2096,7 @@ function kademeRows(){const t=G.tier||1,nx=TIERS[t+1],pk=TPERK[t]||{},dk=G.dk||0
  return h}
 function dkBind(){const b=$('dkB');if(!b)return;b.onclick=()=>{const dk=G.dk||0,d=DUK[dk];if(!d||G.tier<d.t||G.gold<d.c)return;G.gold-=d.c;G.dk=dk+1;sfx.coin();sfx.fan();toast(`Dükkân büyüdü: ${d.ad}!<br>Müşteriler artık %${G.dk*4} fazla öder`,2400);save();hud();checkAch();renderMenu()}}
 /* kademe ödülleri: altın + elmas + sandık anahtarı */
-const TREW={2:{g:300,e:10,k:['t',2]},3:{g:1000,e:20,k:['z',1]},4:{g:3000,e:35,k:['z',2]},5:{g:8000,e:60,k:['k',1]},6:{g:10000,e:70,k:['z',3]},7:{g:13000,e:80,k:['k',1]},8:{g:16000,e:90,k:['k',1]},9:{g:20000,e:100,k:['k',2]},10:{g:30000,e:150,k:['k',3]}};
+const TREW={2:{g:300,e:5,k:['t',1]},3:{g:800,e:8,k:['t',2]},4:{g:2000,e:12,k:['z',1]},5:{g:4000,e:15,k:['z',1]},6:{g:5000,e:18,k:['z',2]},7:{g:6500,e:20,k:['k',1]},8:{g:8000,e:25,k:['z',2]},9:{g:10000,e:30,k:['k',1]},10:{g:15000,e:40,k:['k',2]}};
 const KADN={t:'Tahta',z:'Zümrüt',k:'Kızıl usta'};
 const trTxt=r=>`+${r.g} altın · +${r.e} 💎 · ${r.k[1]} ${KADN[r.k[0]]} sandık anahtarı`;
 const tGot=t=>Array.isArray(G.tC)&&G.tC.includes(t);
@@ -2117,7 +2117,7 @@ function openRepPass(){const cur=G.tier||1,rep=G.rep||0,max=TMAX;
  $('rpX').onclick=()=>{sfx.tap();closeSheet()};ui.sheet.querySelectorAll('[data-rt]').forEach(d=>d.onclick=()=>{const w=$('rpW'),c=w&&w.querySelector('[data-tc="'+d.dataset.rt+'"]');if(c)w.scrollTo({left:c.offsetLeft-(w.clientWidth-c.clientWidth)/2,behavior:'smooth'})});
  ui.sheet.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>rmClaim(+b.dataset.rm));ui.sheet.querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>tClaim(+b.dataset.tr));requestAnimationFrame(()=>{const w=$('rpW'),n=w&&w.querySelector('[data-rdy]')||$('rpNow');if(w&&n)w.scrollLeft=n.offsetLeft-(w.clientWidth-n.clientWidth)/2})}
 /* ara itibar ödülleri: itibar yolunda kademelerin arasında, dokunup alınır */
-function RMS(){return[{r:50,g:100,k:['t',1]},{r:200,g:200,e:5},{r:600,g:400,k:['z',1]},{r:900,g:500,e:8},{r:1500,g:800,e:10},{r:2000,g:1000,k:['t',2]},{r:2500,g:1200,k:['z',1]},{r:3700,g:1800,e:20},{r:5500,g:2500,k:['z',2]},{r:7700,g:3500,e:30},{r:10500,g:4500,k:['k',1]},{r:14000,g:6000,e:45}]}
+function RMS(){return[{r:50,g:100,k:['t',1]},{r:200,g:200,e:3},{r:600,g:400,k:['t',1]},{r:900,g:500,e:4},{r:1500,g:700,k:['t',2]},{r:2000,g:800,e:5},{r:2500,g:1000,k:['z',1]},{r:3700,g:1500,e:6},{r:5500,g:2000,k:['z',1]},{r:7700,g:2500,e:8},{r:10500,g:3000,k:['z',2]},{r:14000,g:4000,e:10}]}
 const rmTxt=m=>[`+${m.g} altın`,m.e?`+${m.e} 💎`:'',m.k?`${m.k[1]} ${KADN[m.k[0]]} sandık anahtarı`:''].filter(Boolean).join(' · ');
 const rmGot=m=>Array.isArray(G.rmC)&&G.rmC.includes(m.r);
 function rmReady(){return RMS().filter(m=>(G.rep||0)>=m.r&&!rmGot(m))}
