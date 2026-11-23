@@ -122,9 +122,9 @@ if(!v){toast('Dükkân kapandı<br>İçerdekiler kalır, yeni müşteri gelmez',
 $('openB').onclick=()=>{if(G.night){toast('Akşam oldu<br>Dükkân yarın sabah açılır',1600);return}setOpen(!G.open)};
 const r5=v=>Math.max(5,Math.round(v/5)*5);
 const pr=it=>PRODS.find(x=>x.id===it.pid);
-const itemVal=it=>pr(it).base*(0.55+0.12*it.stars);
+const itemVal=it=>pr(it).base*(0.55+0.12*it.stars)*(it.mq?1.5:1);
 const sugg=it=>r5(itemVal(it)*1.05);
-const desc=it=>`${it.col?paintOf(it.col).ad.toLowerCase()+' ':''}${it.style?it.style.toLowerCase()+' ':''}${pr(it).ad.toLowerCase()}`;
+const desc=it=>`${it.mq?'✨ usta işi ':''}${it.col?paintOf(it.col).ad.toLowerCase()+' ':''}${it.style?it.style.toLowerCase()+' ':''}${pr(it).ad.toLowerCase()}`;
 function matchStock(o){if(!o||o.buy||o.free||o.rep)return null;return G.stock.filter(it=>it.pid===o.p.id&&(!o.color||it.col===o.color.id)&&(!o.style||it.style===o.style)).sort((a,b)=>b.stars-a.stars)[0]||null}
 function orderActions(){const o=G.order;if(!o)return;if(o.buy){buyActions();return}const L=[btn('Siparişi al','g',()=>acceptOrder())];if(!o.haggled&&!o.noHaggle)L.push(btn('Pazarlık','',haggleOrder));
 const m=matchStock(o);if(m)L.push(btn('Raftan ver '+'★'.repeat(m.stars),'l',()=>stockDeliver(m)));L.push(btn('Reddet','r',rejectOrder));actions(L)}

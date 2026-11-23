@@ -399,3 +399,10 @@ body.dt #card{margin-top:50px}
 @keyframes rpPulse{50%{transform:translateY(-2px)}}
 #top #repP{position:relative;overflow:visible}#top #repP.dot:after{content:'';position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#e0482f;border:2px solid #fff}
 .rpc.rdy{animation:rpPulse 1.6s ease-in-out infinite}
+#cbPop{position:fixed;left:50%;top:22%;transform:translate(-50%,0) scale(.6);font:800 34px/1 var(--fb,sans-serif);color:#ffb238;text-shadow:0 3px 0 #7a3a10,0 0 18px #ff8a1d88;pointer-events:none;opacity:0;z-index:60}
+#cbPop.on{animation:cbA 1s ease-out forwards}
+@keyframes cbA{0%{opacity:0;transform:translate(-50%,10px) scale(.5)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1;transform:translate(-50%,-8px) scale(1)}100%{opacity:0;transform:translate(-50%,-26px) scale(.9)}}
+.cbT{color:#ffcf6a}
+.mqB{margin:4px auto 6px;text-align:center;font-weight:800;font-size:17px;color:#9a6a00;background:linear-gradient(90deg,#fff1c2,#ffe08a,#fff1c2);border:2px solid #d9a23a;border-radius:12px;padding:6px 10px;animation:mqG 1.4s ease-in-out infinite}
+@keyframes mqG{50%{box-shadow:0 0 14px #ffd35a}}
+.cbB{text-align:center;font-weight:700;color:#b5541d;font-size:13px;margin:2px 0}
