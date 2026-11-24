@@ -62,7 +62,7 @@ function qcUI(lbl,btnTxt){ui.act.innerHTML=`<div class="qcm"><div class="qcl"><b
  const b=btn(btnTxt,'g qch');b.style.touchAction='none';b.oncontextmenu=e=>e.preventDefault();ui.act.appendChild(b);return b}
 function qcSkip(){K.qc=0.55}
 /* Nargile çekiş kontrolü: basılı tutup çek; kaçak varsa duman çıkar ve çekiş tıkanır, duman çıkan contaya dokunup sık */
-function bDraw(){const J=[{n:'Lüle',q:[0,0]},{n:'Tabla contası',q:[0.1,0]},{n:'Hortum ağzı',q:[-0.12,0.1]}].map(j=>{const p=LP(j.q);p.y=K.top+0.02;const r=put(K.work,new THREE.RingGeometry(0.022,0.03,24),new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0.0,depthWrite:false,side:THREE.DoubleSide}),p.x,p.y+0.004,p.z);r.rotation.x=-Math.PI/2;return Object.assign(j,{p,r,leak:false})});
+function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla contası',q:[0.8*HKS,0],h:HKY(2.55)},{n:'Hortum ağzı',q:[-1.08*HKS,1.08*HKS],h:HKY(-0.1)}].map(j=>{const p=LP(j.q);p.y=D3?Y+j.h:K.top+0.02;const r=put(K.work,new THREE.RingGeometry(0.022,0.03,24),new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0.0,depthWrite:false,side:THREE.DoubleSide}),p.x,p.y+0.004,p.z);r.rotation.x=-Math.PI/2;return Object.assign(j,{p,r,leak:false})});
  const lk=J.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,2);lk.forEach(i=>J[i].leak=true);
  let hold=false,flow=0,t0=tt,wrong=0,seen=false,lastP=0,lastB=0,lastG=0,done=false;const bub=[];
  const b=qcUI('Çekiş','Çek · basılı tut');b.onpointerdown=e=>{e.preventDefault();hold=true};b.onpointerup=b.onpointerleave=b.onpointercancel=()=>{hold=false};
@@ -74,7 +74,7 @@ function bDraw(){const J=[{n:'Lüle',q:[0,0]},{n:'Tabla contası',q:[0.1,0]},{n:
  tipStep('Basılı tutup çek · duman çıkarsa o contaya dokunup sık');
  K.tick=dt=>{if(done)return;const L=J.filter(x=>x.leak);
   if(hold){const cap=L.length?0.42+Math.sin(tt*11)*0.06:1;flow=Math.min(cap,flow+dt*(L.length?0.9:0.42));
-   if(tt-lastB>(L.length?0.22:0.07)){lastB=tt;const a=Math.random()*6.28,r=Math.random()*0.11,m=put(K.work,new THREE.SphereGeometry(0.006+Math.random()*0.006,6,5),new THREE.MeshBasicMaterial({color:'#eaf7ff',transparent:true,opacity:0.9}),BC.x+Math.cos(a)*r,K.top+0.005,BC.z+Math.sin(a)*r);bub.push({m,v:0.06+Math.random()*0.05,t:0})}
+   if(tt-lastB>(L.length?0.22:0.07)){lastB=tt;const a=Math.random()*6.28,r=Math.random()*0.11,m=put(K.work,new THREE.SphereGeometry(0.006+Math.random()*0.006,6,5),new THREE.MeshBasicMaterial({color:'#eaf7ff',transparent:true,opacity:0.9}),BC.x+Math.cos(a)*r*(D3?0.8:1),D3?Y+HKY(-1.3)+Math.random()*HKY(-0.6):K.top+0.005,BC.z+Math.sin(a)*r*(D3?0.8:1));bub.push({m,v:0.06+Math.random()*0.05,t:0})}
    if(tt-lastG>(L.length?0.3:0.13)){lastG=tt;noise(0.09,L.length?0.025:0.05,260+Math.random()*120,1.6)}
    if(L.length&&tt-lastP>0.25){lastP=tt;L.forEach(j=>puff(j.p.clone().add(V(0,0.01,0)),1,'#d6d6d6'));noise(0.12,0.015,5200,1.2);if(!seen){seen=true;lbl();toast('Kaçak var! Duman çıkan yeri bul',1300)}}}
   else flow=Math.max(0,flow-dt*0.6);
