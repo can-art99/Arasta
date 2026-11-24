@@ -49,10 +49,17 @@ function bFold(){const bb=shapeBB(),w=bb.w,l=bb.l,th=K.p.wood?0.03:0.012,col=K.p
  K.skipFn=()=>{pv.rotation.x=Math.PI;K.top=Y+th*2+0.001};tipStep('Üst yarıyı tutup aşağı katla')}
 
 /* Bağcık geçirme */
-function bLace(){const P=K.st.pts.map(LP);P.forEach(v=>v.y=surfY(v.x,v.z,v.y,[]));let i=1,miss=0;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(0.01,0.003,5,12),M('#c9c9c9',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
- let live=null;const lm='#f4f0e6',seg=(a,b)=>{const g=lineSeg(K.work,a,b,lm,0.008);g.position.y=Math.max(a.y,b.y)+0.006;return g};
- const mv=p=>{const a=P[i-1],q=V(p.x,a.y,p.z);if(live)K.work.remove(live);live=seg(a,q);toolAt(V(p.x,0,p.z),'nd',a.y+0.01);const b=P[i];if(Math.hypot(p.x-b.x,p.z-b.z)<0.035){K.work.remove(live);live=null;seg(a,b);sfx.stitch();i++;if(K.st.pairs&&i%2===0&&i<P.length)i++;tipStep(K.st.pairs?`Tel ${Math.floor(i/2)}/${P.length/2}`:`Bağcık ${i-1}/${P.length-1}`);if(i>=P.length){fin(clamp(1-miss*0.08,0.3,1),'Bağcık geçti!')}}};
- K.pd=mv;K.pm=mv;K.pu=()=>{if(live){K.work.remove(live);live=null;miss++}};K.skipFn=()=>{if(live)K.work.remove(live)};tipStep(K.st.pairs?'Teli alt eşikten burguya sürükle':'Bağcığı sıradaki deliğe sürükle')}
+function bLace(){const P=K.st.pts.map(LP);P.forEach(v=>v.y=surfY(v.x,v.z,v.y,[]));let i=1,miss=0;const PR=!!K.st.pairs;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(PR?0.006:0.01,0.0025,5,12),M('#8d939a',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
+ let live=null;const lm=PR?'#9aa3ad':'#f4f0e6',seg=(a,b)=>{const g=lineSeg(K.work,a,b,lm,PR?0.005:0.008);g.position.y=Math.max(a.y,b.y)+0.006;return g};
+ /* hedef: sıradaki delik altın halkayla yanıp söner, başlangıç yeşil; aralarında kesik kılavuz çizgi */
+ const tg=put(K.work,new THREE.RingGeometry(0.016,0.024,24),new THREE.MeshBasicMaterial({color:'#ffd24a',transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}),0,0,0);tg.rotation.x=-Math.PI/2;tg.renderOrder=6;
+ const st0=put(K.work,new THREE.RingGeometry(0.012,0.018,20),new THREE.MeshBasicMaterial({color:'#4fd38a',transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}),0,0,0);st0.rotation.x=-Math.PI/2;st0.renderOrder=6;
+ let guide=null;const mark=()=>{if(guide){K.work.remove(guide);guide=null}if(i>=P.length){tg.visible=st0.visible=false;return}const a=P[i-1],b=P[i];tg.position.set(b.x,b.y+0.004,b.z);st0.position.set(a.x,a.y+0.004,a.z);
+  const pts=[];const n=Math.max(4,Math.round(a.distanceTo(b)/0.03));for(let k=0;k<=n;k+=2){const q=a.clone().lerp(b,k/n),r=a.clone().lerp(b,Math.min(1,(k+1)/n));pts.push(q,r)}const gg=new THREE.BufferGeometry().setFromPoints(pts);guide=new THREE.LineSegments(gg,new THREE.LineBasicMaterial({color:'#ffe9a8',transparent:true,opacity:0.8}));guide.position.y=0.004;K.work.add(guide)};mark();
+ const mv=p=>{if(i>=P.length)return;const a=P[i-1],q=V(p.x,a.y,p.z);if(live)K.work.remove(live);live=seg(a,q);toolAt(V(p.x,0,p.z),'nd',a.y+0.01);const b=P[i];if(Math.hypot(p.x-b.x,p.z-b.z)<(PR?0.045:0.035)){K.work.remove(live);live=null;seg(a,b);sfx.stitch();if(PR)tone(330+i*60,0.25,'triangle',0.04);ringPulse(V(b.x,b.y+0.004,b.z),0.04,'#fff1c0');i++;if(PR&&i%2===0&&i<P.length)i++;
+  tipStep(PR?`Tel ${Math.floor(i/2)}/${P.length/2} · yeşilden altın halkaya sürükle`:`Bağcık ${i-1}/${P.length-1}`);mark();if(i>=P.length){K.work.remove(tg);K.work.remove(st0);fin(clamp(1-miss*0.08,0.3,1),PR?'Teller takıldı!':'Bağcık geçti!')}}};
+ K.tick=()=>{const k=0.6+0.4*Math.sin(tt*7);tg.material.opacity=k;tg.scale.setScalar(1+0.2*Math.sin(tt*7))};
+ K.pd=mv;K.pm=mv;K.pu=()=>{if(live){K.work.remove(live);live=null;miss++}};K.skipFn=()=>{if(live)K.work.remove(live);K.work.remove(tg);K.work.remove(st0);if(guide)K.work.remove(guide)};tipStep(PR?'Teli yeşil halkadan altın halkaya sürükle':'Bağcığı sıradaki deliğe sürükle')}
 
 /* Atkı: tezgâhta dokuma */
 function bShuttle(){const n=K.st.n||10,bb=shapeBB(),W=bb.w,L=bb.l,sh=mkTool('shuttle'),rows=[],z0=BC.z+bb.z0;let side=0,dz=0,dn=0;K.hy=Y+0.012;

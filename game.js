@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261124.2200';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261124.2212';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -517,11 +517,13 @@ PRODS.push(
   T('Sapı kes',{part:'sap',n:1,shape:rr(0.05,0.4),at:[-0.45,0],col:'#7a4524',wood:true}),A('sap','Sapı gövdeye tak',[[0,-0.39]]),{t:'drill',ad:'Burgu deliklerini aç',pts:[[-0.03,-0.56],[0.03,-0.56],[-0.03,-0.6],[0.03,-0.6]]},
   Y('dik','Perdeleri bağla',{pts:[[0,-0.26],[0,-0.3],[0,-0.34],[0,-0.38],[0,-0.42],[0,-0.46],[0,-0.5]]}),{t:'lace',ad:'Telleri geçir',pairs:true,pts:[[-0.018,0.15],[-0.018,-0.58],[-0.006,0.15],[-0.006,-0.58],[0.006,0.15],[0.006,-0.58],[0.018,0.15],[0.018,-0.58]]},Rb('cila','Cila çek'),Rb('parlat','Son parlatma'),{t:'akort',ad:'Telleri akort et',notes:[['La',220],['Re',293.66],['Sol',392],['La',440]],x:[-0.018,-0.006,0.006,0.018],pegs:[[-0.035,-0.575],[-0.035,-0.62],[0.035,-0.575],[0.035,-0.62]]},D]},
 {id:'sandik',ust:1,hard:true,ad:'Sedef kakma sandık',tier:5,base:1200,need:{kereste:3,sedef:2,tutkal:1,balmumu:1},sheet:'#8a5530',wood:true,shape:()=>rrect(0.5,0.34,0.02),build:sandikModel,
- steps:[T('Alt paneli (tabanı) kes'),{t:'plane',ad:'Tahtaları rendele',n:5},T('Yan tahtaları kes',{part:'yan',n:4,shape:i=>i<2?rrect(0.5,0.04,0.008):rrect(0.04,0.3,0.008),at:[-0.45,0],col:'#8a5530',wood:true}),A('yan','Yanları kutuya diz',[[0,-0.15],[0,0.15],[-0.23,0],[0.23,0]]),
+ steps:[T('Alt paneli (tabanı) kes'),{t:'plane',ad:'Tahtaları rendele',n:5},T('Yan tahtaları kes',{part:'yan',n:4,shape:i=>i<2?rrect(0.5,0.04,0.008):rrect(0.04,0.3,0.008),at:[-0.45,0],col:'#3a2416',wood:true}),A('yan','Yanları kutuya diz',[[0,-0.15],[0,0.15],[-0.23,0],[0.23,0]]),
   Y('yapistir','Köşeleri tutkalla',{pts:[[-0.23,-0.15],[0.23,-0.15],[-0.23,0.15],[0.23,0.15]]}),{t:'hammer',kind:'nail',hits:1,ad:'Köşelere kavela çak',pts:[[-0.23,-0.15],[0.23,-0.15],[-0.23,0.15],[0.23,0.15]]},Hd('Kutuyu mengenede sık'),
-  T('Üst paneli (kapağı) kes',{part:'kapak',n:1,shape:()=>rrect(0.5,0.34,0.02),at:[-0.45,0],col:'#8a5530',wood:true}),Object.assign(A('kapak','Kapağı kutunun üstüne oturt',[[0,0]]),{lift:0.037}),{t:'screw',ad:'Kapak menteşelerini vidala',pts:[[-0.14,-0.15],[0.14,-0.15]]},
-  {t:'chisel',ad:'Kapağa kakma yuvası oy',c:[0,0],r:[0.2,0.09]},{t:'kakma',ad:'Sedefleri yuvalara kak'},Y('yapistir','Sedef kenarlarını tutkalla',{pts:[[0,0],[-0.1,-0.05],[0.1,-0.05],[-0.1,0.05],[0.1,0.05],[-0.18,0],[0.18,0]]}),Rb('zimpara','Kapağı zımparala'),
-  T('Pirinç rozeti kes',{part:'rozet',n:1,shape:()=>circleShape(0.035),at:[0.42,0.24],col:'#c9a23a',metal:true}),A('rozet','Rozeti ön yüze tak',[[0,0.135]]),{t:'hammer',kind:'nail',hits:1,ad:'Rozet çivilerini çak',pts:[[-0.028,0.135],[0.028,0.135]]},
+  T('Pirinç kaplı kapağı kes',{part:'kapak',n:1,shape:()=>rrect(0.5,0.34,0.02),at:[-0.45,0],col:'#a8822a',metal:true}),Object.assign(A('kapak','Kapağı kutunun üstüne oturt',[[0,0]]),{lift:0.037}),{t:'screw',ad:'Kapak menteşelerini vidala',pts:[[-0.14,-0.15],[0.14,-0.15]]},
+  T('Yeşil mermer levhaları kes',{part:'levha',n:4,shape:()=>rrect(0.097,0.28,0.008),at:[-0.45,0],col:'#1f5a36'}),A('levha','Levhaları kapağa eşit aralıkla diz',[[-0.1815,0],[-0.0605,0],[0.0605,0],[0.1815,0]]),
+  T('Pirinç kuşakları kes',{part:'kusak',n:3,shape:()=>rrect(0.024,0.34,0.004),at:[-0.45,0],col:'#d9b04a',metal:true}),A('kusak','Kuşakları levha aralarına yerleştir',[[-0.121,0],[0,0],[0.121,0]]),{t:'hammer',kind:'rivet',hits:1,ad:'Kuşak uçlarını perçinle',pts:[[-0.121,-0.155],[0,-0.155],[0.121,-0.155],[-0.121,0.155],[0,0.155],[0.121,0.155]]},
+  {t:'kakma',ad:'Levhalara sedef kak',slots:[{p:[-0.1815,0],k:'d',s:0.8},{p:[-0.0605,0],k:'c',s:0.7},{p:[0.0605,0],k:'c',s:0.7},{p:[0.1815,0],k:'d',s:0.8}]},
+  T('Pirinç kilit rozetini kes',{part:'rozet',n:1,shape:()=>circleShape(0.035),at:[0.42,0.24],col:'#c9a23a',metal:true}),A('rozet','Kilit rozetini ön yüze tak',[[0,0.152]]),{t:'hammer',kind:'nail',hits:1,ad:'Rozet çivilerini çak',pts:[[-0.028,0.152],[0.028,0.152]]},
   Rb('cila','Balmumu cila sür'),Rb('parlat','Sedefleri parlat'),D]}
 );}
 
@@ -2828,10 +2830,17 @@ function bFold(){const bb=shapeBB(),w=bb.w,l=bb.l,th=K.p.wood?0.03:0.012,col=K.p
  K.skipFn=()=>{pv.rotation.x=Math.PI;K.top=Y+th*2+0.001};tipStep('Üst yarıyı tutup aşağı katla')}
 
 /* Bağcık geçirme */
-function bLace(){const P=K.st.pts.map(LP);P.forEach(v=>v.y=surfY(v.x,v.z,v.y,[]));let i=1,miss=0;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(0.01,0.003,5,12),M('#c9c9c9',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
- let live=null;const lm='#f4f0e6',seg=(a,b)=>{const g=lineSeg(K.work,a,b,lm,0.008);g.position.y=Math.max(a.y,b.y)+0.006;return g};
- const mv=p=>{const a=P[i-1],q=V(p.x,a.y,p.z);if(live)K.work.remove(live);live=seg(a,q);toolAt(V(p.x,0,p.z),'nd',a.y+0.01);const b=P[i];if(Math.hypot(p.x-b.x,p.z-b.z)<0.035){K.work.remove(live);live=null;seg(a,b);sfx.stitch();i++;if(K.st.pairs&&i%2===0&&i<P.length)i++;tipStep(K.st.pairs?`Tel ${Math.floor(i/2)}/${P.length/2}`:`Bağcık ${i-1}/${P.length-1}`);if(i>=P.length){fin(clamp(1-miss*0.08,0.3,1),'Bağcık geçti!')}}};
- K.pd=mv;K.pm=mv;K.pu=()=>{if(live){K.work.remove(live);live=null;miss++}};K.skipFn=()=>{if(live)K.work.remove(live)};tipStep(K.st.pairs?'Teli alt eşikten burguya sürükle':'Bağcığı sıradaki deliğe sürükle')}
+function bLace(){const P=K.st.pts.map(LP);P.forEach(v=>v.y=surfY(v.x,v.z,v.y,[]));let i=1,miss=0;const PR=!!K.st.pairs;const ey=P.map(v=>put(K.work,new THREE.TorusGeometry(PR?0.006:0.01,0.0025,5,12),M('#8d939a',0.3),v.x,v.y+0.002,v.z));ey.forEach(e=>e.rotation.x=Math.PI/2);
+ let live=null;const lm=PR?'#9aa3ad':'#f4f0e6',seg=(a,b)=>{const g=lineSeg(K.work,a,b,lm,PR?0.005:0.008);g.position.y=Math.max(a.y,b.y)+0.006;return g};
+ /* hedef: sıradaki delik altın halkayla yanıp söner, başlangıç yeşil; aralarında kesik kılavuz çizgi */
+ const tg=put(K.work,new THREE.RingGeometry(0.016,0.024,24),new THREE.MeshBasicMaterial({color:'#ffd24a',transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}),0,0,0);tg.rotation.x=-Math.PI/2;tg.renderOrder=6;
+ const st0=put(K.work,new THREE.RingGeometry(0.012,0.018,20),new THREE.MeshBasicMaterial({color:'#4fd38a',transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}),0,0,0);st0.rotation.x=-Math.PI/2;st0.renderOrder=6;
+ let guide=null;const mark=()=>{if(guide){K.work.remove(guide);guide=null}if(i>=P.length){tg.visible=st0.visible=false;return}const a=P[i-1],b=P[i];tg.position.set(b.x,b.y+0.004,b.z);st0.position.set(a.x,a.y+0.004,a.z);
+  const pts=[];const n=Math.max(4,Math.round(a.distanceTo(b)/0.03));for(let k=0;k<=n;k+=2){const q=a.clone().lerp(b,k/n),r=a.clone().lerp(b,Math.min(1,(k+1)/n));pts.push(q,r)}const gg=new THREE.BufferGeometry().setFromPoints(pts);guide=new THREE.LineSegments(gg,new THREE.LineBasicMaterial({color:'#ffe9a8',transparent:true,opacity:0.8}));guide.position.y=0.004;K.work.add(guide)};mark();
+ const mv=p=>{if(i>=P.length)return;const a=P[i-1],q=V(p.x,a.y,p.z);if(live)K.work.remove(live);live=seg(a,q);toolAt(V(p.x,0,p.z),'nd',a.y+0.01);const b=P[i];if(Math.hypot(p.x-b.x,p.z-b.z)<(PR?0.045:0.035)){K.work.remove(live);live=null;seg(a,b);sfx.stitch();if(PR)tone(330+i*60,0.25,'triangle',0.04);ringPulse(V(b.x,b.y+0.004,b.z),0.04,'#fff1c0');i++;if(PR&&i%2===0&&i<P.length)i++;
+  tipStep(PR?`Tel ${Math.floor(i/2)}/${P.length/2} · yeşilden altın halkaya sürükle`:`Bağcık ${i-1}/${P.length-1}`);mark();if(i>=P.length){K.work.remove(tg);K.work.remove(st0);fin(clamp(1-miss*0.08,0.3,1),PR?'Teller takıldı!':'Bağcık geçti!')}}};
+ K.tick=()=>{const k=0.6+0.4*Math.sin(tt*7);tg.material.opacity=k;tg.scale.setScalar(1+0.2*Math.sin(tt*7))};
+ K.pd=mv;K.pm=mv;K.pu=()=>{if(live){K.work.remove(live);live=null;miss++}};K.skipFn=()=>{if(live)K.work.remove(live);K.work.remove(tg);K.work.remove(st0);if(guide)K.work.remove(guide)};tipStep(PR?'Teli yeşil halkadan altın halkaya sürükle':'Bağcığı sıradaki deliğe sürükle')}
 
 /* Atkı: tezgâhta dokuma */
 function bShuttle(){const n=K.st.n||10,bb=shapeBB(),W=bb.w,L=bb.l,sh=mkTool('shuttle'),rows=[],z0=BC.z+bb.z0;let side=0,dz=0,dn=0;K.hy=Y+0.012;
