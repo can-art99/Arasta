@@ -112,7 +112,8 @@ function solidify(st){const o=st.solid,L=st.part?(K.parts[st.part]||[]):[K.piece
    g=new THREE.CylinderGeometry(r,r,L2,14);g.rotateZ(Math.PI/2);g.translate((x0+x1)/2,(y0+y1)/2,r);const rib=new THREE.CylinderGeometry(r*0.35,r*0.35,L2*0.92,8);rib.rotateZ(Math.PI/2);rib.translate((x0+x1)/2-L2*0.02,(y0+y1)/2,r*1.85);
    const mr=new THREE.CylinderGeometry(r*1.12,r*1.12,0.012,14);mr.rotateZ(Math.PI/2);mr.translate(x1-0.006,(y0+y1)/2,r);const sg=new THREE.BoxGeometry(0.006,0.004,0.012);sg.translate(x1-0.014,(y0+y1)/2,r*2.25);
    g=mergeG([g,rib,mr,sg])||g}
-  else g=ext(sh,o.d||0.02,o.bv||0.003);
+  else g=new THREE.ExtrudeGeometry(sh,{depth:o.d||0.02,bevelEnabled:true,bevelThickness:o.bv||0.003,bevelSize:(o.bv||0.003)*0.8,bevelSegments:3,curveSegments:12});
+  const mt=Array.isArray(m.material)?m.material:[m.material];mt.forEach(q=>{if(!q||!q.color)return;if(o.steel){q.color.set('#3a4048');q.metalness=0.75;q.roughness=0.3;if(q.map)q.map=null;q.needsUpdate=true}if(o.walnut){q.color.set('#2e180c');q.roughness=0.5;q.needsUpdate=true}});
   const oldTop=K.top;m.geometry.dispose&&m.geometry.dispose();m.geometry=g;m.castShadow=true;m.scale.z=0.15;tween(0.4,k=>m.scale.z=0.15+0.85*(1-Math.pow(1-k,3)));sparkle(m.position.clone().add(V(0,0.04,0)),6,['#ffffff','#dfe6ee'],0.02,true);
-  if(!st.part){K.top=Y+(o.d||0.02)+(o.bv||0.003)*2}});noise(0.08,0.04,2200,1.5)}
+  if(!st.part){K.top=Y+(o.d||0.02)+(o.bv||0.003)*2}if(o.det==='rev')setTimeout(()=>{try{if(K&&!K.dead)revDetails()}catch(e){}},420)});noise(0.08,0.04,2200,1.5)}
 function mergeG(a){try{if(THREE.BufferGeometryUtils&&THREE.BufferGeometryUtils.mergeBufferGeometries)return THREE.BufferGeometryUtils.mergeBufferGeometries(a.map(x=>x.index?x.toNonIndexed():x))}catch(e){}return null}

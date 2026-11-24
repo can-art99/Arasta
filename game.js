@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261124.2212';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261124.2247';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -585,13 +585,13 @@ PRODS.push(
   {t:'asm',part:'lule',mk:'lule',ad:'Lüleyi tablaya oturt',slots:[[0,0]],oy:HKY(3.27)},{t:'asm',part:'hortum',mk:'hortum',ad:'Hortumu hortum ağzına bağla',slots:[[0,0]],oy:HKY(-0.12),oc:[-1.08*HKS,1.08*HKS]},
   Rb('parlat','Bakırı parlat'),{t:'cekis',ad:'Çekiş kontrolü'},D]},
 {id:'tabanca',ust:1,hard:true,ad:'İşlemeli tabanca',tier:5,base:1500,need:{celik:2,demir:1,kereste:1,sedef:1},sheet:'#596068',shape:frameShape,build:tabancaModel,vrot:[1.35,0,0],
- steps:[T('Çelik gövde plakasını kes',{metal:true,solid:{d:0.022,bv:0.003}}),T('Namlu çubuğunu kes',{part:'namlu',n:1,shape:()=>rrect(RV.barL,RV.barH,0.006),at:[0.1,0.3],col:'#7a8088',metal:true,solid:{round:1}}),
+ steps:[T('Çelik gövde plakasını kes',{metal:true,solid:{d:0.024,bv:0.006,steel:1,det:'rev'}}),T('Namlu çubuğunu kes',{part:'namlu',n:1,shape:()=>rrect(RV.barL,RV.barH,0.006),at:[0.1,0.3],col:'#7a8088',metal:true,solid:{round:1,steel:1}}),
   {t:'forge',part:'namlu',ad:'Namluyu ocakta kızdır'},{t:'dip',part:'namlu',ad:'Namluya su verip sertleştir'},A('namlu','Namluyu gövdeye hizala',[RV.bar]),
   {t:'path',ad:'Namlu eklemini lehimle',paths:[[0,1,2,3,4].map(i=>[RV.jx,RV.bar[1]-RV.barH/2+i*RV.barH/4])]},{t:'drill',ad:'Namlu kanalını aç',pts:[[RV.mz-0.012,RV.bar[1]]]},
   T('Top için çelik diski kes',{part:'top',n:1,shape:()=>circleShape(RV.cylR),at:[0.3,0.3],col:'#5d636b',metal:true,keep:true}),
   {t:'drill',ad:'Topa altı yuva aç',hy:0.013,pts:[0,1,2,3,4,5].map(i=>[0.3+Math.cos(i*Math.PI/3)*RV.cylR*0.58,0.3+Math.sin(i*Math.PI/3)*RV.cylR*0.58])},
   Object.assign(A('top','Topu gövdedeki yuvasına tak',[RV.cyl]),{cyl:1}),
-  T('Ceviz kabzayı kes',{part:'kabza',n:1,shape:gripShape,at:[0.3,0.3],col:'#5a3420',wood:true,solid:{d:0.012,bv:0.003}}),Object.assign(A('kabza','Kabzayı tutamağın üstüne oturt',[RV.grip]),{lift:0.018}),{t:'screw',ad:'Kabza vidalarını sık',pts:[[RV.grip[0]+0.01,RV.grip[1]-0.06],[RV.grip[0]-0.01,RV.grip[1]+0.07]]},
+  T('Ceviz kabzayı kes',{part:'kabza',n:1,shape:gripShape,at:[0.3,0.3],col:'#5a3420',wood:true,solid:{d:0.014,bv:0.007,walnut:1}}),Object.assign(A('kabza','Kabzayı tutamağın üstüne oturt',[RV.grip]),{lift:0.026}),{t:'screw',ad:'Kabza vidalarını sık',pts:[[RV.grip[0]+0.01,RV.grip[1]-0.06],[RV.grip[0]-0.01,RV.grip[1]+0.07]]},
   {t:'kakma',ad:'Kabzaya sedef kak',slots:[{p:[RV.grip[0],RV.grip[1]+0.005],k:'c',s:0.75},{p:[RV.grip[0]+0.012,RV.grip[1]-0.075],k:'d',s:0.6,r:1.2},{p:[RV.grip[0]-0.018,RV.grip[1]+0.085],k:'d',s:0.6,r:-1.9}]},
   {t:'path',grav:1,ad:'Namluya gravür işle',paths:[[0,1,2,3,4,5,6,7,8,9].map(i=>[RV.jx+0.03+i*0.028,RV.bar[1]+Math.sin(i*0.9)*0.01])]},Rb('parlat','Çeliği parlat'),
   {t:'tetik',ad:'Tetik kontrolü (kuru tetik)'},D]}
@@ -2667,9 +2667,10 @@ function solidify(st){const o=st.solid,L=st.part?(K.parts[st.part]||[]):[K.piece
    g=new THREE.CylinderGeometry(r,r,L2,14);g.rotateZ(Math.PI/2);g.translate((x0+x1)/2,(y0+y1)/2,r);const rib=new THREE.CylinderGeometry(r*0.35,r*0.35,L2*0.92,8);rib.rotateZ(Math.PI/2);rib.translate((x0+x1)/2-L2*0.02,(y0+y1)/2,r*1.85);
    const mr=new THREE.CylinderGeometry(r*1.12,r*1.12,0.012,14);mr.rotateZ(Math.PI/2);mr.translate(x1-0.006,(y0+y1)/2,r);const sg=new THREE.BoxGeometry(0.006,0.004,0.012);sg.translate(x1-0.014,(y0+y1)/2,r*2.25);
    g=mergeG([g,rib,mr,sg])||g}
-  else g=ext(sh,o.d||0.02,o.bv||0.003);
+  else g=new THREE.ExtrudeGeometry(sh,{depth:o.d||0.02,bevelEnabled:true,bevelThickness:o.bv||0.003,bevelSize:(o.bv||0.003)*0.8,bevelSegments:3,curveSegments:12});
+  const mt=Array.isArray(m.material)?m.material:[m.material];mt.forEach(q=>{if(!q||!q.color)return;if(o.steel){q.color.set('#3a4048');q.metalness=0.75;q.roughness=0.3;if(q.map)q.map=null;q.needsUpdate=true}if(o.walnut){q.color.set('#2e180c');q.roughness=0.5;q.needsUpdate=true}});
   const oldTop=K.top;m.geometry.dispose&&m.geometry.dispose();m.geometry=g;m.castShadow=true;m.scale.z=0.15;tween(0.4,k=>m.scale.z=0.15+0.85*(1-Math.pow(1-k,3)));sparkle(m.position.clone().add(V(0,0.04,0)),6,['#ffffff','#dfe6ee'],0.02,true);
-  if(!st.part){K.top=Y+(o.d||0.02)+(o.bv||0.003)*2}});noise(0.08,0.04,2200,1.5)}
+  if(!st.part){K.top=Y+(o.d||0.02)+(o.bv||0.003)*2}if(o.det==='rev')setTimeout(()=>{try{if(K&&!K.dead)revDetails()}catch(e){}},420)});noise(0.08,0.04,2200,1.5)}
 function mergeG(a){try{if(THREE.BufferGeometryUtils&&THREE.BufferGeometryUtils.mergeBufferGeometries)return THREE.BufferGeometryUtils.mergeBufferGeometries(a.map(x=>x.index?x.toNonIndexed():x))}catch(e){}return null}
 
 /* ---------- ortak alet animasyonu: vuruş, sarsıntı, geri tepme ---------- */
@@ -3345,9 +3346,12 @@ function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla c
  K.skipFn=()=>{qcSkip();J.forEach(j=>{K.work.remove(j.r);K.work.remove(j.hs)});bub.forEach(q=>K.work.remove(q.m))};
  K.drw={fixAll(){J.filter(x=>x.leak).forEach(fix)},get flow(){return flow},set hold(v){hold=v},get leaks(){return J.filter(x=>x.leak).length}}}
 /* Tabanca tetik kontrolü: basılı tutunca tetik direnci artar; yeşil bölgede bırak (klik, top döner). Kaçırırsan ayar vidasını sık. 3 temiz tetik gerekir */
-function bTrigger(){const tp=(K.parts.top||[])[0],ro=tp&&tp.userData.rotor,hm=new THREE.Group(),hp=LP([RV.cyl[0]-RV.cylL*0.62,RV.cyl[1]-RV.cylR*0.55]);hm.position.set(hp.x,K.top+0.03,hp.z);K.work.add(hm);
+/* tabanca ayrıntıları: horoz ve tetik korkuluğu + tetik (gövde 3B olunca eklenir, tetik testinde kullanılır) */
+function revDetails(){if(K.revD)return K.revD;const top=Y+0.03,hm=new THREE.Group(),hp=LP([RV.cyl[0]-RV.cylL*0.62,RV.cyl[1]-RV.cylR*0.55]);hm.position.set(hp.x,top,hp.z);K.work.add(hm);
  {const sm=M('#2b2e33',0.35);sm.metalness=0.5;const a=put(hm,B(0.012,0.014,0.05),sm,-0.004,0,0.0);a.rotation.y=0.25;put(hm,B(0.02,0.012,0.012),sm,-0.014,0.002,-0.026)}
- const tg=new THREE.Group(),tq=LP([RV.cyl[0]-0.008,RV.cyl[1]+RV.cylR*1.75]);tg.position.set(tq.x,K.top+0.012,tq.z);K.work.add(tg);{const gm=M('#3a3f46',0.35);gm.metalness=0.5;const r=put(tg,new THREE.TorusGeometry(0.03,0.005,6,18,Math.PI*1.2),gm,0,0,0.012);r.rotation.x=Math.PI/2;r.rotation.z=Math.PI*0.9;const tr=put(tg,B(0.008,0.006,0.032),M('#2b2e33',0.35),0.004,0.004,0.004);tr.rotation.y=-0.35;tg.userData.tr=tr}
+ const tg=new THREE.Group(),tq=LP([RV.cyl[0]-0.008,RV.cyl[1]+RV.cylR*1.75]);tg.position.set(tq.x,Y+0.022,tq.z);K.work.add(tg);{const gm=M('#3a3f46',0.35);gm.metalness=0.5;const r=put(tg,new THREE.TorusGeometry(0.03,0.005,6,18,Math.PI*1.2),gm,0,0,0.012);r.rotation.x=Math.PI/2;r.rotation.z=Math.PI*0.9;const tr=put(tg,B(0.008,0.006,0.032),M('#2b2e33',0.35),0.004,0.004,0.004);tr.rotation.y=-0.35;tg.userData.tr=tr}
+ [hm,tg].forEach(o=>{o.scale.setScalar(0.01);tween(0.35,k=>o.scale.setScalar(Math.max(0.01,k)))});K.revD={hm,hp,tg};return K.revD}
+function bTrigger(){const tp=(K.parts.top||[])[0],ro=tp&&tp.userData.rotor,RD=revDetails(),hm=RD.hm,hp=RD.hp,tg=RD.tg;hm.position.y=K.top+0.03;
  const sp=LP([RV.grip[0]+0.04,RV.grip[1]-0.115]);sp.y=K.top+0.015;const scr=put(K.work,Cy(0.009,0.009,0.006,10),M('#c9a23a',0.3),sp.x,sp.y,sp.z),sr=put(K.work,new THREE.RingGeometry(0.018,0.025,22),new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}),sp.x,sp.y+0.003,sp.z);sr.rotation.x=-Math.PI/2;
  let hold=false,pr=0,zc=0.66,zw=0.12,ok=0,att=0,miss=0,need=false,busy=false,cocked=false,turn=0;const sc=[];
  const b=qcUI('Tetik','Tetiği çek · basılı tut');b.onpointerdown=e=>{e.preventDefault();if(need||busy){if(need)toast('Önce ayar vidasını sık',900);return}hold=true;cocked=false};b.onpointerup=b.onpointerleave=b.onpointercancel=()=>{if(hold)rel();hold=false};
