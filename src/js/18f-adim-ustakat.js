@@ -14,8 +14,10 @@ function inlayShape(k,s){s=s||1;const sh=new THREE.Shape();if(k==='c'){sh.absarc
  else{const R=0.034*s,r=0.015*s;for(let i=0;i<10;i++){const t=Math.PI/2+i*Math.PI/5,q=i%2?r:R;i?sh.lineTo(Math.cos(t)*q,Math.sin(t)*q):sh.moveTo(Math.cos(t)*q,Math.sin(t)*q)}sh.closePath()}return sh}
 function bInlay(){const S0=K.st.slots||[{p:[0,0],k:'c',s:1.4},{p:[-0.1,-0.05],k:'d',r:-2.2},{p:[0.1,-0.05],k:'d',r:2.2},{p:[-0.1,0.05],k:'d',r:-0.9},{p:[0.1,0.05],k:'d',r:0.9},{p:[-0.18,0],k:'r'},{p:[0.18,0],k:'r'}];
  const y0=K.top,pearl=i=>new THREE.MeshStandardMaterial({color:'#f3f8f9',roughness:0.18,metalness:0.15,emissive:'#223344',emissiveIntensity:0.6,flatShading:true});
- const sl=S0.map((d,i)=>{const p=LP(d.p),g=flat(inlayShape(d.k,(d.s||1)*1.12),0.0015,M('#24140a',0.9),0);g.position.set(p.x,y0+0.0006,p.z);g.rotation.z=d.r||0;K.work.add(g);
-  const rim=flat(inlayShape(d.k,(d.s||1)*1.3),0.0008,new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0,depthWrite:false}),0);rim.position.set(p.x,y0+0.0003,p.z);rim.rotation.z=d.r||0;K.work.add(rim);return {d,p,g,rim,done:false}});
+ const surf=p=>{const rc=new THREE.Raycaster(V(p.x,Y+1,p.z),V(0,-1,0)),h=rc.intersectObjects(K.work.children.filter(o=>o.visible),true)[0];return h?h.point.y:y0};const sl=S0.map((d,i)=>{const p=LP(d.p),sy=surf(p),g=flat(inlayShape(d.k,(d.s||1)*1.12),0.0015,M('#24140a',0.9),0);g.position.set(p.x,sy+0.0006,p.z);g.rotation.z=d.r||0;K.work.add(g);
+  const rim=flat(inlayShape(d.k,(d.s||1)*1.3),0.0008,new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0,depthWrite:false}),0);rim.position.set(p.x,sy+0.0003,p.z);rim.rotation.z=d.r||0;K.work.add(rim);p.y=sy;return {d,p,g,rim,done:false}});
+ const TOPY=Math.max(y0,...sl.map(q=>q.p.y));/* boş yuvalar altın çerçeveyle yanıp söner, nereye kakılacağı belli olsun */
+ const pulse=()=>{const k=0.3+0.25*Math.sin(tt*5);sl.forEach(q=>{if(q.done)q.rim.material.opacity=0;else if(q!==near)q.rim.material.opacity=k})};
  const ord=S0.map((d,i)=>i).sort(()=>Math.random()-0.5),tx=BC.x-0.47,tz=BC.z-0.15;
  const tray=put(K.work,B(0.2,0.012,0.4),M('#4a1f3a',0.95),tx+0.04,y0+0.003,tz+0.15);const rail=put(K.work,B(0.21,0.02,0.01),M('#c9a23a',0.4),tx+0.04,y0+0.006,tz-0.05);const trayOff=()=>{[tray,rail].forEach(o=>{const s0=o.scale.x;tween(0.35,k=>o.scale.setScalar(Math.max(0.01,s0*(1-k))),()=>K&&K.work.remove(o))})};
  const pc=ord.map((si,j)=>{const d=S0[si],m=flat(inlayShape(d.k,d.s||1),0.005,pearl(j),0.0012);const h=V(tx+(j%2)*0.085,y0+0.011,tz+Math.floor(j/2)*0.1);m.position.copy(h);m.rotation.z=d.r||0;K.work.add(m);return {m,d,home:h,done:false,ph:Math.random()*6}});
@@ -23,15 +25,15 @@ function bInlay(){const S0=K.st.slots||[{p:[0,0],k:'c',s:1.4},{p:[-0.1,-0.05],k:
  const tip=()=>tipStep(`Sedefi aynı şekilli yuvaya sürükle · ${placed}/${pc.length}`);tip();
  const back=q=>{const a=q.m.position.clone();tween(0.25,k=>{q.m.position.lerpVectors(a,q.home,k);q.m.position.y+=Math.sin(k*Math.PI)*0.03},()=>q.m.scale.setScalar(1))};
  const findSlot=(x,z,r)=>{let b=null,bd=r;sl.forEach(s=>{if(s.done)return;const d=Math.hypot(s.p.x-x,s.p.z-z);if(d<bd){bd=d;b=s}});return b};
- K.pd=p=>{let b=null,bd=0.05;pc.forEach(q=>{if(q.done)return;const d=Math.hypot(q.m.position.x-p.x,q.m.position.z-p.z);if(d<bd){bd=d;b=q}});if(!b)return;drag=b;off.set(b.m.position.x-p.x,0,b.m.position.z-p.z);b.m.position.y=y0+0.03;b.m.scale.setScalar(1.18);sfx.pick&&sfx.pick();tone(1500,0.04,'triangle',0.05)};
+ K.pd=p=>{let b=null,bd=0.05;pc.forEach(q=>{if(q.done)return;const d=Math.hypot(q.m.position.x-p.x,q.m.position.z-p.z);if(d<bd){bd=d;b=q}});if(!b)return;drag=b;off.set(b.m.position.x-p.x,0,b.m.position.z-p.z);b.m.position.y=TOPY+0.03;b.m.scale.setScalar(1.18);sfx.pick&&sfx.pick();tone(1500,0.04,'triangle',0.05)};
  K.pm=p=>{if(!drag)return;drag.m.position.x=p.x+off.x;drag.m.position.z=p.z+off.z;const s=findSlot(drag.m.position.x,drag.m.position.z,0.06);if(near&&near!==s)near.rim.material.opacity=0;near=s;if(s)s.rim.material.opacity=s.d.k===drag.d.k?0.85:0.25};
  K.pu=()=>{if(!drag)return;const q=drag;drag=null;if(near)near.rim.material.opacity=0;const s=findSlot(q.m.position.x,q.m.position.z,0.055);near=null;
   if(s&&s.d.k===q.d.k&&(s.d.s||1)===(q.d.s||1)){const e=Math.hypot(s.p.x-q.m.position.x,s.p.z-q.m.position.z);errs.push(e);s.done=q.done=true;placed++;const a=q.m.position.clone(),b=V(s.p.x,y0-0.0015,s.p.z);q.m.rotation.z=s.d.r||0;
-   tween(0.18,k=>{q.m.position.lerpVectors(a,b,k);q.m.scale.setScalar(1.18-0.18*k)},()=>{tone(2100,0.05,'triangle',0.08);tone(3150,0.25,'sine',0.05,null,0.03);impactFx(0.2,K.piece);sparkle(V(b.x,y0+0.01,b.z),9);ringPulse(V(b.x,y0+0.002,b.z),0.05);s.g.visible=false;
+   tween(0.18,k=>{q.m.position.lerpVectors(a,b,k);q.m.scale.setScalar(1.18-0.18*k)},()=>{tone(2100,0.05,'triangle',0.08);tone(3150,0.25,'sine',0.05,null,0.03);impactFx(0.2,K.piece);sparkle(V(b.x,b.y+0.01,b.z),9);ringPulse(V(b.x,b.y+0.003,b.z),0.05);s.g.visible=false;
     if(placed>=pc.length){K.tick=null;const L=pc.slice();L.forEach((z,i)=>setTimeout(()=>{sparkle(V(z.m.position.x,y0+0.012,z.m.position.z),6,['#ffffff','#c9f2ff','#ffe9b0'],0.045,0.09);tone(1400+i*180,0.3,'sine',0.04)},120*i));
      setTimeout(()=>{trayOff();fin(clamp(1-miss*0.12-avg(errs.length?errs:[0])*3,0.3,1),'Kakma tamam!')},120*L.length+450)}else tip()})}
   else{if(s){miss++;sfx.bad();toast('Bu yuvaya uymuyor',700);jolt(q.m,0.004)}back(q)}};
- K.tick=dt=>{pc.forEach(q=>{if(q===drag)return;q.m.material.emissive.setHSL((tt*0.08+q.ph*0.1)%1,0.55,q.done?0.06:0.1)});if(drag)drag.m.material.emissive.setHSL((tt*0.3)%1,0.7,0.16)};
+ K.tick=dt=>{pulse();pc.forEach(q=>{if(q===drag)return;q.m.material.emissive.setHSL((tt*0.08+q.ph*0.1)%1,0.55,q.done?0.06:0.1)});if(drag)drag.m.material.emissive.setHSL((tt*0.3)%1,0.7,0.16)};
  K.skipFn=()=>{trayOff();pc.forEach(q=>{if(q.done)return;const s=sl.find(z=>!z.done&&z.d.k===q.d.k&&(z.d.s||1)===(q.d.s||1));if(s){s.done=q.done=true;q.m.position.set(s.p.x,y0-0.0015,s.p.z);s.g.visible=false}})}}
 /* ---- AKORT: burguyu çevirip teli doğru notaya getir ---- */
 let KSB=null;
