@@ -62,14 +62,16 @@ function qcUI(lbl,btnTxt){ui.act.innerHTML=`<div class="qcm"><div class="qcl"><b
  const b=btn(btnTxt,'g qch');b.style.touchAction='none';b.oncontextmenu=e=>e.preventDefault();ui.act.appendChild(b);return b}
 function qcSkip(){K.qc=0.55}
 /* Nargile çekiş kontrolü: basılı tutup çek; kaçak varsa duman çıkar ve çekiş tıkanır, duman çıkan contaya dokunup sık */
-function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla contası',q:[0.8*HKS,0],h:HKY(2.55)},{n:'Hortum ağzı',q:[-1.08*HKS,1.08*HKS],h:HKY(-0.1)}].map(j=>{const p=LP(j.q);p.y=D3?Y+j.h:K.top+0.02;const r=put(K.work,new THREE.RingGeometry(0.022,0.03,24),new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0.0,depthWrite:false,side:THREE.DoubleSide}),p.x,p.y+0.004,p.z);r.rotation.x=-Math.PI/2;return Object.assign(j,{p,r,leak:false})});
+function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla contası',q:[0.8*HKS,0],h:HKY(2.55)},{n:'Hortum ağzı',q:[-1.08*HKS,1.08*HKS],h:HKY(-0.1)}].map(j=>{const p=LP(j.q);p.y=D3?Y+j.h:K.top+0.02;const r=put(K.work,new THREE.RingGeometry(0.026,0.036,24),new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0.0,depthWrite:false,side:THREE.DoubleSide}),p.x,p.y+0.004,p.z);r.rotation.x=-Math.PI/2;r.renderOrder=5;const hs=put(K.work,new THREE.SphereGeometry(0.06,10,8),new THREE.MeshBasicMaterial({visible:false}),p.x,p.y,p.z);return Object.assign(j,{p,r,hs,leak:false})});
  const lk=J.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,2);lk.forEach(i=>J[i].leak=true);
  let hold=false,flow=0,t0=tt,wrong=0,seen=false,lastP=0,lastB=0,lastG=0,done=false;const bub=[];
  const b=qcUI('Çekiş','Çek · basılı tut');b.onpointerdown=e=>{e.preventDefault();hold=true};b.onpointerup=b.onpointerleave=b.onpointercancel=()=>{hold=false};
  const z=$('qcZ');if(z){z.style.left='88%';z.style.width='12%'}
  const fix=j=>{j.leak=false;sfx.drop&&sfx.drop();tone(520,0.05,'square',0.03);setTimeout(()=>tone(700,0.05,'square',0.03),70);ringPulse(j.p.clone(),0.05,'#bff3ff');sparkle(j.p.clone().add(V(0,0.02,0)),6);j.r.material.color.set('#7fe0b0');j.r.material.opacity=0.8;
   const left=J.filter(x=>x.leak).length;toast(left?`${j.n} sıkıldı · bir kaçak daha var`:`${j.n} sıkıldı · tekrar çek`,1100)};
- K.pd=p=>{if(done)return;let best=null,bd=9;J.forEach(j=>{const d=Math.hypot(j.p.x-p.x,j.p.z-p.z);if(d<bd){bd=d;best=j}});if(!best||bd>0.06)return;if(best.leak)fix(best);else{wrong++;sfx.tap();toast(`${best.n} sağlam`,800)}};
+ K.pd=p=>{if(done)return;let best=null;const hit=ray.intersectObjects(J.map(j=>j.hs),false)[0];if(hit)best=J.find(j=>j.hs===hit.object);
+  if(!best){/* ekran üzerinde en yakın conta (yükseklik farkı yüzünden masa düzlemindeki nokta kayabiliyor) */let bd=9;const c=ray.ray.origin,dv=ray.ray.direction;J.forEach(j=>{const d=ray.ray.distanceToPoint(j.p);if(d<bd){bd=d;best=j}});if(bd>0.08)best=null}
+  if(!best)return;if(best.leak)fix(best);else{wrong++;sfx.tap();toast(`${best.n} sağlam`,800)}};
  const lbl=()=>{const s=$('qcS');if(!s)return;const L=J.filter(x=>x.leak).length;s.textContent=!seen?'Basılı tutup çek':L?'Kaçak var · duman çıkan yere dokun':'Çekiş açık · dolana kadar tut'};lbl();
  tipStep('Basılı tutup çek · duman çıkarsa o contaya dokunup sık');
  K.tick=dt=>{if(done)return;const L=J.filter(x=>x.leak);
@@ -78,11 +80,11 @@ function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla c
    if(tt-lastG>(L.length?0.3:0.13)){lastG=tt;noise(0.09,L.length?0.025:0.05,260+Math.random()*120,1.6)}
    if(L.length&&tt-lastP>0.25){lastP=tt;L.forEach(j=>puff(j.p.clone().add(V(0,0.01,0)),1,'#d6d6d6'));noise(0.12,0.015,5200,1.2);if(!seen){seen=true;lbl();toast('Kaçak var! Duman çıkan yeri bul',1300)}}}
   else flow=Math.max(0,flow-dt*0.6);
-  J.forEach(j=>{if(j.leak&&seen){j.r.material.opacity=0.25+0.25*Math.sin(tt*8)}});
+  J.forEach(j=>{if(j.leak&&seen){j.r.material.opacity=0.55+0.35*Math.sin(tt*8);j.r.scale.setScalar(1+0.15*Math.sin(tt*8))}else if(!j.leak&&j.r.material.color.getHex()!==0x7fe0b0&&seen){j.r.material.opacity=0.18}});
   for(let i=bub.length-1;i>=0;i--){const q=bub[i];q.t+=dt;q.m.position.y+=q.v*dt;q.m.material.opacity=Math.max(0,0.9-q.t*1.4);if(q.t>0.65){K.work.remove(q.m);bub.splice(i,1)}}
   const f=$('qcF'),pp=$('qcP');if(f)f.style.width=Math.round(flow*100)+'%';if(pp)pp.style.left=Math.round(flow*100)+'%';lbl();
-  if(!L.length&&flow>=0.999){done=true;hold=false;const sc=clamp(1-wrong*0.12-Math.max(0,tt-t0-15)*0.015,0.35,1);K.qc=sc;J.forEach(j=>K.work.remove(j.r));bub.forEach(q=>K.work.remove(q.m));for(let k=0;k<5;k++)setTimeout(()=>noise(0.1,0.05,300,1.4),k*110);sparkle(V(BC.x,K.top+0.05,BC.z),14);setTimeout(()=>fin(sc,'Çekiş tertemiz!'),700)}};
- K.skipFn=()=>{qcSkip();J.forEach(j=>K.work.remove(j.r));bub.forEach(q=>K.work.remove(q.m))};
+  if(!L.length&&flow>=0.999){done=true;hold=false;const sc=clamp(1-wrong*0.12-Math.max(0,tt-t0-15)*0.015,0.35,1);K.qc=sc;J.forEach(j=>{K.work.remove(j.r);K.work.remove(j.hs)});bub.forEach(q=>K.work.remove(q.m));for(let k=0;k<5;k++)setTimeout(()=>noise(0.1,0.05,300,1.4),k*110);sparkle(V(BC.x,K.top+0.05,BC.z),14);setTimeout(()=>fin(sc,'Çekiş tertemiz!'),700)}};
+ K.skipFn=()=>{qcSkip();J.forEach(j=>{K.work.remove(j.r);K.work.remove(j.hs)});bub.forEach(q=>K.work.remove(q.m))};
  K.drw={fixAll(){J.filter(x=>x.leak).forEach(fix)},get flow(){return flow},set hold(v){hold=v},get leaks(){return J.filter(x=>x.leak).length}}}
 /* Tabanca tetik kontrolü: basılı tutunca tetik direnci artar; yeşil bölgede bırak (klik, top döner). Kaçırırsan ayar vidasını sık. 3 temiz tetik gerekir */
 function bTrigger(){const tp=(K.parts.top||[])[0],ro=tp&&tp.userData.rotor,hm=new THREE.Group(),hp=LP([RV.cyl[0]-RV.cylL*0.62,RV.cyl[1]-RV.cylR*0.55]);hm.position.set(hp.x,K.top+0.03,hp.z);K.work.add(hm);

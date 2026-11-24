@@ -9,7 +9,7 @@ try{LD.t++;fetch(AU('sounds/list.json')).then(r=>r.ok?r.json():[]).then(l=>{SBLI
 const HAD_SAVE=(()=>{try{return Object.keys(localStorage).some(k=>/^kraft-save/.test(k))}catch(e){return false}})();
 
 /* ---------- hata takibi: oyunda çıkan hataları sunucuya bildirir (oyuncuya görünmez) ---------- */
-const VER='261124.0848';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
+const VER='261124.0932';const ERRQ=[],ERRS=new Set();let ERRN=0,ERRT=0;
 function errHash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function errCtx(){const c={v:VER,ua:navigator.userAgent.slice(0,140),w:innerWidth+'x'+innerHeight};try{c.view=view;c.phase=G.phase;c.gold=G.gold;c.tier=G.tier;c.day=G.day;c.rep=G.rep}catch(e){}try{if(K&&K.p){c.pid=K.p.id;c.si=K.si;c.step=K.st&&(K.st.ad||K.st.t)}}catch(e){}try{c.trail=ERRTRAIL.slice(-12)}catch(e){}return c}
 const ERRTRAIL=[];function crumb(s){ERRTRAIL.push(Math.round(performance.now()/1000)+'s '+s);if(ERRTRAIL.length>20)ERRTRAIL.shift()}
@@ -2351,7 +2351,7 @@ setInterval(()=>{try{ustTick()}catch(e){}},10000);
 setInterval(()=>{if(!UF)return;S.children.forEach(c=>{if(!c.visible||c===UGRP||c===craft||c.isLight||c.isPoints||c.isLineSegments||UHID.includes(c))return;const p=c.position;if(Math.abs(p.x)<3.4&&p.z>-4.5&&p.z<4.9&&p.y<5){let sk=false;c.traverse(o=>{if(o.isSkinnedMesh)sk=true});if(sk){c.visible=false;UHID.push(c)}}})},400);
 const tLeft=o=>{const m=Math.max(0,Math.round((o.end-NOW())/60));return m>=60?Math.floor(m/60)+' sa '+(m%60)+' dk':m+' dk'};
 const missOf=p=>Object.entries(p.need).filter(([k,n])=>k==='boya'?!anyPaint():(G.inv[k]||0)<n).map(([k,n])=>k==='boya'?'boya':MATS[k].ad+(n>1?' ×'+n:''));
-function ustBoard(){const s=ustS();let h=`<h3>Koleksiyoner siparişleri</h3><p>Koleksiyonerler en az 4★ şaheser ister, karşılığında bütçenin tamamını öder. Yeni koleksiyoner yaklaşık saatte bir gelir.</p>`;
+function ustBoard(){const s=ustS();let h=`<h3>Koleksiyoner siparişleri</h3><p>Koleksiyonerler 4★ ve üstü şahesere bütçenin tamamını öder, 3★ ürünü %60'a alır. Yeni koleksiyoner yaklaşık saatte bir gelir.</p>`;
  h+=s.ord.length?s.ord.map(o=>{const p=PRODS.find(x=>x.id===o.pid),ms=missOf(p);return `<div class="row"><img class="ic" src="${ICON[p.id]}" alt=""><div class="n">${o.ad} · ${p.ad}<small>Bütçe <b>${o.budget.toLocaleString('tr-TR')} altın</b> · ${tLeft(o)} kaldı · ${p.steps.length} adım</small>${ms.length?`<small class="no">Eksik: ${ms.join(', ')}</small>`:''}</div><button class="btn g" data-uo="${o.id}" ${ms.length?'disabled':''}>Yap</button></div>`}).join(''):`<p class="dem">Şu an bekleyen koleksiyoner yok. Sıradaki ${Math.max(1,Math.round(((s.nx||0)-NOW())/60))} dk içinde gelir.</p>`;
  openSheet('ustord',h+closeBtn);wire();ui.sheet.querySelectorAll('[data-uo]').forEach(b=>b.onclick=()=>{const o=s.ord.find(x=>String(x.id)===b.dataset.uo);if(!o)return;const p=PRODS.find(x=>x.id===o.pid);ustStart(p,o)})}
 function ustFree(){const L=ustProds();const h='<h3>Şaheser üret</h3><p>Seçkin vitrine koy; vitrin yavaş satar ama iyi fiyat alır.</p>'+L.map(p=>{const ms=missOf(p);return `<div class="row"><img class="ic" src="${ICON[p.id]}" alt=""><div class="n">${p.ad}<small>${ms.length?'<span class="no">Eksik: '+ms.join(', ')+'</span>':'Malzemeler tamam · '+p.steps.length+' adım'}</small></div><button class="btn" data-uf="${p.id}" ${ms.length?'disabled':''}>Üret</button></div>`}).join('');
@@ -2359,12 +2359,12 @@ function ustFree(){const L=ustProds();const h='<h3>Şaheser üret</h3><p>Seçkin
 function ustStart(p,o){if(UPZ){toast('Önce yarım kalan şaheseri bitir',1500);return}if(!p||!hasNeed(p)||G.phase!=='idle')return;const s=ustS();if(!o&&s.stock.length>=UST.vcap&&(G.store||[]).length>=stoCap()){toast('Seçkin vitrin ve depo rafı dolu',1600);return}show(ui.modal,false);modalMode=null;G.order={p,color:null,style:null,budget:o?o.budget:p.base,free:true,ust:1,coll:o?o.id:null};startCraft()}
 /* kraft bitince (serbest üretim yolundan) */
 function ustResult(){G.phase='result';refresh();const it=K.res.item,o=G.order,s=ustS(),co=o.coll&&s.ord.find(x=>x.id===o.coll),pct=v=>'%'+Math.round(v*100);sfx.good();
- it.price=Math.round(itemVal(it)*1.1/10)*10;const ok=co&&it.stars>=4,pay=co?Math.round(co.budget*(it.stars>=5?1:0.85)*(it.mq?1.25:1)/10)*10:0;K.res.ustPay=ok?pay:0;
+ it.price=Math.round(itemVal(it)*1.1/10)*10;const ok=co&&it.stars>=4,low=co&&it.stars===3?Math.round(co.budget*0.6/10)*10:0,pay=co?Math.round(co.budget*(it.stars>=5?1:0.85)*(it.mq?1.25:1)/10)*10:0;K.res.ustPay=ok?pay:0;
  tip(null);openSheet('result',`<h3>${pr(it).ad} hazır</h3>${it.mq?'<div class="mqB">✨ Usta işi! ✨</div>':''}`+resSum(it.stars)+
- (co?(ok?`<div class="rtot"><span>${co.ad} ödüyor</span><b>${pay.toLocaleString('tr-TR')} altın</b></div>`:`<div class="uxF">${co.ad} en az 4★ istiyor<br><small>Ürün seçkin vitrine konur, sipariş açık kalır</small></div>`):`<div class="rtot"><span>Seçkin vitrin fiyatı</span><b>${it.price.toLocaleString('tr-TR')} altın</b></div>`)+
- `<div style="text-align:center"><button class="btn g" id="ustOk">${ok?'Koleksiyonere teslim et':'Seçkin vitrine koy'}</button></div>`);$('ustOk').onclick=()=>ustDone(ok,co)}
+ (co?(ok?`<div class="rtot"><span>${co.ad} ödüyor</span><b>${pay.toLocaleString('tr-TR')} altın</b></div>`:`<div class="uxF">${co.ad} tam ödeme için en az 4★ istiyor${low?`<br><small>3★ ürünü bütçenin %60'ına (<b>${low.toLocaleString('tr-TR')} altın</b>) alabilir ya da ürünü vitrine koyup siparişi açık bırakabilirsin</small>`:'<br><small>Ürün seçkin vitrine konur, sipariş açık kalır</small>'}</div>`):`<div class="rtot"><span>Seçkin vitrin fiyatı</span><b>${it.price.toLocaleString('tr-TR')} altın</b></div>`)+
+ `<div style="text-align:center;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${low?'<button class="btn g" id="ustLow">Koleksiyonere ver</button>':''}<button class="btn ${low?'l':'g'}" id="ustOk">${ok?'Koleksiyonere teslim et':'Seçkin vitrine koy'}</button></div>`);$('ustOk').onclick=()=>ustDone(ok,co);if(low)$('ustLow').onclick=()=>{K.res.ustPay=low;ustDone(true,co)}}
 function ustDone(ok,co){show(ui.modal,false);modalMode=null;const it=K.res.item,s=ustS(),w=K.work,g=K.model.g;
- if(ok){const pay=K.res.ustPay;G.gold+=pay;G.st.earned+=pay;G.st.deliv++;chDeliv();G.rep+=it.stars>=5?8:5;s.ord=s.ord.filter(x=>x!==co);G.st.ckol=(G.st.ckol||0)+1;sfx.cash();setTimeout(()=>gemRoll(GEM_P.bes,'Koleksiyoner elmas hediye etti!'),1500);toast(`+${pay.toLocaleString('tr-TR')} altın · +${it.stars>=5?8:5} itibar`,2000)}
+ if(ok){const pay=K.res.ustPay;G.gold+=pay;G.st.earned+=pay;G.st.deliv++;chDeliv();G.rep+=it.stars>=5?8:it.stars>=4?5:2;s.ord=s.ord.filter(x=>x!==co);G.st.ckol=(G.st.ckol||0)+1;sfx.cash();setTimeout(()=>gemRoll(GEM_P.bes,'Koleksiyoner elmas hediye etti!'),1500);toast(`+${pay.toLocaleString('tr-TR')} altın · +${it.stars>=5?8:it.stars>=4?5:2} itibar`,2000)}
  else if(s.stock.length<UST.vcap){s.stock.push(it);toast('Seçkin vitrine kondu',1400)}else{(G.store=G.store||[]).push(it);storeSync();toast('Seçkin vitrin dolu, ürün depo rafına kondu',1800)}
  if(it.stars>=3){const e=G.cat[it.pid]||(G.cat[it.pid]={n:0,best:0});e.n++;e.best=Math.max(e.best,it.stars)}
  tween(0.3,k=>g.scale.setScalar(Math.max(0.01,0.8*(1-k))),()=>craft.remove(w));G.phase='idle';G.order=null;ustVitSync();levelUp();save();refresh()}
@@ -3123,8 +3123,8 @@ for(let x=-rx;x<=rx;x+=0.045)for(let z=-rz;z<=rz;z+=0.045)if((x/rx)**2+(z/rz)**2
 function paintAt(p){sThr(sfx.brush,0.3);toolAt(p,'br',K.ptop);K.pc.forEach(c=>{if(!c.on&&Math.hypot(c.p.x-p.x,c.p.z-p.z)<0.085*eqMul('firca')){c.on=true;K.pn++}});const cv=K.pn/K.pcN;K.model.um.color.set(paintHex());K.model.um.roughness=0.45;tipStep('Boyandı: %'+Math.round(cv*100));
 if(cv>=0.9){K.pc=null;K.painted=true;K.rubbing=false;sfx.good();build(false);renderDesign();tipStep('Boya tamam · Sürükleyip çevir, sonra Bitir')}}
 function bDesign(){K.work.clear();if(TOOL)TOOL.visible=false;K.painted=false;K.pc=null;K.pn=0;K.pcN=1;K.nat={hex:K.p.sheet,ad:'Doğal'};K.color=K.p.need.boya?null:K.nat;K.rx=K.ry=0;K.style=K.p.styles?(G.order.style||K.p.styles[0]):null;build(true);renderDesign()}
-function build(pop){if(K.model)K.work.remove(K.model.g);K.model=K.p.build(paintHex(),K.style,K);K.model.g.position.copy(BC);K.model.g.scale.setScalar(1.6);K.work.add(K.model.g);{const b=new THREE.Box3().setFromObject(K.model.g),z=b.getSize(V(0,0,0));K.mR=Math.max(z.x,z.z)/2;K.mH=z.y}applySpin();
-if(pop){const g=K.model.g;g.scale.set(1.6,0.08,1.6);tween(0.45,k=>g.scale.set(1.6,0.08+1.52*k,1.6))}}
+function build(pop){if(K.model)K.work.remove(K.model.g);K.model=K.p.build(paintHex(),K.style,K);K.model.g.position.copy(BC);K.model.g.scale.setScalar(1.6);K.work.add(K.model.g);{let b=new THREE.Box3().setFromObject(K.model.g),z=b.getSize(V(0,0,0));const mx=Math.max(z.x,z.y*1.25,z.z);if(mx>0.7){K.model.g.scale.multiplyScalar(0.7/mx);b=new THREE.Box3().setFromObject(K.model.g);z=b.getSize(V(0,0,0))}K.mR=Math.max(z.x,z.z)/2;K.mH=z.y;K.mS=K.model.g.scale.x}applySpin();
+if(pop){const g=K.model.g,S=K.mS||1.6;g.scale.set(S,0.05*S,S);tween(0.45,k=>g.scale.set(S,S*(0.05+0.95*k),S))}}
 function applySpin(){if(!K||!K.model)return;const g=K.model.g;g.rotation.set(K.rx||0,K.ry||0,0);g.position.y=BC.y+(K.mR||0.2)*Math.abs(Math.sin(K.rx||0))+(K.mH||0)*(1-Math.cos(K.rx||0))*0.5+0.01}
 function renderDesign(){const L=[];if(K.p.wood)L.push(btn('Doğal','l'+(K.color===K.nat?' sel':''),()=>{K.color=K.nat;K.pc=null;K.painted=false;build(false);renderDesign()}));
 if(K.p.need.boya||K.p.wood)PAINTS.filter(p=>G.inv['boya_'+p.id]>0).forEach(p=>{const b=btn('','col'+(K.color===p?' sel':''),()=>{if(K.color===p)return;K.color=p;K.painted=false;K.pn=0;K.pcN=1;K.rx=K.ry=0;sfx.drop();build(false);mkPaint();renderDesign();tipStep('Parmağınla boyayı ürüne sür')});b.style.background=p.hex;b.setAttribute('aria-label',p.ad);L.push(b)});
@@ -3134,14 +3134,14 @@ const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 function finish(){if(!K.color||(K.color.id&&!K.painted))return;const o=G.order;if(K.color.id)G.inv['boya_'+K.color.id]--;K.rx=K.ry=0;applySpin();G.step=null;actions([]);tip(null);
 if(o.rep){repFinish(o);return}
 if(o.free){const work=avg(K.scores),stars=qcCap(clamp(Math.round(work*5)-(K.skips?1:0),1,5)),it={id:++G.sid,pid:K.p.id,col:K.color.id||null,style:K.style,stars};if(mqRoll(stars)){it.mq=1;G.st.mq=(G.st.mq||0)+1}it.price=sugg(it);K.res={item:it,ux:uxCheck(stars)};
-Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';finCam(()=>{sway=1;showFree()});tween(1.1,k=>{g.position.lerpVectors(fr,V(2.3,1.6,-1.0),k);g.scale.setScalar(1.6-0.8*k)});return}
+Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';finCam(()=>{sway=1;showFree()});tween(1.1,k=>{g.position.lerpVectors(fr,V(2.3,1.6,-1.0),k);g.scale.setScalar((K.mS||1.6)*(1-0.5*k))});return}
 const work=avg(K.scores),colorOk=!o.color||K.color.id===o.color.id,styleOk=!o.style||K.style===o.style,late=K.late,B0=o.budget,L=[];let pay=B0;
 const cut=(t,f)=>{const v=Math.round(B0*f);if(v>0){L.push([t,-v]);pay-=v}};
 if(work<0.85)cut('İşçilik kusuru',(0.85-work)*0.6);if(K.skips)cut(`Eksik adım ×${K.skips}`,0.12*K.skips);if(!colorOk)cut('Yanlış renk',0.3);if(!styleOk)cut('Yanlış model',0.2);if(late)cut('Geç teslim',0.25);
 const stars=qcCap(clamp(Math.round((0.7*work+0.3*((colorOk?0.6:0)+(styleOk?0.4:0)))*5)-(late?1:0)-(K.skips?1:0),1,5));
 if(o.hurry&&!late){const v=Math.round(B0*0.2);L.push(['Acele bonusu',v]);pay+=v}if(stars===5){L.push(['Bahşiş',15]);pay+=15}{const cb=comboPct();if(cb>0&&stars>=4){const v=Math.round(B0*cb);L.push([`Kombo x${K.cbM}`,v]);pay+=v}}let mq=0;if(mqRoll(stars)){mq=1;const v=Math.round(B0*0.5);L.push(['✨ Usta işi',v]);pay+=v}
 pay=Math.max(Math.round(B0*0.15),pay);K.res={stars,pay,L,colorOk,styleOk,late,mq};
-Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';finCam(()=>{sway=1;showResult()});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar(1.6-0.6*k)})}
+Q.forEach(x=>x.g.visible=true);const g=K.model.g,fr=g.position.clone();view='home';finCam(()=>{sway=1;showResult()});tween(1.1,k=>{g.position.lerpVectors(fr,V(0.25,Y,1.35),k);g.scale.setScalar((K.mS||1.6)*(1-0.375*k))})}
 function showFree(){if(G.order&&G.order.ust){ustResult();return}G.phase='result';refresh();const it=K.res.item,pct=v=>'%'+Math.round(v*100);sfx.good();
 tip(null);openSheet('result',`<h3>${pr(it).ad} vitrine kondu</h3>${uxHtml(K.res.ux)}${it.mq?'<div class="mqB">✨ Usta işi! Değeri %50 fazla ✨</div>':''}`+resSum(it.stars)+
 `<div class="rtot"><span>Vitrin fiyatı · Vitrin'de değiştirebilirsin</span><b>${it.price} altın</b></div><div style="text-align:center"><button class="btn g" id="freeOk">Tamam</button></div>`);$('freeOk').onclick=freeDone}
@@ -3298,14 +3298,16 @@ function qcUI(lbl,btnTxt){ui.act.innerHTML=`<div class="qcm"><div class="qcl"><b
  const b=btn(btnTxt,'g qch');b.style.touchAction='none';b.oncontextmenu=e=>e.preventDefault();ui.act.appendChild(b);return b}
 function qcSkip(){K.qc=0.55}
 /* Nargile çekiş kontrolü: basılı tutup çek; kaçak varsa duman çıkar ve çekiş tıkanır, duman çıkan contaya dokunup sık */
-function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla contası',q:[0.8*HKS,0],h:HKY(2.55)},{n:'Hortum ağzı',q:[-1.08*HKS,1.08*HKS],h:HKY(-0.1)}].map(j=>{const p=LP(j.q);p.y=D3?Y+j.h:K.top+0.02;const r=put(K.work,new THREE.RingGeometry(0.022,0.03,24),new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0.0,depthWrite:false,side:THREE.DoubleSide}),p.x,p.y+0.004,p.z);r.rotation.x=-Math.PI/2;return Object.assign(j,{p,r,leak:false})});
+function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla contası',q:[0.8*HKS,0],h:HKY(2.55)},{n:'Hortum ağzı',q:[-1.08*HKS,1.08*HKS],h:HKY(-0.1)}].map(j=>{const p=LP(j.q);p.y=D3?Y+j.h:K.top+0.02;const r=put(K.work,new THREE.RingGeometry(0.026,0.036,24),new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0.0,depthWrite:false,side:THREE.DoubleSide}),p.x,p.y+0.004,p.z);r.rotation.x=-Math.PI/2;r.renderOrder=5;const hs=put(K.work,new THREE.SphereGeometry(0.06,10,8),new THREE.MeshBasicMaterial({visible:false}),p.x,p.y,p.z);return Object.assign(j,{p,r,hs,leak:false})});
  const lk=J.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,2);lk.forEach(i=>J[i].leak=true);
  let hold=false,flow=0,t0=tt,wrong=0,seen=false,lastP=0,lastB=0,lastG=0,done=false;const bub=[];
  const b=qcUI('Çekiş','Çek · basılı tut');b.onpointerdown=e=>{e.preventDefault();hold=true};b.onpointerup=b.onpointerleave=b.onpointercancel=()=>{hold=false};
  const z=$('qcZ');if(z){z.style.left='88%';z.style.width='12%'}
  const fix=j=>{j.leak=false;sfx.drop&&sfx.drop();tone(520,0.05,'square',0.03);setTimeout(()=>tone(700,0.05,'square',0.03),70);ringPulse(j.p.clone(),0.05,'#bff3ff');sparkle(j.p.clone().add(V(0,0.02,0)),6);j.r.material.color.set('#7fe0b0');j.r.material.opacity=0.8;
   const left=J.filter(x=>x.leak).length;toast(left?`${j.n} sıkıldı · bir kaçak daha var`:`${j.n} sıkıldı · tekrar çek`,1100)};
- K.pd=p=>{if(done)return;let best=null,bd=9;J.forEach(j=>{const d=Math.hypot(j.p.x-p.x,j.p.z-p.z);if(d<bd){bd=d;best=j}});if(!best||bd>0.06)return;if(best.leak)fix(best);else{wrong++;sfx.tap();toast(`${best.n} sağlam`,800)}};
+ K.pd=p=>{if(done)return;let best=null;const hit=ray.intersectObjects(J.map(j=>j.hs),false)[0];if(hit)best=J.find(j=>j.hs===hit.object);
+  if(!best){/* ekran üzerinde en yakın conta (yükseklik farkı yüzünden masa düzlemindeki nokta kayabiliyor) */let bd=9;const c=ray.ray.origin,dv=ray.ray.direction;J.forEach(j=>{const d=ray.ray.distanceToPoint(j.p);if(d<bd){bd=d;best=j}});if(bd>0.08)best=null}
+  if(!best)return;if(best.leak)fix(best);else{wrong++;sfx.tap();toast(`${best.n} sağlam`,800)}};
  const lbl=()=>{const s=$('qcS');if(!s)return;const L=J.filter(x=>x.leak).length;s.textContent=!seen?'Basılı tutup çek':L?'Kaçak var · duman çıkan yere dokun':'Çekiş açık · dolana kadar tut'};lbl();
  tipStep('Basılı tutup çek · duman çıkarsa o contaya dokunup sık');
  K.tick=dt=>{if(done)return;const L=J.filter(x=>x.leak);
@@ -3314,11 +3316,11 @@ function bDraw(){const D3=!!K.is3d,J=[{n:'Lüle',q:[0,0],h:HKY(3.3)},{n:'Tabla c
    if(tt-lastG>(L.length?0.3:0.13)){lastG=tt;noise(0.09,L.length?0.025:0.05,260+Math.random()*120,1.6)}
    if(L.length&&tt-lastP>0.25){lastP=tt;L.forEach(j=>puff(j.p.clone().add(V(0,0.01,0)),1,'#d6d6d6'));noise(0.12,0.015,5200,1.2);if(!seen){seen=true;lbl();toast('Kaçak var! Duman çıkan yeri bul',1300)}}}
   else flow=Math.max(0,flow-dt*0.6);
-  J.forEach(j=>{if(j.leak&&seen){j.r.material.opacity=0.25+0.25*Math.sin(tt*8)}});
+  J.forEach(j=>{if(j.leak&&seen){j.r.material.opacity=0.55+0.35*Math.sin(tt*8);j.r.scale.setScalar(1+0.15*Math.sin(tt*8))}else if(!j.leak&&j.r.material.color.getHex()!==0x7fe0b0&&seen){j.r.material.opacity=0.18}});
   for(let i=bub.length-1;i>=0;i--){const q=bub[i];q.t+=dt;q.m.position.y+=q.v*dt;q.m.material.opacity=Math.max(0,0.9-q.t*1.4);if(q.t>0.65){K.work.remove(q.m);bub.splice(i,1)}}
   const f=$('qcF'),pp=$('qcP');if(f)f.style.width=Math.round(flow*100)+'%';if(pp)pp.style.left=Math.round(flow*100)+'%';lbl();
-  if(!L.length&&flow>=0.999){done=true;hold=false;const sc=clamp(1-wrong*0.12-Math.max(0,tt-t0-15)*0.015,0.35,1);K.qc=sc;J.forEach(j=>K.work.remove(j.r));bub.forEach(q=>K.work.remove(q.m));for(let k=0;k<5;k++)setTimeout(()=>noise(0.1,0.05,300,1.4),k*110);sparkle(V(BC.x,K.top+0.05,BC.z),14);setTimeout(()=>fin(sc,'Çekiş tertemiz!'),700)}};
- K.skipFn=()=>{qcSkip();J.forEach(j=>K.work.remove(j.r));bub.forEach(q=>K.work.remove(q.m))};
+  if(!L.length&&flow>=0.999){done=true;hold=false;const sc=clamp(1-wrong*0.12-Math.max(0,tt-t0-15)*0.015,0.35,1);K.qc=sc;J.forEach(j=>{K.work.remove(j.r);K.work.remove(j.hs)});bub.forEach(q=>K.work.remove(q.m));for(let k=0;k<5;k++)setTimeout(()=>noise(0.1,0.05,300,1.4),k*110);sparkle(V(BC.x,K.top+0.05,BC.z),14);setTimeout(()=>fin(sc,'Çekiş tertemiz!'),700)}};
+ K.skipFn=()=>{qcSkip();J.forEach(j=>{K.work.remove(j.r);K.work.remove(j.hs)});bub.forEach(q=>K.work.remove(q.m))};
  K.drw={fixAll(){J.filter(x=>x.leak).forEach(fix)},get flow(){return flow},set hold(v){hold=v},get leaks(){return J.filter(x=>x.leak).length}}}
 /* Tabanca tetik kontrolü: basılı tutunca tetik direnci artar; yeşil bölgede bırak (klik, top döner). Kaçırırsan ayar vidasını sık. 3 temiz tetik gerekir */
 function bTrigger(){const tp=(K.parts.top||[])[0],ro=tp&&tp.userData.rotor,hm=new THREE.Group(),hp=LP([RV.cyl[0]-RV.cylL*0.62,RV.cyl[1]-RV.cylR*0.55]);hm.position.set(hp.x,K.top+0.03,hp.z);K.work.add(hm);
