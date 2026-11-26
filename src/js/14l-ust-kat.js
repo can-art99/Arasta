@@ -148,8 +148,8 @@ function ustDesk(g,TZP,UMAT){glb('m_utezg',src=>{const m=src.scene.clone(),w=new
  m.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;const ms=Array.isArray(o.material)?o.material:[o.material];o.material=ms.map(q=>/Wood/.test(q.name)?M('#5a321b',0.6):/Gray/.test(q.name)?M('#7a5a2a',0.5):M('#2b2420',0.55));if(o.material.length===1)o.material=o.material[0]}});TZP.forEach(o=>o.visible=false);
  /* L tablası ürünleri taşırıyordu: modelin tablası gizlenir, yerine tezgâhı tam kaplayan geniş ahşap tabla konur */
  m.traverse(o=>{if(o.isMesh){o.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(o);if(bb.max.y>Y-0.06&&bb.max.y-bb.min.y<0.12)o.visible=false}});
- const tw=M('#5a321b',0.6),tp=put(g,B(2.6,0.06,1.3),tw,0,Y-0.03,BC.z);tp.castShadow=tp.receiveShadow=true;put(g,B(2.64,0.025,1.34),M('#3e2213',0.6),0,Y-0.07,BC.z);
- if(UMAT){UMAT.scale.set(2.3/1.5,1,1.1/0.9);UMAT.position.set(0,Y+0.001,BC.z)}})}
+ const tw=M('#5a321b',0.6),tp=put(g,B(2.6,0.06,1.3),tw,0,Y-0.034,BC.z);tp.castShadow=tp.receiveShadow=true;put(g,B(2.64,0.025,1.34),M('#3e2213',0.6),0,Y-0.07,BC.z);
+ if(UMAT){UMAT.scale.set(2.3/1.5,1,1.1/0.9);UMAT.position.set(0,Y-0.0025,BC.z)}})}
 /* üst kat oda modelleri: yüklenince yerlerindeki basit parçalar gizlenir */
 let USEAT=0.52,UVP=[[-0.4,1.25],[0.4,1.25],[-0.4,1.7],[0.4,1.7],[-0.4,2.12],[0.4,2.12]],UVW=0.6,UVH=0.38;
 function ustModels(g,WINP,SEDP,AVP,TZP,UMAT){const hide=a=>a.forEach(o=>o.visible=false);ustDesk(g,TZP,UMAT);
