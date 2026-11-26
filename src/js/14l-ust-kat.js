@@ -83,7 +83,10 @@ function ustUnlock(){const s=ustS(),tk=(G.tier||1)>=UST.t,gk=G.gold>=UST.g;
 /* koleksiyoner siparişleri */
 function ustNewOrder(){const s=ustS(),L=ustProds();if(!L.length)return;const p=pick(L),used=new Set(s.ord.map(o=>o.ad));const nm=pick(COLN.filter(n=>!used.has(n)))||pick(COLN);
  s.ord.push({id:Date.now()+Math.floor(Math.random()*999),pid:p.id,ad:nm,budget:Math.round(p.base*(1.2+Math.random()*0.4)*payM()/50)*50,end:NOW()+5400});if(!UF)setTimeout(()=>toast(`Koleksiyoner ${nm} üst kata geldi<br><small>${p.ad} istiyor</small>`,2200),400)}
-function ustTick(){try{ustFigs()}catch(e){}const s=ustS();if(!s.open||!G.started)return;const n=NOW();const before=s.ord.length;s.ord=s.ord.filter(o=>o.end>n);if(s.ord.length<before&&UF)toast('Bir koleksiyoner beklemekten vazgeçti',1600);
+function ustTick(){try{ustFigs()}catch(e){}const s=ustS();if(!s.open||!G.started)return;const n=NOW();
+ /* oyun kapalıyken geçen süre: seçkin vitrin satışını yakala (en fazla 12 saat) */
+ {const gap=Math.min(43200,n-(s.lt||n));s.lt=n;if(gap>60&&s.stock.length){const p=1-Math.exp(-gap/5400);let cnt=0,sum=0;s.stock=s.stock.filter(it=>{if(Math.random()<p){cnt++;sum+=it.price;return false}return true});
+  if(cnt){G.gold+=sum;if(G.st){G.st.earned+=sum;G.st.sold+=cnt}setTimeout(()=>{sfx.cash&&sfx.cash();toast(`Sen yokken seçkin vitrinden ${cnt} şaheser satıldı<br><b>+${sum.toLocaleString('tr-TR')} altın</b>`,3200)},2500);ustVitSync();save();hud()}}}const before=s.ord.length;s.ord=s.ord.filter(o=>o.end>n);if(s.ord.length<before&&UF)toast('Bir koleksiyoner beklemekten vazgeçti',1600);
  if(s.ord.length<2&&n>=(s.nx||0)){ustNewOrder();s.nx=n+3000+Math.random()*1200;save();if(UF)refresh()}
  if(s.stock.length&&Math.random()<s.stock.length*10/5400){const i=Math.floor(Math.random()*s.stock.length),it=s.stock[i];s.stock.splice(i,1);G.gold+=it.price;if(G.st){G.st.earned+=it.price;G.st.sold++}sfx.cash&&sfx.cash();toast(`Seçkin vitrinden ${pr(it).ad} satıldı<br><b>+${it.price.toLocaleString('tr-TR')} altın</b>`,2400);ustVitSync();save();hud()}}
 setInterval(()=>{try{ustTick()}catch(e){}},10000);
@@ -126,7 +129,7 @@ function ustFigs(){const s=ustS(),want=UF&&s.open?s.ord.slice(0,2):[];
   m.traverse(q=>{if(q.isMesh){q.frustumCulled=false;q.castShadow=true}});w.add(m);const L=UCSL[slot];w.position.set(L[0],0,L[1]);w.rotation.y=L[2];UGRP.add(w);
   const mx=new THREE.AnimationMixer(m),cl=g.animations.find(c=>c.name==='idle')||g.animations[0];if(cl){const a=mx.clipAction(cl);a.time=Math.random()*cl.duration;a.play()}MIX.push(mx);
   const F={id:o.id,slot,src:g,w,mx,m,ry:L[2]};sitInit(F);UCOL.push(F);w.scale.setScalar(0.01);tween(0.45,k=>w.scale.setScalar(Math.max(0.01,1-Math.pow(1-k,3))))})}
-let UKING=null,UKL=false;function ustKing(){if(UKL||!THREE.GLTFLoader)return;UKL=true;new THREE.GLTFLoader().load(AU('models/m_King.glb'),g=>{g.nm='m_King';prepModel(g.scene);const bb=new THREE.Box3().setFromObject(g.scene);g.h=bb.max.y-bb.min.y;g.y0=bb.min.y;g.cx=(bb.min.x+bb.max.x)/2;g.cz=(bb.min.z+bb.max.z)/2;UKING=g;try{ustFigs()}catch(e){}},undefined,()=>{})}
+let UKING=null,UKL=false;function ustKing(){if(UKL||!THREE.GLTFLoader)return;UKL=true;new THREE.GLTFLoader().load(AU('models/m_King.glb'),g=>{g.nm='m_King';prepModel(g.scene);{const hsl={};g.scene.traverse(q=>{if(!q.isMesh)return;(Array.isArray(q.material)?q.material:[q.material]).forEach(m=>{if(!m||!m.color||m.userData.sat)return;m.userData.sat=1;m.color.getHSL(hsl);m.color.setHSL(hsl.h,Math.min(1,hsl.s*1.6+0.08),hsl.l*0.92);if(m.metalness>0.5)m.metalness=0.45})})}const bb=new THREE.Box3().setFromObject(g.scene);g.h=bb.max.y-bb.min.y;g.y0=bb.min.y;g.cx=(bb.min.x+bb.max.x)/2;g.cz=(bb.min.z+bb.max.z)/2;UKING=g;try{ustFigs()}catch(e){}},undefined,()=>{})}
 /* oturma: modellerde oturma animasyonu yok; aynı iskelet adlarını (UpperLeg/LowerLeg/Foot) kullanan her karakterde
    bacak kemikleri her karede dünya yönüne göre çevrilir (uyluk öne, baldır aşağı) ve figür sedire indirilir */
 const _sa=new THREE.Vector3(),_sb=new THREE.Vector3(),_sq=new THREE.Quaternion(),_sw=new THREE.Quaternion(),_sp=new THREE.Quaternion();
