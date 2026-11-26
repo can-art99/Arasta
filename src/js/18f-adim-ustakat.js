@@ -14,7 +14,7 @@ function inlayShape(k,s){s=s||1;const sh=new THREE.Shape();if(k==='c'){sh.absarc
  else{const R=0.034*s,r=0.015*s;for(let i=0;i<10;i++){const t=Math.PI/2+i*Math.PI/5,q=i%2?r:R;i?sh.lineTo(Math.cos(t)*q,Math.sin(t)*q):sh.moveTo(Math.cos(t)*q,Math.sin(t)*q)}sh.closePath()}return sh}
 function bInlay(){const S0=K.st.slots||[{p:[0,0],k:'c',s:1.4},{p:[-0.1,-0.05],k:'d',r:-2.2},{p:[0.1,-0.05],k:'d',r:2.2},{p:[-0.1,0.05],k:'d',r:-0.9},{p:[0.1,0.05],k:'d',r:0.9},{p:[-0.18,0],k:'r'},{p:[0.18,0],k:'r'}];
  const y0=K.top,pearl=i=>new THREE.MeshStandardMaterial({color:'#f3f8f9',roughness:0.18,metalness:0.15,emissive:'#223344',emissiveIntensity:0.6,flatShading:true});
- const surf=p=>{const rc=new THREE.Raycaster(V(p.x,Y+1,p.z),V(0,-1,0)),h=rc.intersectObjects(K.work.children.filter(o=>o.visible),true)[0];return h?h.point.y:y0};const sl=S0.map((d,i)=>{const p=LP(d.p),sy=surf(p),g=flat(inlayShape(d.k,(d.s||1)*1.12),0.0015,M('#24140a',0.9),0);g.position.set(p.x,sy+0.0006,p.z);g.rotation.z=d.r||0;K.work.add(g);
+ const surf=p=>{const rc=new THREE.Raycaster(V(p.x,Y+1,p.z),V(0,-1,0));rc.camera=cam;const h=rc.intersectObjects(K.work.children.filter(o=>o.visible),true)[0];return h?h.point.y:y0};const sl=S0.map((d,i)=>{const p=LP(d.p),sy=surf(p),g=flat(inlayShape(d.k,(d.s||1)*1.12),0.0015,M('#24140a',0.9),0);g.position.set(p.x,sy+0.0006,p.z);g.rotation.z=d.r||0;K.work.add(g);
   const rim=flat(inlayShape(d.k,(d.s||1)*1.3),0.0008,new THREE.MeshBasicMaterial({color:'#ffd77a',transparent:true,opacity:0,depthWrite:false}),0);rim.position.set(p.x,sy+0.0003,p.z);rim.rotation.z=d.r||0;K.work.add(rim);p.y=sy;return {d,p,g,rim,done:false}});
  const TOPY=Math.max(y0,...sl.map(q=>q.p.y));/* boş yuvalar altın çerçeveyle yanıp söner, nereye kakılacağı belli olsun */
  const pulse=()=>{const k=0.3+0.25*Math.sin(tt*5);sl.forEach(q=>{if(q.done)q.rim.material.opacity=0;else if(q!==near)q.rim.material.opacity=k})};
@@ -110,3 +110,38 @@ function bTrigger(){const tp=(K.parts.top||[])[0],ro=tp&&tp.userData.rotor,RD=re
   const p2=$('qcP'),f=$('qcF');if(p2)p2.style.left=Math.round(Math.min(1,pr)*100)+'%';if(f)f.style.width=Math.round(Math.min(1,pr)*100)+'%'};
  zone();lbl();tipStep('Mermisiz deneme: basılı tut, horoz kalkar · ibre yeşildeyken bırak');setTimeout(()=>{if(G.step==='tetik'&&!att)toast('Kuru tetik testi: silah ateşlenmez, sadece mekanizma denenir',2400)},400);
  K.skipFn=()=>{qcSkip();K.work.remove(sr)};K.trg={get pr(){return pr},set pr(v){pr=v},get zc(){return zc},rel,fixScrew(){K.pd(sp)},get need(){return need},get ok(){return ok}}}
+/* Kuş kafesi kalite kontrolü: kuş kafeste dolaşır, açılmış tellere yönelir; kuş varmadan açık tele dokunup düzelt */
+function bCage(){const tel=(K.parts.tel||[])[0],bars=tel&&tel.userData.bars;if(!bars||!bars.length){K.qc=0.6;fin(0.6,'Kafes hazır');return}
+ const kus=kfPart('kus',null,1).g,bird=kus.userData.bird;kus.position.copy(tel.position);K.work.add(kus);
+ const pick=bars.map((b,i)=>i).filter(i=>{const a=bars[i].userData.a;return Math.abs(Math.sin(a)-1)>0.15}).sort(()=>Math.random()-0.5).slice(0,3);
+ const bent=pick.map(i=>{const b=bars[i],a=b.userData.a,p0=b.position.clone(),r0=b.rotation.clone();const h=put(tel,Cy(0.022,0.022,KF.H,8),new THREE.MeshBasicMaterial({visible:false}),p0.x,p0.y,p0.z);
+  const ax=V(-Math.sin(a),0,Math.cos(a));const q=new THREE.Quaternion().setFromAxisAngle(ax,-0.32);b.quaternion.premultiply(q);b.position.x+=Math.cos(a)*0.02;b.position.z+=Math.sin(a)*0.02;b.material=b.material.clone();b.material.emissive=new THREE.Color('#ff9a3a');b.material.emissiveIntensity=0.0;
+  return {b,h,a,p0,r0,ok:false}});
+ let tgt=null,tT=0,esc=0,wrong=0,done=false,t0=tt;const LIM=4.2;
+ const b=qcUI('Kafes','Kuş kaçmadan açık teli düzelt');b.style.display='none';const lbl=()=>{const s=$("qcS"),f=$("qcF"),n=bent.filter(x=>x.ok).length;if(s)s.textContent=`Düzeltilen tel ${n}/${bent.length} · kaçış ${esc}`;if(f)f.style.width=Math.round(n/bent.length*100)+"%"};lbl();
+ const next=()=>{const L=bent.filter(x=>!x.ok);if(!L.length)return end();tgt=L[Math.floor(Math.random()*L.length)];tT=0;const a=tgt.a,from=bird.position.clone(),to=V(Math.cos(a)*0.07,bird.position.y,Math.sin(a)*0.07);bird.rotation.y=-a;tween(0.6,k=>{bird.position.lerpVectors(from,to,k);bird.position.y=KF.H0+0.112+Math.sin(k*Math.PI)*0.03});tone(2600,0.05,'sine',0.03);setTimeout(()=>tone(3100,0.05,'sine',0.03),80)};
+ const fix=x=>{x.ok=true;x.b.quaternion.setFromEuler(x.r0);const pa=x.b.position.clone();tween(0.2,k=>x.b.position.lerpVectors(pa,x.p0,k));x.b.material.emissiveIntensity=0;noise(0.04,0.08,3000,2);tone(1400,0.04,'square',0.03);sparkle(tel.position.clone().add(x.p0).add(V(0,0.05,0)),6);lbl();if(x===tgt)setTimeout(next,250)};
+ const end=()=>{if(done)return;done=true;K.tick=null;const sc=clamp(1-esc*0.2-wrong*0.06-Math.max(0,tt-t0-20)*0.01,0.3,1);K.qc=sc;const fr=bird.position.clone();tween(0.5,k=>{bird.position.lerpVectors(fr,V(0,KF.H0+0.095,0),k);bird.position.y+=Math.sin(k*Math.PI)*0.03});
+  for(let i=0;i<4;i++)setTimeout(()=>tone(2400+i*300+Math.random()*200,0.08,'sine',0.04),300+i*140);setTimeout(()=>fin(sc,'Kafes sağlam, kuş mutlu!'),1100)};
+ K.pd=()=>{if(done)return;const hit=ray.intersectObjects(bent.filter(x=>!x.ok).map(x=>x.h),false)[0];if(hit){fix(bent.find(x=>x.h===hit.object))}else{wrong++;sfx.tap()}};
+ K.tick=dt=>{if(done||!tgt)return;tT+=dt;bent.forEach(x=>{if(!x.ok)x.b.material.emissiveIntensity=0.35+0.3*Math.sin(tt*8)});
+  if(tT>LIM&&!tgt.ok){esc++;lbl();toast('Kuş aralıktan kafasını uzattı!',1100);const a=tgt.a,fr=bird.position.clone();tween(0.25,k=>bird.position.lerpVectors(fr,V(Math.cos(a)*0.12,fr.y,Math.sin(a)*0.12),k),()=>{const f2=bird.position.clone();tween(0.35,k=>bird.position.lerpVectors(f2,V(0,KF.H0+0.112,0),k))});tone(3600,0.06,'sine',0.05);setTimeout(()=>tone(3200,0.06,'sine',0.05),90);tT=-0.4;setTimeout(()=>{if(!done)next()},700)}};
+ tipStep('Kuş açık tele yöneliyor · parlayan teli dokunarak düzelt');setTimeout(next,700);
+ K.skipFn=()=>{qcSkip();bent.forEach(x=>{if(!x.ok){x.ok=true;x.b.quaternion.setFromEuler(x.r0);x.b.position.copy(x.p0);x.b.material.emissiveIntensity=0}})};K.cg={fixAll(){bent.filter(x=>!x.ok).forEach(fix)},get esc(){return esc}}}
+/* Usturlap kalibrasyonu: ağı merkez çevresinde döndürüp kırmızı yıldız işaretçisini altın nişana hizala; üç yıldız */
+function bAlign(){const rt=(K.parts.rete||[])[0];if(!rt){K.qc=0.6;fin(0.6,'Usturlap hazır');return}const c=rt.position.clone(),STARS=['Vega','Sirius','Altair'],ang=a=>{a=(a+Math.PI)%(Math.PI*2);if(a<0)a+=Math.PI*2;return a-Math.PI};
+ const mk=new THREE.Group();put(mk,new THREE.ConeGeometry(0.009,0.022,4),M('#ffd24a',0.3),0,0,0).rotation.z=Math.PI/2;mk.position.y=c.y+0.02;K.work.add(mk);const halo=put(K.work,new THREE.RingGeometry(0.012,0.017,20),new THREE.MeshBasicMaterial({color:'#ffe08a',transparent:true,opacity:0.8,depthWrite:false,side:THREE.DoubleSide}),0,c.y+0.021,0);halo.rotation.x=-Math.PI/2;
+ let round=0,th=0,drag=null,sc=[],t1=tt,done=false;
+ const b=qcUI('Nişan','Ağı çevir · yıldızı nişana getir');b.style.display='none';
+ const setT=()=>{th=(Math.random()*2-1)*Math.PI;const r=0.152;mk.position.x=c.x+Math.cos(th)*r;mk.position.z=c.z+Math.sin(th)*r;mk.rotation.y=-th+Math.PI;halo.position.x=c.x+Math.cos(th)*0.132;halo.position.z=c.z+Math.sin(th)*0.132;
+  rt.rotation.y=-(th+(Math.random()<0.5?1:-1)*(1+Math.random()*1.6));t1=tt;const s=$('qcN');if(s)s.textContent=STARS[round];toast(`${STARS[round]} yıldızını nişana hizala`,1200)};
+ const err=()=>Math.abs(ang(-rt.rotation.y-th));
+ const ui2=()=>{const e=err(),f=$('qcF'),p=$('qcP'),s=$('qcS');const k=Math.max(0,1-e/(Math.PI/2));if(f)f.style.width=Math.round(k*100)+'%';if(p)p.style.left=Math.round(k*100)+'%';if(s)s.textContent=`Yıldız ${round+1}/3 · sapma ${Math.round(e*180/Math.PI)}°`};
+ {const z=$('qcZ');if(z){z.style.left='94%';z.style.width='6%'}}
+ K.pd=p=>{if(done)return;drag={a0:Math.atan2(p.z-c.z,p.x-c.x),r0:rt.rotation.y}};
+ K.pm=p=>{if(!drag||done)return;const a=Math.atan2(p.z-c.z,p.x-c.x);rt.rotation.y=drag.r0-(ang(a-drag.a0));ui2();if(err()<0.05&&!drag.tk){drag.tk=1;tone(1800,0.03,'square',0.03)}else if(err()>=0.05)drag.tk=0};
+ K.pu=()=>{if(!drag||done)return;drag=null;const e=err();if(e<0.07){const s0=clamp(1-e/0.07*0.25-Math.max(0,tt-t1-6)*0.03,0.4,1);sc.push(s0);rt.rotation.y=-th;tone(1320,0.08,'triangle',0.06);setTimeout(()=>tone(1980,0.18,'sine',0.05),70);ringPulse(mk.position.clone(),0.05,'#fff1c0');sparkle(mk.position.clone().add(V(0,0.02,0)),8,['#ffffff','#fff3c4','#cfe8ff']);
+   round++;if(round>=3){done=true;K.tick=null;K.work.remove(mk);K.work.remove(halo);const q=avg(sc);K.qc=q;setTimeout(()=>fin(q,'Usturlap ayarlandı!'),700)}else setTimeout(setT,700)}else{sfx.tap();toast('Biraz daha · işaretçi altın nişanın tam üstüne gelmeli',1100)}};
+ K.tick=()=>{halo.material.opacity=0.5+0.35*Math.sin(tt*6);ui2()};
+ tipStep('Ağı merkez çevresinde sürükleyerek çevir · kırmızı işaretçiyi altın nişana getir');setT();ui2();
+ K.skipFn=()=>{qcSkip();K.work.remove(mk);K.work.remove(halo)};K.aln={solve(){rt.rotation.y=-th;drag={};K.pu()}}}

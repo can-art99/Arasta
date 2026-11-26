@@ -111,3 +111,50 @@ PRODS.push(
   {t:'path',grav:1,ad:'Namluya gravür işle',paths:[[0,1,2,3,4,5,6,7,8,9].map(i=>[RV.jx+0.03+i*0.028,RV.bar[1]+Math.sin(i*0.9)*0.01])]},Rb('parlat','Çeliği parlat'),
   {t:'tetik',ad:'Tetik kontrolü (kuru tetik)'},D]}
 );}
+
+/* ---------- Kuş kafesi ve usturlap ---------- */
+const KF={R:0.11,H0:0.042,H:0.26};
+function brassM(hex){const m=M(hex||'#a07a28',0.3);m.metalness=0.6;return m}
+function kfPart(key,hex,sc){const g=new THREE.Group(),R=KF.R,H0=KF.H0,H=KF.H,bm=brassM(hex&&hex!=='#b58a2e'?hex:'#a07a28');let um=bm;
+ if(key==='taban'){const b=put(g,Cy(R+0.02,R+0.025,0.03,28),M('#3e2112',0.5),0,0.015,0);b.castShadow=true}
+ if(key==='tel'){const bars=[];for(let i=0;i<16;i++){const a=i/16*Math.PI*2,x=Math.cos(a)*R,z=Math.sin(a)*R;const b=put(g,Cy(0.0035,0.0035,H,6),bm,x,H0+H/2,z);b.castShadow=true;b.userData.a=a;bars.push(b)}
+  [0.006,H*0.5,H].forEach(h=>{const r=put(g,new THREE.TorusGeometry(R,0.0042,6,40),bm,0,H0+h,0);r.rotation.x=Math.PI/2});
+  const pc=put(g,Cy(0.004,0.004,R*1.9,8),M('#5a3420',0.6),0,H0+0.09,0);pc.rotation.z=Math.PI/2;g.userData.bars=bars}
+ if(key==='kubbe'){for(let i=0;i<8;i++){const t=put(g,new THREE.TorusGeometry(R,0.0035,6,24,Math.PI),bm,0,H0+H,0);t.rotation.y=i*Math.PI/8}
+  put(g,new THREE.SphereGeometry(0.014,10,8),bm,0,H0+H+R+0.006,0);const hk=put(g,new THREE.TorusGeometry(0.018,0.004,6,16),bm,0,H0+H+R+0.035,0);hk.castShadow=true}
+ if(key==='kapi'){const d=new THREE.Group();d.position.set(0,H0,R+0.004);g.add(d);const fm=brassM('#8a6420');[[0,0.005,0.07,0.006],[0,0.115,0.07,0.006]].forEach(q=>put(d,B(q[2],q[3],0.006),fm,q[0],q[1],0));[-0.035,0.035].forEach(x=>put(d,B(0.006,0.116,0.006),fm,x,0.06,0));[-0.012,0.012].forEach(x=>put(d,Cy(0.0025,0.0025,0.11,5),fm,x,0.06,0));put(d,new THREE.TorusGeometry(0.008,0.002,5,10),fm,0.045,0.06,0)}
+ if(key==='kus'){const k=new THREE.Group(),y=M('#f2c84b',0.6),bo=put(k,new THREE.SphereGeometry(0.02,10,8),y,0,0,0);bo.scale.set(1.25,1,1);put(k,new THREE.SphereGeometry(0.013,10,8),y,0.022,0.013,0);const bk=put(k,new THREE.ConeGeometry(0.005,0.012,6),M('#e07a2a',0.5),0.038,0.012,0);bk.rotation.z=-Math.PI/2;
+  [-1,1].forEach(sd=>put(k,new THREE.SphereGeometry(0.0028,6,5),M('#1a1a1a',0.4),0.03,0.018,sd*0.007));const tl=put(k,B(0.025,0.004,0.014),M('#d9a83a',0.6),-0.028,0.005,0);tl.rotation.z=0.4;k.position.set(0,H0+0.112,0);g.add(k);g.userData.bird=k}
+ g.scale.setScalar(sc||1);return {g,um}}
+function kafesModel(hex){const g=new THREE.Group();let um=null;['taban','tel','kubbe','kapi','kus'].forEach(k=>{const r=kfPart(k,hex,1);g.add(r.g);if(k==='tel')um=r.um});return {g,um}}
+/* usturlap: ağ (rete) — çember, kollar, burç halkası ve yıldız işaretçileri */
+function reteGroup(hex){const g=new THREE.Group(),inn=new THREE.Group();inn.rotation.x=-Math.PI/2;g.add(inn);const bm=brassM(hex||'#b8902f'),d=0.004,add=sh=>{const m=new THREE.Mesh(ext(sh,d,0.0012),bm);m.castShadow=true;inn.add(m);return m};
+ const ring=(r1,r2,cx,cy)=>{const s=new THREE.Shape();s.absarc(cx||0,cy||0,r2,0,Math.PI*2,false);const h=new THREE.Path();h.absarc(cx||0,cy||0,r1,0,Math.PI*2,true);s.holes.push(h);return s};
+ add(ring(0.101,0.113));add(ring(0.058,0.066,0,0.032));add(circleShape(0.018));
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2+0.3,s=new THREE.Shape(),w=0.004;s.moveTo(Math.cos(a)*0.016-Math.sin(a)*w,Math.sin(a)*0.016+Math.cos(a)*w);s.lineTo(Math.cos(a)*0.104-Math.sin(a)*w,Math.sin(a)*0.104+Math.cos(a)*w);s.lineTo(Math.cos(a)*0.104+Math.sin(a)*w,Math.sin(a)*0.104-Math.cos(a)*w);s.lineTo(Math.cos(a)*0.016+Math.sin(a)*w,Math.sin(a)*0.016-Math.cos(a)*w);add(s)}
+ [[0,0.022,1],[1.3,0.012],[2.4,0.012],[3.6,0.012],[4.7,0.012]].forEach(([a,l,main])=>{const s=new THREE.Shape(),r0=0.098,w=main?0.012:0.007;s.moveTo(Math.cos(a)*r0-Math.sin(a)*w,Math.sin(a)*r0+Math.cos(a)*w);s.lineTo(Math.cos(a)*(r0+l+0.012),Math.sin(a)*(r0+l+0.012));s.lineTo(Math.cos(a)*r0+Math.sin(a)*w,Math.sin(a)*r0-Math.cos(a)*w);const m=add(s);if(main){m.material=M('#b8402a',0.4)}});
+ g.userData.sh=circleShape(0.113);return g}
+function usturlapModel(hex){const g=new THREE.Group(),bm=brassM(hex||'#a07a28');put(g,Cy(0.14,0.14,0.012,40),bm,0,0.006,0).castShadow=true;const rim=put(g,new THREE.TorusGeometry(0.138,0.006,6,40),bm,0,0.012,0);rim.rotation.x=Math.PI/2;
+ for(let i=0;i<36;i++){const a=i/36*Math.PI*2,t=put(g,B(i%3?0.008:0.014,0.001,0.0018),M('#3a2a12',0.6),Math.cos(a)*(0.125-(i%3?0:0.003)),0.0125,Math.sin(a)*(0.125-(i%3?0:0.003)));t.rotation.y=-a}
+ const c2=put(g,new THREE.TorusGeometry(0.07,0.001,4,40),M('#3a2a12',0.6),0,0.0125,0);c2.rotation.x=Math.PI/2;const rt=reteGroup();rt.position.y=0.013;g.add(rt);
+ const al=put(g,B(0.27,0.004,0.018),brassM('#8a6420'),0,0.02,0);al.rotation.y=0.6;put(g,Cy(0.008,0.008,0.012,10),bm,0,0.022,0);
+ const th=put(g,Cy(0.03,0.03,0.012,16,1,false,0,Math.PI),bm,0,0.006,-0.138);th.rotation.y=Math.PI/2;const hr=put(g,new THREE.TorusGeometry(0.02,0.004,6,16),bm,0,0.008,-0.18);hr.rotation.x=Math.PI/2;return {g,um:bm}}
+{const T=(ad,o)=>Object.assign({t:'trace',ad},o||{}),Rb=(k,ad)=>({t:'rub',k,ad}),D={t:'design'},A=(part,ad,slots)=>({t:'asm',part,ad,slots,pose:'flat'}),ci=r=>()=>circleShape(r),RG=(r,n)=>Array.from({length:n+1},(_,i)=>[Math.cos(i/n*Math.PI*2)*r,Math.sin(i/n*Math.PI*2)*r]);
+PRODS.push(
+{id:'kafes',ust:1,hard:true,ad:'Süslü kuş kafesi',tier:5,base:1000,need:{pirinc:2,kereste:1,demir:1},sheet:'#b58a2e',shape:ci(0.13),build:kafesModel,mkPart:kfPart,
+ steps:[T('Ceviz tabanı kes',{wood:true,solid:{d:0.03,bv:0.006,walnut:1}}),{t:'drill',ad:'Tel yuvalarını aç',pts:RG(0.11,16).slice(0,16).filter((_,i)=>i%2===0)},
+  T('Pirinç telleri kes',{part:'tel',n:1,shape:()=>rrect(0.3,0.06,0.004),at:[-0.42,0],col:'#c9a23a',metal:true}),Rb('torch','Telleri tavlayıp yumuşat'),
+  {t:'asm',part:'tel',mk:'tel',ad:'Tel gövdeyi tabana dik',slots:[[0,0]],oy:KF.H0+0.006,r:0.115,rest:[0.34,0.06]},{t:'path',ad:'Tel diplerini lehimle',paths:[RG(0.11,16)]},
+  {t:'asm',part:'kubbe',mk:'kubbe',ad:'Kubbeyi tellerin üstüne oturt',slots:[[0,0]],oy:KF.H0+KF.H,r:0.115,rest:[0.36,0.08]},
+  {t:'asm',part:'kapi',mk:'kapi',ad:'Kapıyı ön yüze tak',slots:[[0,0]],oy:KF.H0+0.06,oc:[0,KF.R],r:0.04,rest:[0.34,0.1]},
+  Rb('parlat','Pirinci parlat'),{t:'kafes',ad:'Tel aralığı kontrolü'},D]},
+{id:'usturlap',ust:1,hard:true,ad:'Usturlap',tier:5,base:1400,need:{pirinc:3,gumus:1},sheet:'#b58a2e',shape:ci(0.14),build:usturlapModel,vrot:[Math.PI/2,0,0],
+ steps:[T('Pirinç ana diski kes',{metal:true,solid:{d:0.01,bv:0.003,brass:1}}),{t:'hammer',kind:'dent',hits:1,ad:'Kenarı dövüp düzelt',pts:[[0.13,0],[-0.13,0],[0,0.13],[0,-0.13]]},
+  {t:'path',grav:1,ad:'Derece halkasını kazı',paths:[RG(0.125,24)]},{t:'path',grav:1,ad:'Ufuk çizgilerini kazı',paths:[[[-0.11,0],[-0.06,0],[0,0],[0.06,0],[0.11,0]],RG(0.07,16)]},
+  {t:'drill',ad:'Merkez deliğini aç',pts:[[0,0]]},
+  T('Ağ (örümcek) levhasını kes',{part:'rete',n:1,shape:ci(0.115),at:[-0.42,0],col:'#c9a23a',metal:true,solid:{fn:()=>reteGroup()}}),Rb('zimpara','Ağın kollarını eğele'),
+  Object.assign(A('rete','Ağı diskin üstüne oturt',[[0,0]]),{lift:0.006}),
+  T('Gözetleme cetvelini kes',{part:'alid',n:1,shape:()=>rrect(0.27,0.018,0.004),at:[-0.42,0],col:'#b8902f',metal:true,solid:{d:0.004,bv:0.0015,brass:1}}),A('alid','Cetveli merkeze yerleştir',[[0,0,0.6]]),{t:'screw',ad:'Merkez pimini vidala',pts:[[0,0]]},
+  T('Askı halkasını kes',{part:'halka',n:1,shape:ci(0.022),at:[0.42,0.24],col:'#c9a23a',metal:true,solid:{d:0.006,bv:0.002,brass:1}}),A('halka','Halkayı tepeye tak',[[0,-0.158]]),
+  Rb('parlat','Pirinci parlat'),{t:'nisan',ad:'Kalibrasyon: yıldız nişanı'},D]}
+);}
